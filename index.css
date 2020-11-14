@@ -1,0 +1,49 @@
+.wrapper {
+    width: 900px;
+    margin: auto;
+}
+
+section, h1 {
+    padding-left: 250px;
+    position: relative;
+}
+
+section { margin-bottom: 4em; }
+
+section:before  {
+    content: "";
+    position: absolute;
+    left: 0;
+    width: 200px;
+    height: 200px;
+    background-size: contain;
+    background-repeat: no-repeat;
+    border-radius: 10px;
+    border: 2px solid white;
+    box-shadow: 0px 3px 10px rgba(0,0,0,0.5);
+    box-sizing: border-box;
+    margin-bottom: 20px;
+}
+
+section#about:before { background-image: url(me.jpg); }
+section#links:before { background-image: url(bsod.jpg); }
+section#publications:before { background-image: url(presentation.jpg); }
+section#personal-life:before { background-image: url(family.jpg); }
+
+section li { margin-bottom: 1em; }
+
+#links li:before {
+    content:"";
+    width: 16px;
+    height: 16px;
+    margin: 0 5px -2px 0;
+    background-image: url(icons.png);
+    background-repeat: no-repeat;
+    display: inline-block;
+}
+
+#blogger:before { background-position: -1px -1px; }
+#github:before { background-position: -20px -1px; }
+#stackoverflow:before { background-position: -37px -1px; }
+#linkedin:before { background-position: -55px -1px; }
+#sourceforge:before { background-position: -74px -1px; }
