@@ -1,21 +1,23 @@
 .wrapper {
-    width: 900px;
+    max-width: 900px;
     margin: auto;
 }
 
 section, h1 {
-    padding-left: 250px;
+    padding-left: calc( min( 22vw, 230px ) );
     position: relative;
 }
 
-section { margin-bottom: 4em; }
+section { margin-bottom: 4rem; }
 
 section:before  {
     content: "";
     position: absolute;
     left: 0;
-    width: 200px;
-    height: 200px;
+    width: 20vw;
+    height: 20vw;
+    max-width: 200px;
+    max-height: 200px;
     background-size: contain;
     background-repeat: no-repeat;
     border-radius: 10px;
@@ -30,14 +32,14 @@ section#links:before { background-image: url(bsod.jpg); }
 section#publications:before { background-image: url(presentation.jpg); }
 section#personal-life:before { background-image: url(family.jpg); }
 
-section li { margin-bottom: 1em; }
+section li { margin-bottom: 1rem; }
 
 #links li:before {
     content:"";
     width: 16px;
     height: 16px;
     margin: 0 5px -2px 0;
-    background-image: url(icons.png);
+    background-image: url(icons.svg);
     background-repeat: no-repeat;
     display: inline-block;
 }
