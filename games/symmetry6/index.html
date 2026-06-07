@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Symmetry6</title>
+    <link rel="stylesheet" href="style.css">
+    <!-- Using Three.js for 2.5D/3D rendering and smooth animations -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/mrdoob/three.js@r128/examples/js/loaders/GLTFLoader.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/mrdoob/three.js@r128/examples/js/loaders/DRACOLoader.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/mrdoob/three.js@r128/examples/js/loaders/MTLLoader.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/mrdoob/three.js@r128/examples/js/loaders/OBJLoader.js"></script>
+</head>
+
+<body>
+
+    <div id="menu-top-bar">
+        <span id="rewards-display" style="margin-left: 10px;"><img src="icons/puzzle.svg" alt="Puzzle"> 0</span>
+        <span id="coins-display"><img src="icons/coin.svg" alt="Coin"> 0</span>
+        <!-- <span id="debug-screen-size" style="color: red;"></span> -->
+        <span class="top-right-container"
+            style="flex: 1; align-items: center; display: flex; justify-content: flex-end;">
+            <!-- <button id="btn-fullscreen" class="icon-btn" title="Toggle Fullscreen" style="margin-right: 10px;">
+                <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2" fill="none"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"></path>
+                </svg>
+            </button> -->
+            <button id="btn-back-home" class="icon-btn" title="Home" style="display: none;">
+                <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2" fill="none"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                    <polyline points="9 22 9 12 15 12 15 22"></polyline>
+                </svg>
+            </button>
+            <button id="btn-store" class="icon-btn" title="Store" style="margin-right: 10px; display: none;">
+                <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2" fill="none"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="9" cy="21" r="1"></circle>
+                    <circle cx="20" cy="21" r="1"></circle>
+                    <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+                </svg>
+            </button>
+            <button id="btn-settings" class="icon-btn" title="Settings">
+                <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2" fill="none"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="3"></circle>
+                    <path
+                        d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z">
+                    </path>
+                </svg>
+            </button>
+        </span>
+    </div>
+
+    <!-- Splash Screen -->
+    <div id="splash-screen" class="screen" style="display: block; background-color: transparent; z-index: 20;">
+        <div class="menu-content">
+            <img src="title.webp" style="width: 90vw; max-width: 400px; margin-bottom: 20px;">
+            <div id="splash-loading-container"
+                style="width: 80%; max-width: 300px; height: 10px; background: rgba(255,255,255,0.2); border-radius: 5px; overflow: hidden; margin: 0 auto 20px auto;">
+                <div id="splash-loading-bar"
+                    style="width: 0%; height: 100%; background: #2ecc71; transition: width 0.2s ease-out;"></div>
+            </div>
+            <p id="splash-loading-text" style="font-size: 16px; color: #aaa; margin-top: 0;">Loading... 0%</p>
+            <p id="splash-tap-text" class="pulse-text">Tap to Start</p>
+        </div>
+    </div>
+
+    <!-- Home Screen -->
+    <div id="home-screen" class="screen" style="display: none; background-color: transparent;">
+
+        <div class="menu-content">
+            <img src="title.webp" style="width: 90vw;">
+            <button id="btn-play" class="btn">Play Level 1</button>
+            <button id="btn-daily-reward" class="btn">Claim Coins</button>
+            <button id="btn-puzzle" class="btn">View Puzzle</button>
+            <button id="btn-level-select" class="btn">Select Level</button>
+        </div>
+    </div>
+
+    <!-- Puzzle Screen -->
+    <div id="puzzle-screen" class="screen">
+        <div class="menu-content">
+            <h1 style="font-size: 36px; margin-bottom: 20px;">Jigsaw Puzzle</h1>
+            <div id="puzzle-grid-container"></div>
+            <button id="btn-puzzle-back" class="btn">Back</button>
+        </div>
+    </div>
+
+    <!-- Level Select Screen -->
+    <div id="level-select-screen" class="screen">
+        <div class="menu-content">
+            <h1 style="font-size: 36px; margin-bottom: 20px;">Select Level</h1>
+            <div id="level-select-grid" class="level-grid">
+                <!-- Level buttons will be injected here by main.js -->
+            </div>
+            <button id="btn-level-select-back" class="btn">Back</button>
+        </div>
+    </div>
+
+    <!-- Game HUD (Your original UI Layer) -->
+    <div id="game-hud" class="screen">
+        <div class="hud-top-bar">
+            <div
+                style="display: flex; justify-content: space-between; align-items: center; pointer-events: auto; gap: 1em;">
+                <div id="step-count-display" class="hud-stats">Steps: 0</div>
+                <div id="timer-display" class="hud-stats">00:00</div>
+            </div>
+            <div id="objective-display"
+                style="text-align: center; font-size: 2.3vh; font-weight: normal; text-shadow: 1px 1px 3px rgba(0,0,0,0.8); pointer-events: none;">
+            </div>
+        </div>
+        <div class="hud-bottom-bar">
+            <div style="display: flex; gap: 15px; align-items: center; justify-content: space-evenly; width: 100%;">
+                <button id="btn-single-flip" class="icon-btn" title="Single Flip">
+                    <img src="icons/flip.svg">
+                    <div id="flip-badge">1</div>
+                </button>
+                <button id="btn-single-rotate" class="icon-btn" title="Single Rotate">
+                    <img src="icons/rotate.svg">
+                    <div id="rotate-badge">1</div>
+                </button>
+                <div id="level-number-display" class="level-circle">1</div>
+                <button id="btn-hint" class="icon-btn" title="Show Hint">
+                    <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2" fill="none"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M9 18h6"></path>
+                        <path d="M10 22h4"></path>
+                        <path
+                            d="M15.09 14c.18-.98.65-1.74 1.41-2.5A4.65 4.65 0 0 0 18 8 6 6 0 0 0 6 8c0 1 .23 2.23 1.5 3.5A4.61 4.61 0 0 1 8.91 14">
+                        </path>
+                    </svg>
+                    <div id="hint-badge">1</div>
+                </button>
+                <button id="reset-view-btn" class="icon-btn" title="Restart Level">
+                    <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2" fill="none"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path>
+                        <polyline points="3 3 3 8 8 8"></polyline>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Level Complete Screen -->
+    <div id="level-complete-screen" class="screen">
+        <div class="menu-content">
+            <!-- <img src="level_complete.webp" style="width: 80vw; margin-bottom: 20px;"> -->
+            <div id="level-complete-stars">
+                <!-- Stars will be inserted here -->
+            </div>
+            <p id="level-complete-text"></p>
+            <button id="btn-continue" class="btn">Continue</button>
+        </div>
+    </div>
+
+    <!-- Minigame Container -->
+    <div id="minigame-container" class="screen">
+        <div class="menu-content">
+            <h1 style="font-size: 36px; margin-bottom: 20px;">Minigames</h1>
+            <p>Coming Soon...</p>
+            <button id="btn-mg-back" class="btn">Back</button>
+        </div>
+    </div>
+
+    <!-- Settings Modal -->
+    <div id="settings-modal" class="modal">
+        <div class="modal-content">
+            <h2 style="margin-top: 0;">Settings</h2>
+            <div class="setting-row">
+                <label for="bgm-slider">Music Volume</label>
+                <input type="range" id="bgm-slider" min="0" max="1" step="0.05" value="0.5">
+            </div>
+            <div class="setting-row">
+                <label for="sfx-slider">SFX Volume</label>
+                <input type="range" id="sfx-slider" min="0" max="1" step="0.05" value="0.5">
+            </div>
+            <button id="btn-privacy-settings" class="btn" style="margin-top: 20px; font-size: 16px;">Ad Privacy Settings</button>
+            <button id="btn-close-settings" class="btn" style="margin-top: 20px;">Close</button>
+            <div id="version-display-settings" style="margin-top: 15px; font-size: 12px; color: #888; text-align: center;">v0.3</div>
+        </div>
+    </div>
+
+    <!-- Interlude Screen -->
+    <div id="interlude-screen" style="display: none;">
+        <div
+            style="display: flex; flex-direction: column; justify-content: space-between;; align-items: center; width: 100%; height: 100%; text-align: center; padding: 20px; box-sizing: border-box; color: white;">
+            <div>
+                <h2 id="interlude-title"
+                    style="font-size: 2.5em; margin-bottom: 20px; font-family: system-ui, sans-serif;">
+                </h2>
+                <div id="interlude-img-container" style="margin-bottom: 20px; display: none;">
+                    <img id="interlude-img" src=""
+                        style="max-width: 100%; max-height: 250px; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.5);">
+                </div>
+                <p id="interlude-text"
+                    style="font-size: 1.2em; max-width: 600px; margin-bottom: 40px; line-height: 1.5; font-family: system-ui, sans-serif;">
+                </p>
+            </div>
+            <div>
+                <button id="btn-interlude-continue" class="btn" style="padding: 15px 40px;">Start</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="ad-loading-overlay" style="display: none; position: fixed; color: #fff; align-items: center; justify-content: center; z-index: 9999; font-size: 24px;">
+        Loading Ad...
+    </div>
+
+    <div id="ads-container" style="display: none; position: fixed; z-index: 9998;">
+        <div id="ad-placeholder"
+            style="display: flex; align-items: center; color: white; font-size: 25vw; text-align: center; width: 100vw; height: 100vh;">
+            AD GOES HERE</div>
+    </div>
+
+    <div id="store-modal">
+        <div class="store-modal-content">
+            <button id="btn-close-store">
+                <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2" fill="none"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="18" y1="6" x2="6" y2="18"></line>
+                    <line x1="6" y1="6" x2="18" y2="18"></line>
+                </svg>
+            </button>
+            <h2>Store</h2>
+            <div id="store-content">
+                <p style="text-align: center; color: #ccc; margin-top: 20px;">Loading store...</p>
+            </div>
+        </div>
+    </div>
+
+    <script type="module" src="main.js"></script>
+</body>
+
+</html>

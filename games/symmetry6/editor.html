@@ -1,0 +1,884 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Symmetry6 Level Editor</title>
+    <style>
+      .color-swatch {
+        width: 24px;
+        height: 24px;
+        border-radius: 50%;
+        cursor: grab;
+        flex-shrink: 0;
+        border: 2px solid rgba(0,0,0,0.5);
+        transition: transform 0.1s;
+      }
+      .color-swatch:hover {
+        transform: scale(1.1);
+      }
+      .color-swatch:active {
+        cursor: grabbing;
+      }
+      .color-list {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        padding: 8px;
+        min-height: 40px;
+        background: #111;
+        border: 1px dashed #444;
+        border-radius: 4px;
+        margin-bottom: 20px;
+      }
+      .color-list.drag-over {
+        background: #222;
+        border-color: #3498db;
+      }
+      .palette-container {
+        display: flex;
+        gap: 8px;
+        margin-bottom: 16px;
+        padding: 8px;
+        background: #1a1a1a;
+        border-radius: 4px;
+      }
+      body {
+        margin: 0;
+        padding: 0;
+        font-family: sans-serif;
+        background: #1a1a1a;
+        color: #eee;
+        display: flex;
+        flex-direction: column;
+        height: 100vh;
+        overflow: hidden;
+      }
+      #topbar {
+        background: #2a2a2a;
+        border-bottom: 1px solid #444;
+        padding: 15px 20px;
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        box-sizing: border-box;
+        flex-shrink: 0;
+        flex-wrap: wrap;
+      }
+      #content {
+        display: flex;
+        flex-grow: 1;
+        overflow: hidden;
+        width: 100%;
+      }
+      #sidebar {
+        width: 450px;
+        background: #2a2a2a;
+        border-right: 1px solid #444;
+        padding: 20px;
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+        box-sizing: border-box;
+        overflow-y: auto;
+        flex-shrink: 0;
+      }
+      #main {
+        flex-grow: 1;
+        position: relative;
+        cursor: crosshair;
+      }
+      h2,
+      h3 {
+        margin: 0 0 10px 0;
+        font-size: 16px;
+        color: #aaa;
+        text-transform: uppercase;
+      }
+
+      #level-list-panel {
+        width: 260px;
+        background: #1a1a1a;
+        border-right: 1px solid #333;
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+        padding: 10px;
+        overflow-y: auto;
+        flex-shrink: 0;
+        box-sizing: border-box;
+      }
+      .reorder-item {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 5px;
+        background: #2a2a2a;
+        border: 1px solid #444;
+        border-radius: 4px;
+        cursor: pointer;
+        user-select: none;
+      }
+      .reorder-item.active {
+        border-color: #3498db;
+        background: #1e3a5f;
+      }
+      .reorder-item.dragging {
+        opacity: 0.5;
+      }
+      .reorder-item.drag-over {
+        border-top: 2px solid #f1c40f;
+      }
+
+      .control-group {
+        background: #333;
+        padding: 15px;
+        border-radius: 8px;
+      }
+      .topbar-group {
+        padding: 10px;
+        margin: 0;
+        display: flex;
+        align-items: center;
+      }
+      .btn {
+        background: #4caf50;
+        color: white;
+        border: none;
+        padding: 8px 12px;
+        border-radius: 4px;
+        cursor: pointer;
+        font-weight: bold;
+        width: 100%;
+        margin-bottom: 5px;
+      }
+      .btn:hover {
+        background: #45a049;
+      }
+      .btn.danger {
+        background: #e74c3c;
+      }
+      .btn.danger:hover {
+        background: #c0392b;
+      }
+      .btn.outline {
+        background: transparent;
+        border: 1px solid #aaa;
+      }
+      .btn.outline.active {
+        background: #555;
+        border-color: #fff;
+        color: #fff;
+      }
+
+      .swatch-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 5px;
+        margin-bottom: 10px;
+      }
+      .swatch {
+        height: 30px;
+        border-radius: 4px;
+        border: 2px solid transparent;
+        cursor: pointer;
+      }
+      .swatch.active {
+        border-color: #fff;
+        transform: scale(1.05);
+      }
+
+      svg {
+        width: 100%;
+        height: 100%;
+        outline: none;
+      }
+      .hex-bg {
+        fill: #222;
+        stroke: #333;
+        stroke-width: 1;
+        transition: fill 0.2s;
+      }
+      .hex-bg:hover {
+        fill: #333;
+      }
+      .hex-top {
+        stroke: #000;
+        stroke-width: 2;
+      }
+      .hex-bot {
+        stroke: #000;
+        stroke-width: 1;
+        opacity: 0.8;
+      }
+      .path-line {
+        fill: none;
+        stroke: #fff;
+        stroke-width: 8;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+        pointer-events: none;
+      }
+      .missing-warning {
+        fill: #ff6b6b;
+        font-weight: bold;
+        font-size: 20px;
+        pointer-events: none;
+        text-anchor: middle;
+        dominant-baseline: middle;
+      }
+      .target-star {
+        fill: white;
+        pointer-events: none;
+      }
+
+      dialog {
+        /* 1. Define the CLOSED state (the exit destination) */
+        opacity: 0;
+        transform: scale(0.9);
+
+        /* 2. Transition all properties, including discrete ones */
+        /* 'overlay' keeps it on top while the exit animation plays */
+        transition: opacity 0.4s ease, transform 0.4s ease,
+          overlay 0.4s ease allow-discrete, display 0.4s ease allow-discrete;
+      }
+
+      /* 3. Define the OPEN state */
+      dialog[open] {
+        opacity: 1;
+        transform: scale(1);
+      }
+
+      /* 4. Define the STARTING state (required for the entrance animation) */
+      @starting-style {
+        dialog[open] {
+          opacity: 0;
+          transform: scale(0.9);
+        }
+      }
+
+      /* 5. Don't forget the backdrop! */
+      dialog::backdrop {
+        background-color: rgba(0, 0, 0, 0);
+        transition: display 0.4s allow-discrete, overlay 0.4s allow-discrete,
+          background-color 0.4s;
+      }
+
+      dialog[open]::backdrop {
+        background-color: rgba(0, 0, 0, 0.5);
+      }
+
+      @keyframes pulse-record {
+        0% { opacity: 1; transform: scale(1); }
+        50% { opacity: 0.3; transform: scale(0.8); }
+        100% { opacity: 1; transform: scale(1); }
+      }
+    </style>
+  </head>
+  <body>
+    <div id="topbar">
+      <div class="control-group topbar-group" style="flex-grow: 1">
+        <div style="display: flex; gap: 10px; align-items: center; width: 100%">
+          <button class="btn" id="btn-add" style="width: auto; margin: 0">
+            Add Level
+          </button>
+          <button
+            class="btn"
+            id="btn-duplicate"
+            style="background: #9b59b6; width: auto; margin: 0"
+          >
+            Duplicate
+          </button>
+          <button
+            class="btn danger"
+            id="btn-delete"
+            style="width: auto; margin: 0"
+          >
+            Delete
+          </button>
+          <button
+            class="btn danger"
+            id="btn-clean-level"
+            style="width: auto; margin: 0"
+          >
+            Clean
+          </button>
+          <button
+            class="btn"
+            id="btn-export"
+            style="background: #3498db; width: auto; margin: 0"
+          >
+            Export JSON
+          </button>
+          <input
+            type="text"
+            id="objective-input"
+            placeholder="Level Objective..."
+            style="
+              padding: 8px;
+              background: #444;
+              color: #fff;
+              border: none;
+              border-radius: 4px;
+              box-sizing: border-box;
+              flex-grow: 1;
+            "
+          />
+          <input
+            type="number"
+            id="target-moves-input"
+            placeholder="Target Moves"
+            title="Target Moves for 3 Stars"
+            style="
+              padding: 8px;
+              background: #444;
+              color: #fff;
+              border: none;
+              border-radius: 4px;
+              box-sizing: border-box;
+              width: 120px;
+            "
+          />
+          <button
+            id="btn-edit-interlude"
+            style="
+              padding: 8px 16px;
+              width: 150px;
+              text-align: center;
+              box-sizing: border-box;
+              background: #333;
+              color: #fff;
+              border: 1px solid #555;
+              cursor: pointer;
+              border-radius: 4px;
+              font-weight: bold;
+              transition: all 0.2s;
+              margin: 0;
+            "
+          >
+            Add Interlude
+          </button>
+        </div>
+      </div>
+
+      <div class="control-group topbar-group">
+        <div style="display: flex; gap: 10px; align-items: center">
+          <button
+            class="btn outline active"
+            id="layer-initial"
+            style="width: auto; margin: 0"
+          >
+            Initial Board
+          </button>
+          <button
+            class="btn outline"
+            id="layer-objective"
+            style="width: auto; margin: 0"
+          >
+            Objective Map
+          </button>
+          <button
+            class="btn"
+            id="btn-copy-layer"
+            style="background: #f39c12; width: auto; margin: 0"
+          >
+            Copy to Objective
+          </button>
+          <div
+            style="width: 1px; height: 30px; background: #555; margin: 0 5px"
+          ></div>
+          <button
+            class="btn outline"
+            id="btn-undo"
+            title="Ctrl+Z"
+            style="width: auto; margin: 0"
+          >
+            Undo
+          </button>
+          <button
+            class="btn outline"
+            id="btn-redo"
+            title="Ctrl+Y / Ctrl+Shift+Z"
+            style="width: auto; margin: 0"
+          >
+            Redo
+          </button>
+          <div
+            style="width: 1px; height: 30px; background: #555; margin: 0 5px"
+          ></div>
+          <button class="btn outline" id="btn-test-mode" style="width: auto; margin: 0; border-color: #9b59b6; color: #9b59b6;">
+            Test Mode: OFF
+          </button>
+          <span id="test-steps" style="display: none; font-weight: bold; color: #9b59b6; margin-left: 10px;">Steps: 0</span>
+        </div>
+      </div>
+    </div>
+    <div id="content">
+      <div id="level-list-panel"></div>
+      <div id="sidebar">
+        <div class="control-group">
+          <h2>Tools</h2>
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 5px">
+            <button
+              class="btn outline active"
+              data-tool="paintTop"
+              style="margin: 0"
+            >
+              Set Tile Color
+            </button>
+            <button class="btn outline" data-tool="setMultiColor" style="margin: 0">
+              Set Multi Color
+            </button>
+            <button
+              class="btn outline"
+              data-tool="paintTarget"
+              style="margin: 0"
+            >
+              Place Target
+            </button>
+            <button class="btn outline" data-tool="flip" style="margin: 0">
+              Flip Tile
+            </button>
+            <button
+              class="btn outline"
+              style="border-color: #3498db; color: #3498db; margin: 0"
+              data-tool="path"
+            >
+              Draw Path (Drag)
+            </button>
+            <button class="btn outline" data-tool="clearPath" style="margin: 0">
+              Clear Path
+            </button>
+            <button
+              class="btn outline"
+              data-tool="wall"
+              style="border-color: #e74c3c; color: #e74c3c; margin: 0"
+            >
+              Toggle Wall
+            </button>
+            <button
+              class="btn outline"
+              data-tool="colorGate"
+              style="border-color: #f1c40f; color: #f1c40f; margin: 0"
+            >
+              Toggle Color Gate
+            </button>
+            <button
+              class="btn outline danger"
+              data-tool="erase"
+              style="margin: 0"
+            >
+              Erase Tile
+            </button>
+          </div>
+
+          <div style="display: flex; gap: 5px; margin-top: 10px">
+            <button
+              class="btn outline"
+              data-tool="paintZone"
+              style="border-color: #f39c12; color: #f39c12; flex-grow: 1"
+              title="Paint on Objective Layer"
+            >
+              Set Zone (Obj)
+            </button>
+            <input
+              type="number"
+              id="tool-val-zone"
+              value="2"
+              min="1"
+              max="9"
+              style="
+                width: 50px;
+                background: #444;
+                color: #fff;
+                border: none;
+                border-radius: 4px;
+                text-align: center;
+              "
+            />
+          </div>
+          <div style="display: flex; gap: 5px; margin-top: 5px">
+            <button
+              class="btn outline"
+              data-tool="paintFreeze"
+              style="border-color: #00ffff; color: #00ffff; flex-grow: 1"
+              title="Paint on Initial Layer"
+            >
+              Set Freeze (Init)
+            </button>
+            <input
+              type="number"
+              id="tool-val-freeze"
+              value="1"
+              min="0"
+              max="9"
+              style="
+                width: 50px;
+                background: #444;
+                color: #fff;
+                border: none;
+                border-radius: 4px;
+                text-align: center;
+              "
+            />
+          </div>
+
+          <button
+            class="btn danger"
+            id="btn-clear-board"
+            style="margin-top: 15px"
+          >
+            Clear Entire Board
+          </button>
+        </div>
+
+        <div class="control-group" id="color-palette">
+          <h2>Colors</h2>
+          <div class="swatch-grid">
+            <div
+              class="swatch active"
+              data-color="rr"
+              style="background: #e74c3c"
+            ></div>
+            <div
+              class="swatch"
+              data-color="bb"
+              style="background: #3498db"
+            ></div>
+            <div
+              class="swatch"
+              data-color="yy"
+              style="background: #f1c40f"
+            ></div>
+            <div
+              class="swatch"
+              data-color="gg"
+              style="background: #2ecc71"
+            ></div>
+            <div
+              class="swatch"
+              data-color="pp"
+              style="background: #9b59b6"
+            ></div>
+            <div
+              class="swatch"
+              data-color="oo"
+              style="background: #e67e22"
+            ></div>
+            <div
+              class="swatch"
+              data-color="cc"
+              style="background: #00bcd4"
+            ></div>
+            <div
+              class="swatch"
+              data-color="**"
+              style="background: #838383"
+              title="Empty"
+            ></div>
+            <div
+              class="swatch"
+              data-color="@@"
+              style="background: #272727"
+              title="Blocked"
+            ></div>
+          </div>
+        </div>
+
+        <div class="control-group">
+          <h2>Generator</h2>
+          <div style="display: flex; gap: 5px; margin-bottom: 5px">
+            <input
+              type="number"
+              id="gen-n-input"
+              value="5"
+              min="1"
+              max="50"
+              style="
+                width: 60px;
+                background: #444;
+                color: #fff;
+                border: none;
+                border-radius: 4px;
+                padding: 5px;
+              "
+            />
+            <button
+              class="btn"
+              id="btn-generate-n"
+              style="flex-grow: 1; background: #e67e22; margin: 0"
+            >
+              Generate Levels
+            </button>
+          </div>
+          <button
+            class="btn"
+            id="btn-shuffle"
+            style="margin-top: 5px; background: #9b59b6"
+          >
+            Shuffle (Flip Randomly)
+          </button>
+          <p
+            style="
+              font-size: 11px;
+              color: #aaa;
+              margin: 10px 0 0 0;
+              line-height: 1.3;
+            "
+          >
+            Procedurally generates solvable puzzles using a reverse-shuffle
+            algorithm.
+          </p>
+        </div>
+      </div>
+      <div id="main">
+        <svg id="grid" viewBox="-300 -300 600 600">
+          <g id="grid-content"></g>
+          <g id="grid-overlay"></g>
+        </svg>
+      </div>
+    </div>
+
+    <dialog
+      id="interlude-modal"
+      style="
+        background: #222;
+        padding: 20px;
+        border-radius: 8px;
+        width: 400px;
+        border: 1px solid #555;
+        color: white;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+      "
+    >
+      <h3
+        style="
+          margin-top: 0;
+          border-bottom: 1px solid #444;
+          padding-bottom: 10px;
+        "
+      >
+        Level Interlude
+      </h3>
+      <label
+        style="display: block; font-size: 12px; color: #aaa; margin-top: 10px"
+        >Interlude Title</label
+      >
+      <input
+        type="text"
+        id="interlude-title"
+        style="
+          width: 100%;
+          box-sizing: border-box;
+          margin-bottom: 10px;
+          background: #111;
+          color: #fff;
+          border: 1px solid #444;
+          padding: 8px;
+          border-radius: 4px;
+        "
+        placeholder="e.g. New Mechanic!"
+      />
+      <label style="display: block; font-size: 12px; color: #aaa"
+        >Interlude Text</label
+      >
+      <textarea
+        id="interlude-text"
+        style="
+          width: 100%;
+          box-sizing: border-box;
+          margin-bottom: 10px;
+          background: #111;
+          color: #fff;
+          border: 1px solid #444;
+          padding: 8px;
+          border-radius: 4px;
+        "
+        rows="4"
+        placeholder="Explain the mechanic..."
+      ></textarea>
+      <label style="display: block; font-size: 12px; color: #aaa"
+        >Interlude Image (Placeholder URL)</label
+      >
+      <input
+        type="text"
+        id="interlude-image"
+        style="
+          width: 100%;
+          box-sizing: border-box;
+          background: #111;
+          color: #fff;
+          border: 1px solid #444;
+          padding: 8px;
+          margin-bottom: 20px;
+          border-radius: 4px;
+        "
+        placeholder="assets/tut_image.png"
+      />
+
+    <div style="margin-bottom: 20px; padding: 10px; background: #111; border: 1px solid #444; border-radius: 4px;">
+      <div style="display: flex; justify-content: space-between; align-items: center;">
+        <div>
+          <label style="display: block; font-size: 12px; color: #aaa;">Interactive Tutorial</label>
+          <span id="interlude-tutorial-status" style="font-size: 14px; color: #ccc;">No tutorial recorded.</span>
+        </div>
+        <div style="display: flex; gap: 5px;">
+          <button id="btn-tutorial-clear" style="padding: 6px 12px; background: #c0392b; color: white; border: none; cursor: pointer; border-radius: 4px; font-weight: bold; display: none;">Clear</button>
+          <button id="btn-tutorial-preview" class="btn" style="width: auto; background: #3498db; margin: 0; display: none;">Preview</button>
+          <button id="btn-record-tutorial" class="btn" style="width: auto; background: #e67e22; margin: 0;">Record</button>
+        </div>
+      </div>
+    </div>
+
+      <div style="display: flex; justify-content: space-between">
+        <button
+          id="btn-interlude-clear"
+          style="
+            padding: 8px 16px;
+            background: #c0392b;
+            color: white;
+            border: none;
+            cursor: pointer;
+            border-radius: 4px;
+            font-weight: bold;
+          "
+        >
+          Clear
+        </button>
+        <div>
+          <button
+            id="btn-interlude-cancel"
+            style="
+              padding: 8px 16px;
+              background: #555;
+              color: white;
+              border: none;
+              cursor: pointer;
+              border-radius: 4px;
+              margin-right: 8px;
+              font-weight: bold;
+            "
+          >
+            Cancel
+          </button>
+          <button
+            id="btn-interlude-save"
+            style="
+              padding: 8px 16px;
+              background: #2ecc71;
+              color: white;
+              border: none;
+              cursor: pointer;
+              border-radius: 4px;
+              font-weight: bold;
+            "
+          >
+            Save
+          </button>
+        </div>
+      </div>
+    </dialog>
+
+    <dialog
+      id="test-win-modal"
+      style="
+        background: #222; padding: 30px; border-radius: 8px; width: 300px;
+        border: 1px solid #555; color: white; text-align: center;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+      "
+    >
+      <h2 style="color: #2ecc71; margin-top: 0; font-size: 24px;">Level Solved!</h2>
+      <p id="test-win-steps" style="font-size: 16px; color: #ccc; margin: 20px 0;"></p>
+      <button id="btn-test-win-close" class="btn" style="width: 100%;">Awesome!</button>
+    </dialog>
+
+  <div id="tutorial-record-hud" style="display: none; position: fixed; top: 20px; left: 50%; transform: translateX(-50%); background: rgba(231, 76, 60, 0.95); padding: 10px 20px; border-radius: 30px; font-weight: bold; z-index: 1000; align-items: center; gap: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.5);">
+    <div style="display: flex; align-items: center; gap: 10px;">
+      <span style="display: inline-block; width: 12px; height: 12px; background: #fff; border-radius: 50%; animation: pulse-record 1.5s infinite;"></span>
+      <span>Recording... Steps: <span id="tutorial-record-steps">0</span></span>
+    </div>
+    <div style="display: flex; gap: 10px;">
+      <button id="btn-tutorial-stop" style="padding: 5px 15px; border: none; border-radius: 15px; background: #fff; color: #e74c3c; font-weight: bold; cursor: pointer;">Stop & Save</button>
+      <button id="btn-tutorial-cancel" style="padding: 5px 15px; border: 1px solid #fff; border-radius: 15px; background: transparent; color: #fff; cursor: pointer;">Cancel</button>
+    </div>
+  </div>
+
+  <div id="tutorial-playback-hud" style="display: none; position: fixed; top: 20px; left: 50%; transform: translateX(-50%); background: rgba(52, 152, 219, 0.95); padding: 10px 20px; border-radius: 30px; font-weight: bold; z-index: 1000; align-items: center; gap: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.5);">
+    <div style="display: flex; align-items: center; gap: 10px;">
+      <span>Previewing Tutorial...</span>
+    </div>
+    <div style="display: flex; gap: 10px;">
+      <button id="btn-tutorial-stop-playback" style="padding: 5px 15px; border: none; border-radius: 15px; background: #fff; color: #2980b9; font-weight: bold; cursor: pointer;">Stop Preview</button>
+    </div>
+  </div>
+
+    <dialog
+      id="multi-color-modal"
+      style="
+        background: #222;
+        padding: 20px;
+        border-radius: 8px;
+        width: 350px;
+        border: 1px solid #555;
+        color: white;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+      "
+    >
+      <h3
+        style="
+          margin-top: 0;
+          border-bottom: 1px solid #444;
+          padding-bottom: 10px;
+        "
+      >
+        Set Multi Color
+      </h3>
+      <p style="font-size: 12px; color: #aaa; margin-bottom: 15px;">
+        Define the sequence of colors for this tile. Use the color initials (r, b, y, g, p, o, c, *, @).
+      </p>
+      
+      <label style="display: block; font-size: 12px; color: #aaa; margin-top: 10px; margin-bottom: 5px;">Palette (Drag to lists)</label>
+      <div id="multi-color-palette" class="palette-container"></div>
+      
+      <label style="display: block; font-size: 12px; color: #aaa; margin-bottom: 5px;">Static Colors (Click to remove, drag to reorder)</label>
+      <div id="multi-static-list" class="color-list"></div>
+      
+      <label style="display: block; font-size: 12px; color: #aaa; margin-bottom: 5px;">Cycling Colors (Click to remove, drag to reorder)</label>
+      <div id="multi-cycling-list" class="color-list"></div>
+
+      <div style="display: flex; justify-content: flex-end">
+        <button
+          id="btn-multi-cancel"
+          style="
+            padding: 8px 16px;
+            background: #555;
+            color: white;
+            border: none;
+            cursor: pointer;
+            border-radius: 4px;
+            margin-right: 8px;
+            font-weight: bold;
+          "
+        >
+          Cancel
+        </button>
+        <button
+          id="btn-multi-save"
+          style="
+            padding: 8px 16px;
+            background: #3498db;
+            color: white;
+            border: none;
+            cursor: pointer;
+            border-radius: 4px;
+            font-weight: bold;
+          "
+        >
+          Save
+        </button>
+      </div>
+    </dialog>
+
+    <script type="module" src="editor.js"></script>
+  </body>
+</html>

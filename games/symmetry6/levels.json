@@ -1,0 +1,1062 @@
+[
+  {
+    "objectiveString": "Bring the blue tiles together",
+    "objective": {
+      "type": "match_map",
+      "map": [
+        "  ** bb ** bb **  "
+      ]
+    },
+    "map": [
+      "  bb ** ** ** bb  "
+    ],
+    "staticMap": [
+      "  ** ** Tb ** **  "
+    ],
+    "interlude": {
+      "title": "Flip Tiles",
+      "text": "You solve levels by flipping tiles along a common edge, either by tapping or clicking that edge, or dragging from one tile to the next.",
+      "tutorial": {
+        "map": [
+          "  ** ** bb  "
+        ],
+        "staticMap": [
+          "  To ** **  "
+        ],
+        "steps": [
+          [
+            1,
+            0,
+            0,
+            0
+          ]
+        ]
+      }
+    },
+    "targetMoves": 2
+  },
+  {
+    "objectiveString": "Surround the target with matching blue tiles",
+    "objective": {
+      "type": "match_map",
+      "map": [
+        "  ** ** ** ** ** ** **  ",
+        "  ** ** bb bb ** **  ",
+        "  ** ** bb To bb ** **  ",
+        "  ** ** bb bb ** **  ",
+        "  ** ** ** ** ** ** **  "
+      ]
+    },
+    "map": [
+      "  ** ** bb ** bb ** **  ",
+      "  ** ** ** ** ** **  ",
+      "  ** bb ** ** ** bb **  ",
+      "  ** ** ** ** ** **  ",
+      "  ** ** bb ** bb ** **  "
+    ],
+    "staticMap": [
+      "  ** ** ** ** ** ** **  ",
+      "  ** ** ** ** ** **  ",
+      "  ** ** ** To ** ** **  ",
+      "  ** ** ** ** ** **  ",
+      "  ** ** ** ** ** ** **  "
+    ],
+    "targetMoves": 6,
+    "interlude": {
+      "tutorial": {
+        "map": [],
+        "staticMap": []
+      }
+    }
+  },
+  {
+    "objectiveString": "Surround the targets with matching blue and red tiles",
+    "objective": {
+      "type": "match_map",
+      "map": [
+        "  ** ** ** ** ** ** **  ",
+        "  rr rr ** ** bb bb  ",
+        "  rr ** rr ** bb ** bb  ",
+        "  rr rr ** ** bb bb  ",
+        "  ** ** ** ** ** ** **  "
+      ]
+    },
+    "map": [
+      "  rr ** rr ** bb ** bb  ",
+      "  ** ** ** rr ** **  ",
+      "  rr ** ** ** ** ** bb  ",
+      "  ** ** bb ** ** **  ",
+      "  rr ** rr ** bb ** bb  "
+    ],
+    "staticMap": [
+      "  **** **** **** **** **** **** ****  ",
+      "  Z1** Z1** **** **** Z2** Z2**  ",
+      "  Z1** TrZ1 Z1** **** Z2** TbZ2 Z2**  ",
+      "  Z1** Z1** **** **** Z2** Z2**  ",
+      "  **** **** **** **** **** **** ****  "
+    ],
+    "targetMoves": 12
+  },
+  {
+    "objectiveString": "Match the dual-colored tiles to their targets",
+    "interlude": {
+      "title": "Dual-Colored Tiles",
+      "text": "Some tiles have different colors on the top and bottom! Flipping them reveals the hidden side.",
+      "tutorial": {
+        "map": [
+          "  ** yg **  ",
+          "  ** ** **  "
+        ],
+        "staticMap": [
+          "  ** ** **  ",
+          "  ** ** **  "
+        ],
+        "steps": [
+          [
+            0,
+            -1,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            0,
+            -1
+          ]
+        ]
+      }
+    },
+    "objective": {
+      "type": "match_map",
+      "map": [
+        "  ** ** ** ** ** ** **  ",
+        "  yg yg ** ** gy gy  ",
+        "  yg ** yg ** gy ** gy  ",
+        "  yg yg ** ** gy gy  ",
+        "  ** ** ** ** ** ** **  "
+      ]
+    },
+    "map": [
+      "  ** ** yg ** ** ** **  ",
+      "  yg ** ** ** gy gy  ",
+      "  yg ** yg ** gy ** gy  ",
+      "  yg yg ** ** ** gy  ",
+      "  ** ** ** ** gy ** **  "
+    ],
+    "staticMap": [
+      "  **** **** **** **** **** **** ****  ",
+      "  Z1** Z1** **** **** Z2** Z2**  ",
+      "  Z1** TyZ1 Z1** **** Z2** TgZ2 Z2**  ",
+      "  Z1** Z1** **** **** Z2** Z2**  ",
+      "  **** **** **** **** **** **** ****  "
+    ],
+    "targetMoves": 4
+  },
+  {
+    "objectiveString": "Match the dual-colored tiles to their targets",
+    "objective": {
+      "type": "match_map",
+      "map": [
+        "  ** ** ** ** ** ** **  ",
+        "  yg yg ** ** gy gy  ",
+        "  yg ** yg ** gy ** gy  ",
+        "  yg yg ** ** gy gy  ",
+        "  ** ** ** ** ** ** **  "
+      ]
+    },
+    "map": [
+      "  gy ** gy ** gy ** yg  ",
+      "  ** yg ** gy ** **  ",
+      "  ** ** ** yg ** ** **  ",
+      "  ** ** yg ** ** **  ",
+      "  gy ** gy ** yg ** yg  "
+    ],
+    "staticMap": [
+      "  **** **** **** **** **** **** ****  ",
+      "  Z1** Z1** **** **** Z2** Z2**  ",
+      "  Z1** TyZ1 Z1** **** Z2** TgZ2 Z2**  ",
+      "  Z1** Z1** **** **** Z2** Z2**  ",
+      "  **** **** **** **** **** **** ****  "
+    ],
+    "targetMoves": 20
+  },
+  {
+    "objectiveString": "Form parallel stripes of color",
+    "map": [
+      "  ** bg bb  ",
+      "  gg gg bb **  ",
+      "  oo ob ** oo ob  ",
+      "  ** rp rr rr  ",
+      "  pp br **  "
+    ],
+    "objective": {
+      "type": "match_map",
+      "map": [
+        "  ** bb bb  ",
+        "  gg gg gb **  ",
+        "  oo ob ** oo ob  ",
+        "  ** rb rr rr  ",
+        "  pp pr **  "
+      ]
+    },
+    "staticMap": [
+      "  TbZ1 Z1** Z1**  ",
+      "  Z2** Z2** Z2** TgZ2  ",
+      "  Z3** Z3** ToZ3 Z3** Z3**  ",
+      "  TrZ4 Z4** Z4** Z4**  ",
+      "  Z5** Z5** TpZ5  "
+    ],
+    "targetMoves": 15
+  },
+  {
+    "objectiveString": "Fix the line",
+    "staticMap": [
+      "  ** ** ** **  ",
+      "  ** ** ** ** **  ",
+      "  ** ** ** **  "
+    ],
+    "map": [
+      "  **** **** **** ****  ",
+      "  **** rrs0 **** rrs0 ****  ",
+      "  **** **** rrs2 ****  "
+    ],
+    "objective": {
+      "type": "match_map",
+      "map": [
+        "  **** **** **** ****  ",
+        "  **** rrs0 rrs0 rrs0 ****  ",
+        "  **** **** **** ****  "
+      ]
+    },
+    "interlude": {
+      "title": "Path Connections",
+      "text": "Connect the matching endpoints with a continuous path! Flipping a path tile will rotate the lines.",
+      "tutorial": {
+        "staticMap": [
+          "  Ey4 *** ***  ",
+          "  *** *** ***  ",
+          "  "
+        ],
+        "map": [
+          "  **** yys0 ****  ",
+          "  **** **** ****  ",
+          "  "
+        ],
+        "steps": [
+          [
+            0,
+            -1,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            -1,
+            0
+          ],
+          [
+            -1,
+            0,
+            0,
+            -1
+          ]
+        ]
+      }
+    },
+    "targetMoves": 1
+  },
+  {
+    "objectiveString": "Fix the broken capsule",
+    "staticMap": [
+      "  ** ** ** ** ** ** **  ",
+      "  ** ** ** ** ** **  ",
+      "  ** ** Tb Tb Tb ** **  ",
+      "  ** ** ** ** ** **  ",
+      "  ** ** ** ** ** ** **  "
+    ],
+    "map": [
+      "  **** bba1 **** **** **** **** ****  ",
+      "  **** **** bbs0 bbs0 bba5 ****  ",
+      "  bba0 **** **** **** **** **** bba3  ",
+      "  **** **** bbs0 bbs0 bba1 ****  ",
+      "  **** bba5 **** **** **** **** ****  "
+    ],
+    "objective": {
+      "type": "match_map",
+      "map": [
+        "  **** **** **** **** **** **** ****  ",
+        "  **** bba4 bbs0 bbs0 bba5 ****  ",
+        "  **** bba3 **** **** **** bba0 ****  ",
+        "  **** bba2 bbs0 bbs0 bba1 ****  ",
+        "  **** **** **** **** **** **** ****  "
+      ]
+    },
+    "targetMoves": 4
+  },
+  {
+    "objectiveString": "Complete the lines",
+    "staticMap": [
+      "  *** *** *** *** ***  ",
+      "  Er4 *** *** Er1  ",
+      "  *** *** *** *** ***  ",
+      "  Eb4 *** *** Eb1  ",
+      "  *** *** *** *** ***  "
+    ],
+    "map": [
+      "  **** rrs2 **** **** ****  ",
+      "  **** **** **** ****  ",
+      "  **** bbs2 **** rrs2 ****  ",
+      "  **** **** **** ****  ",
+      "  **** **** **** bbs2 ****  "
+    ],
+    "objective": {
+      "type": "match_map",
+      "map": [
+        "  **** rrs0 rrs0 ****  ",
+        "  ",
+        "  **** bbs0 bbs0 ****  "
+      ]
+    },
+    "targetMoves": 4
+  },
+  {
+    "objectiveString": "Circle the target and connect the endpoints",
+    "objective": {
+      "type": "match_map",
+      "map": [
+        "  **** **** **** **** yyc5 yya4 ****  ",
+        "  rra4 rra5 **** yyc2 yyC2 yyc5  ",
+        "  rra3 **** rra0 **** yys2 yya3 ****  ",
+        "  rra2 rra1 **** yya3 **** yya0  ",
+        "  **** **** **** **** yya2 yya1 ****  "
+      ]
+    },
+    "map": [
+      "  **** **** **** **** yyc5 yya4 ****  ",
+      "  rra4 rra5 yyc0 **** yyC2 yyc5  ",
+      "  rra3 **** **** rra3 yys2 **** yya0  ",
+      "  rra2 rra1 **** yya3 **** yya0  ",
+      "  **** **** **** **** yya2 yya1 ****  "
+    ],
+    "staticMap": [
+      "  ***** ***** ***** Ey4Z2 Z2*** Z2*** Ey1Z2  ",
+      "  Z1*** Z1*** ***** Z2*** Z2*** Z2***  ",
+      "  Z1*** TrZ1* Z1*** ***** Z2*** Z2*** *****  ",
+      "  Z1*** Z1*** ***** Z2*** ***** Z2***  ",
+      "  ***** ***** ***** ***** Z2*** Z2*** *****  "
+    ],
+    "targetMoves": 3
+  },
+  {
+    "objectiveString": "Fix the circle around the target",
+    "map": [
+      "  yca1 pp** pp**  ",
+      "  pp** pp** cya5 pp**  ",
+      "  pp** cya3 **** cya0 pp**  ",
+      "  pp** cya2 pp** pp**  ",
+      "  pp** pp** yca4  "
+    ],
+    "objective": {
+      "type": "match_map",
+      "map": [
+        "  pp** pp** pp**  ",
+        "  pp** cya4 cya5 pp**  ",
+        "  pp** cya3 **** cya0 pp**  ",
+        "  pp** cya2 cya1 pp**  ",
+        "  pp** pp** pp**  "
+      ]
+    },
+    "staticMap": [
+      "  ** ** **  ",
+      "  ** ** ** **  ",
+      "  ** ** Ty ** **  ",
+      "  ** ** ** **  ",
+      "  ** ** **  "
+    ],
+    "targetMoves": 2
+  },
+  {
+    "objectiveString": "X marks the spot",
+    "staticMap": [
+      "  Ey5 *** Eg6  ",
+      "  *** ***  ",
+      "  ***  ",
+      "  *** ***  ",
+      "  Eg3 *** Ey2  "
+    ],
+    "map": [
+      "  **** **** ****  ",
+      "  ygs1 gys2  ",
+      "  gys1  ",
+      "  gys2 gyC0  ",
+      "  **** **** ****  "
+    ],
+    "objective": {
+      "type": "match_map",
+      "map": [
+        "  **** **** ****  ",
+        "  ygs1 gys2  ",
+        "  ygC1  ",
+        "  gys2 ygs1  ",
+        "  **** **** ****  "
+      ]
+    },
+    "targetMoves": 1
+  },
+  {
+    "objectiveString": "Form parallel stripes of color",
+    "map": [
+      "  ** oo rr  ",
+      "  gg bb rr **  ",
+      "  bo pp ** bg oo  ",
+      "  ** gg ob rp  ",
+      "  bb br **  "
+    ],
+    "objective": {
+      "type": "match_map",
+      "map": [
+        "  ** bb bb  ",
+        "  gg gg gb **  ",
+        "  oo ob ** oo ob  ",
+        "  ** rb rr rr  ",
+        "  pp pr **  "
+      ]
+    },
+    "staticMap": [
+      "  TbZ1 Z1** Z1**  ",
+      "  Z2** Z2** Z2** TgZ2  ",
+      "  Z3** Z3** ToZ3 Z3** Z3**  ",
+      "  TrZ4 Z4** Z4** Z4**  ",
+      "  Z5** Z5** TpZ5  "
+    ],
+    "targetMoves": 32
+  },
+  {
+    "objectiveString": "Match the multi-colored tiles",
+    "objective": {
+      "type": "match_map",
+      "map": [
+        "  oo ** ob ** br ** br  ",
+        "  or og go gg bg bg  ",
+        "  ** ** gb ** gr ** **  ",
+        "  rg ro gg gg pg pg  ",
+        "  rb ** ro ** po ** pb  "
+      ]
+    },
+    "map": [
+      "  ** ** rb ** go ** **  ",
+      "  gb gr ob or gb pg  ",
+      "  og rb oo ** gp pb gb  ",
+      "  gg gg or op rg rb  ",
+      "  ** ** gg ** ro ** **  "
+    ],
+    "staticMap": [
+      "  Z1** ToZ1 Z1** **** Z4** TbZ4 Z4**  ",
+      "  Z1** Z1** Z3** Z3** Z4** Z4**  ",
+      "  **** **** Z3** TgZ3 Z3** **** ****  ",
+      "  Z2** Z2** Z3** Z3** Z5** Z5**  ",
+      "  Z2** TrZ2 Z2** **** Z5** TpZ5 Z5**  "
+    ],
+    "targetMoves": 30
+  },
+  {
+    "objectiveString": "Connect the matching endpoints with a path",
+    "map": [
+      "  ppa1 ppa4 pps1 yy** bb** **** ****  ",
+      "  **** **** bb** **** pps0 ppa5  ",
+      "  ppa4 bb** pps0 yy** bb** bb** pps1  ",
+      "  bb** bb** ppa0 yy** **** ppa0  ",
+      "  **** **** pps0 bb** pps1 **** pps0  "
+    ],
+    "objective": {
+      "type": "match_map",
+      "map": [
+        "  **** ppa4 ppa5 bb** bb** **** ****  ",
+        "  pps2 **** pps1 **** bb** pps1  ",
+        "  ppa3 bb** yy** pps1 yy** bb** ppa0  ",
+        "  pps1 bb** yy** pps1 **** pps2  ",
+        "  **** **** bb** bb** ppa2 ppa1 ****  "
+      ]
+    },
+    "staticMap": [
+      "  ***** Z5*** Z5*** Z4*** Z4*** Ep5Z5 *****  ",
+      "  Z5*** TbZ3* Z5*** TyZ2* Z4*** Z5***  ",
+      "  Z5*** Z3*** Z1*** Z5*** Z2*** Z4*** Z5***  ",
+      "  Z5*** Z3*** Z1*** Z5*** TbZ4* Z5***  ",
+      "  ***** Ep2Z5 Z3*** Z3*** Z5*** Z5*** *****  "
+    ],
+    "targetMoves": 30
+  },
+  {
+    "objectiveString": "Circle the target and connect the endpoints",
+    "objective": {
+      "type": "match_map",
+      "map": [
+        "  **** **** **** **** yyc5 yya4 ****  ",
+        "  rra4 rra5 **** yyc2 yyC2 yyc5  ",
+        "  rra3 **** rra0 **** yys2 yya3 ****  ",
+        "  rra2 rra1 **** yya3 **** yya0  ",
+        "  **** **** **** **** yya2 yya1 ****  "
+      ]
+    },
+    "map": [
+      "  **** **** **** **** **** yyc3 ****  ",
+      "  rra4 rra5 yyc0 yyC0 **** yya1  ",
+      "  rra3 **** yys2 **** yya0 rra3 yyc5  ",
+      "  rra2 rra1 yya0 **** yya4 yya0  ",
+      "  **** **** **** **** yya2 **** ****  "
+    ],
+    "staticMap": [
+      "  ***** ***** ***** Ey4Z2 Z2*** Z2*** Ey1Z2  ",
+      "  Z1*** Z1*** ***** Z2*** Z2*** Z2***  ",
+      "  Z1*** TrZ1* Z1*** ***** Z2*** Z2*** *****  ",
+      "  Z1*** Z1*** ***** Z2*** ***** Z2***  ",
+      "  ***** ***** ***** ***** Z2*** Z2*** *****  "
+    ],
+    "targetMoves": 20
+  },
+  {
+    "objectiveString": "Match the target pattern",
+    "staticMap": [
+      "  **** **** **** **** **** **** ****  ",
+      "  **** TrZ1 Z1** Z1** TrZ1 ****  ",
+      "  **** **** **** **** **** **** ****  ",
+      "  **** TbZ2 Z2** Z2** TbZ2 ****  ",
+      "  **** **** **** **** F1** **** ****  "
+    ],
+    "map": [
+      "  ** ** rr ** ** ** **  ",
+      "  ** ** ** rr ** **  ",
+      "  ** ** ** ** ** ** **  ",
+      "  ** ** bb ** ** **  ",
+      "  ** ** ** ** bb ** **  "
+    ],
+    "objective": {
+      "type": "match_map",
+      "map": [
+        "  ** ** ** ** ** ** **  ",
+        "  ** ** rr rr ** **  ",
+        "  ** ** ** ** ** ** **  ",
+        "  ** ** bb bb ** **  ",
+        "  ** ** ** ** ** ** **  "
+      ]
+    },
+    "interlude": {
+      "title": "Frozen Tiles",
+      "text": "Frozen tiles are encased in ice and cannot be moved. Complete the surrounding zones to unfreeze them!",
+      "tutorial": {
+        "map": [
+          "  bb ** gg **  "
+        ],
+        "staticMap": [
+          "  Z1** Z1** Z2F1 Z2**  "
+        ],
+        "objective": {
+          "type": "match_map",
+          "map": [
+            "  ** bb ** gg  "
+          ]
+        },
+        "steps": [
+          [
+            -2,
+            0,
+            -1,
+            0
+          ],
+          [
+            0,
+            0,
+            1,
+            0
+          ],
+          [
+            1,
+            0,
+            0,
+            0
+          ],
+          [
+            -1,
+            0,
+            -2,
+            0
+          ]
+        ]
+      }
+    },
+    "targetMoves": 2
+  },
+  {
+    "objectiveString": "Red-Green-Blue",
+    "map": [
+      "  rr rr gg gg gg  ",
+      "  rr gg rr gg gg **  ",
+      "  ** gg gg gg cc cc cc  ",
+      "  rr rr gg cc gg cc  ",
+      "  ** gg ** gg cc  "
+    ],
+    "objective": {
+      "type": "match_map",
+      "map": [
+        "  rr rr gg gg gg  ",
+        "  rr rr gg gg gg **  ",
+        "  ** rr gg gg gg cc cc  ",
+        "  rr gg gg gg cc cc  ",
+        "  ** gg ** cc cc  "
+      ]
+    },
+    "staticMap": [
+      "  Z1** Z1** Z2** Z2** Z2**  ",
+      "  Z1** Z1** Z2** Z2** Z2** TcZ3  ",
+      "  TrZ1 Z1** Z2F1 Z2** Z2** Z3F2 Z3**  ",
+      "  Z1** Z2** Z2** Z2** Z3** Z3**  ",
+      "  TgZ2 Z2** TgZ2 Z3** Z3**  "
+    ],
+    "targetMoves": 7
+  },
+  {
+    "objectiveString": "Circle the target with a continuous path of a different color",
+    "map": [
+      "  cya1 pp** cya2  ",
+      "  pp** pp** pp** cya4  ",
+      "  pp** yca5 **** pp** pp**  ",
+      "  pp** pp** pp** yca4  ",
+      "  pp** cya3 pp**  "
+    ],
+    "objective": {
+      "type": "match_map",
+      "map": [
+        "  pp** pp** pp**  ",
+        "  pp** cya4 cya5 pp**  ",
+        "  pp** cya3 **** cya0 pp**  ",
+        "  pp** cya2 cya1 pp**  ",
+        "  pp** pp** pp**  "
+      ]
+    },
+    "staticMap": [
+      "  ** ** **  ",
+      "  ** ** ** **  ",
+      "  ** ** Ty ** **  ",
+      "  ** ** ** **  ",
+      "  ** ** **  "
+    ],
+    "targetMoves": 20
+  },
+  {
+    "objectiveString": "Surround the center with matching colored rings",
+    "map": [
+      "  co or oo bb cc oc **  ",
+      "  ** bb oc oo cc or  ",
+      "  oo oo co ** cc oo or  ",
+      "  cc oo bb cc ** oc  ",
+      "  ** bb oc bb bb cc oo  "
+    ],
+    "objective": {
+      "type": "match_map",
+      "map": [
+        "  ** or co cc co oo **  ",
+        "  oo co bb bb cc or  ",
+        "  oo cc bb ** bb co or  ",
+        "  oo co bb bb cc oo  ",
+        "  ** oo co cc cc oo **  "
+      ]
+    },
+    "staticMap": [
+      "  ** Z1 Z3 Z3 Z3 Z2 **  ",
+      "  Z1 Z3 Z4 Z4 Z3 Z2  ",
+      "  Z1 Z3 Z4 Tr Z4 Z3 Z2  ",
+      "  Z1 Z3 Z4 Z4 Z3 Z2  ",
+      "  ** Z1 Z3 Z3 Z3 Z2 **  "
+    ],
+    "targetMoves": 30
+  },
+  {
+    "objectiveString": "Red-Green-Blue",
+    "map": [
+      "  gg rr cc rr gg  ",
+      "  gg gg gg rr gg **  ",
+      "  ** rr gg cc cc cc gg  ",
+      "  gg gg rr cc gg gg  ",
+      "  ** rr ** gg cc  "
+    ],
+    "objective": {
+      "type": "match_map",
+      "map": [
+        "  rr rr gg gg gg  ",
+        "  rr rr gg gg gg **  ",
+        "  ** rr gg gg gg cc cc  ",
+        "  rr gg gg gg cc cc  ",
+        "  ** gg ** cc cc  "
+      ]
+    },
+    "staticMap": [
+      "  Z1** Z1** Z2** Z2** Z2**  ",
+      "  Z1** Z1** Z2** Z2** Z2** TcZ3  ",
+      "  TrZ1 Z1** Z2F1 Z2** Z2** Z3F2 Z3**  ",
+      "  Z1** Z2** Z2** Z2** Z3** Z3**  ",
+      "  TgZ2 Z2** TgZ2 Z3** Z3**  "
+    ],
+    "targetMoves": 20
+  },
+  {
+    "objectiveString": "Group the matching colors into clusters",
+    "map": [
+      "  cc gg rr rr gg rr rr  ",
+      "  gg gg cc gg rr **  ",
+      "  ** ** ** cc ** gg rr  ",
+      "  cc gg rr ** rr rr  ",
+      "  gg gg gg cc gg rr rr  "
+    ],
+    "objective": {
+      "type": "match_map",
+      "map": [
+        "  ** gg cc rr rr rr **  ",
+        "  gg gg cc rr rr rr  ",
+        "  gg gg ** cc ** rr rr  ",
+        "  gg gg gg cc rr rr  ",
+        "  ** gg gg gg cc rr **  "
+      ]
+    },
+    "staticMap": [
+      "  ** ** ** ** ** ** **  ",
+      "  ** ** ** ** ** **  ",
+      "  ** ** Tg ** Tr ** **  ",
+      "  ** ** ** ** ** **  ",
+      "  ** ** ** ** ** ** **  "
+    ],
+    "targetMoves": 20
+  },
+  {
+    "objectiveString": "X marks the spot",
+    "staticMap": [
+      "  Ey5 *** Eg6  ",
+      "  *** ***  ",
+      "  ***  ",
+      "  *** ***  ",
+      "  Eg3 *** Ey2  "
+    ],
+    "map": [
+      "  **** **** ****  ",
+      "  gyC0 ygs0  ",
+      "  ygs2  ",
+      "  ygs0 gys0  ",
+      "  **** **** ****  "
+    ],
+    "objective": {
+      "type": "match_map",
+      "map": [
+        "  **** **** ****  ",
+        "  ygs1 gys2  ",
+        "  ygC1  ",
+        "  gys2 ygs1  ",
+        "  **** **** ****  "
+      ]
+    },
+    "targetMoves": 20
+  },
+  {
+    "objectiveString": "Airlock",
+    "staticMap": [
+      "  Z1** Z1** Z1** Z1** Z1** Z1** Z1**  ",
+      "  Z2F1 Z2F1 Z2F1 Z2** Z2F1 Z2F1  ",
+      "  Z3** Z3** Z3** Z3** Z3** Z3** Z3**  ",
+      "  Z4F3 Z4** Z4F3 Z4F3 Z4F3 Z4F3  ",
+      "  Z5** Z5** Z5** Z5** Z5** Z5** Z5**  "
+    ],
+    "map": [
+      "  bb rr rr rr rr rr gg  ",
+      "  bb bb bb rr bb bb  ",
+      "  yy yy pp yy yy yy yy  ",
+      "  gg pp gg gg gg gg  ",
+      "  pp pp yy pp rr pp pp  "
+    ],
+    "objective": {
+      "type": "match_map",
+      "map": [
+        "  rr rr rr rr rr rr rr  ",
+        "  bb bb bb bb bb bb  ",
+        "  yy yy yy yy yy yy yy  ",
+        "  gg gg gg gg gg gg  ",
+        "  pp pp pp pp pp pp pp  "
+      ]
+    },
+    "targetMoves": 30
+  },
+  {
+    "interlude": {
+      "title": "Walls",
+      "text": "Tiles cannot be flipped over walls. You must find a path around them!",
+      "tutorial": {
+        "map": [
+          "  ** ** rr  ",
+          "  ** ** **  "
+        ],
+        "staticMap": [
+          "  TrZ1 W4Z1** Z1**  ",
+          "  Z1** Z1** Z1**  "
+        ],
+        "objective": {
+          "type": "match_map",
+          "map": [
+            "  rr ** **  ",
+            "  ** ** **  "
+          ]
+        },
+        "steps": [
+          [
+            1,
+            -1,
+            0,
+            -1
+          ],
+          [
+            1,
+            -1,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            0,
+            -1
+          ]
+        ]
+      }
+    },
+    "objectiveString": "Form parallel stripes of color",
+    "staticMap": [
+      "  Z3** Z3** TrZ3  ",
+      "  Z2** Z2** Z2** Z2**  ",
+      "  Z1W3 Z1W3 ToZ1 Z1** Z1**  ",
+      "  TbZ4 Z4W3 Z4W3 Z4**  ",
+      "  Z5** Z5** Z5**  "
+    ],
+    "map": [
+      "  pp pp **  ",
+      "  pp rb rr oo  ",
+      "  or gg ** bb oo  ",
+      "  ** rr pp ro  ",
+      "  gg rb gg  "
+    ],
+    "objective": {
+      "type": "match_map",
+      "map": [
+        "  rr rr **  ",
+        "  pp pp pp pp  ",
+        "  or or ** oo oo  ",
+        "  ** br br bb  ",
+        "  gg gg gg  "
+      ]
+    },
+    "targetMoves": 30
+  },
+  {
+    "objectiveString": "BPGPR",
+    "staticMap": [
+      "  ** ** ** ** ** ** Tr  ",
+      "  ** Tp Tp Tp Tp Tp  ",
+      "  ** ** ** ** ** ** **  ",
+      "  ** Tp Tp Tp Tp Tp  ",
+      "  ** ** ** ** ** ** Tb  "
+    ],
+    "map": [
+      "  ** ** rr bb pp bb **  ",
+      "  ** ** ** ** ** **  ",
+      "  ** bb rr bb rr bb rr  ",
+      "  ** ** ** ** ** **  ",
+      "  ** ** bb rr pp rr **  "
+    ],
+    "objective": {
+      "type": "match_map",
+      "map": [
+        "  rr rr rr rr rr rr **  ",
+        "  pp ** ** ** ** **  ",
+        "  ** ** ** ** ** ** **  ",
+        "  pp ** ** ** ** **  ",
+        "  bb bb bb bb bb bb **  "
+      ]
+    },
+    "targetMoves": 50
+  },
+  {
+    "objectiveString": "Circle the target with a continuous colored path",
+    "map": [
+      "  gg** pp** bba1 rr** rr** gg** pp**  ",
+      "  rr** gg** rr** rr** rr** bba5  ",
+      "  gg** rr** rr** **** gg** gg** gg**  ",
+      "  bba5 rr** gg** rr** bba5 rr**  ",
+      "  gg** pp** bba0 bba0 rr** pp** gg**  "
+    ],
+    "objective": {
+      "type": "match_map",
+      "map": [
+        "  pp** gg** rr** rr** rr** gg** pp**  ",
+        "  gg** rr** bba4 bba5 rr** gg**  ",
+        "  gg** rr** bba3 **** bba0 rr** gg**  ",
+        "  gg** rr** bba2 bba1 rr** gg**  ",
+        "  pp** gg** rr** rr** rr** gg** pp**  "
+      ]
+    },
+    "staticMap": [
+      "  **** Z3** Z2** Z2** Z2** Z3** ****  ",
+      "  Z3W2 Z2** Z1** Z1W2 Z2W3 Z3**  ",
+      "  Z3** Z2** Z1W1 TbZ1 Z1** Z2W1 Z3**  ",
+      "  Z3** Z2** Z1** Z1** Z2** Z3**  ",
+      "  **** Z3W3 Z2W3 Z2** Z2** Z3** W2**  "
+    ],
+    "targetMoves": 50
+  },
+  {
+    "objectiveString": "Color-Gate Maze",
+    "staticMap": [
+      "  ** ** **  ",
+      "  ** ** ** **  ",
+      "  "
+    ],
+    "map": [
+      "  ****** ****** ******  ",
+      "  [-rby] ****** ****** ******  ",
+      "  "
+    ],
+    "objective": {
+      "type": "match_map",
+      "map": [
+        "  ** **  ",
+        "  ** rr **  ",
+        "  ** **  "
+      ]
+    },
+    "targetMoves": 9,
+    "interlude": {
+      "title": "Color-Gates",
+      "text": "You can only flip if the tile color exists on the gate",
+      "tutorial": {
+        "map": [
+          "  by **  "
+        ],
+        "staticMap": [
+          "  *** Cb1  "
+        ],
+        "steps": [
+          [
+            -1,
+            0,
+            0,
+            0,
+            false
+          ],
+          [
+            0,
+            0,
+            -1,
+            0,
+            true
+          ]
+        ],
+        "targetMoves": 5
+      }
+    }
+  },
+  {
+    "objectiveString": "Match the target pattern.",
+    "staticMap": [
+      "  ** ** **  "
+    ],
+    "map": [
+      "  [-rby] ****** ******  "
+    ],
+    "objective": {
+      "type": "match_map",
+      "map": [
+        "  ** ** yy  "
+      ]
+    },
+    "targetMoves": 2
+  },
+  {
+    "objectiveString": "Pass through the color gates",
+    "objective": {
+      "type": "match_map",
+      "map": [
+        "  ** ** ** ** ** Tr  "
+      ]
+    },
+    "map": [
+      "  rb ** ** ** ** **  "
+    ],
+    "staticMap": [
+      "  ** ** ** ** ** **  "
+    ],
+    "colorGates": {
+      "-2,0|-1,0": "r",
+      "0,0|1,0": "b"
+    },
+    "interlude": {
+      "title": "Color Gates",
+      "text": "You can only flip a tile across a color gate if the color facing upwards matches the gate's color!"
+    },
+    "targetMoves": 5
+  },
+  {
+    "objectiveString": "Navigate the multi-color cycle",
+    "objective": {
+      "type": "match_map",
+      "map": [
+        "  ** Tr ** Tb **  ",
+        "  ** ** ** ** **  ",
+        "  ** ** Ty ** **  "
+      ]
+    },
+    "map": [
+      "  ** ** ** ** **  ",
+      "  ** ** [-rby] ** **  ",
+      "  ** ** ** ** **  "
+    ],
+    "staticMap": [
+      "  ** Tr ** Tb **  ",
+      "  ** ** ** ** **  ",
+      "  ** ** Ty ** **  "
+    ],
+    "interlude": {
+      "title": "Multi-Color Sequences",
+      "text": "Some tiles cycle through more than 2 colors as you flip them. Watch the sequence carefully!"
+    },
+    "targetMoves": 8
+  },
+  {
+    "objectiveString": "Navigate the prism maze",
+    "objective": {
+      "type": "match_map",
+      "map": [
+        "  ** ** ** **  ",
+        "  ** ** ** **  ",
+        "  ** ** ** **  ",
+        "  ** ** ** Tb  "
+      ]
+    },
+    "map": [
+      "  [-rgb] ** ** **  ",
+      "  ** ** ** **  ",
+      "  ** ** ** **  ",
+      "  ** ** ** **  "
+    ],
+    "staticMap": [
+      "  ** ** ** **  ",
+      "  ** ** ** **  ",
+      "  ** ** ** **  ",
+      "  ** ** ** Tb  "
+    ],
+    "colorGates": {
+      "-1,-2|-1,-1": "r",
+      "-1,-1|0,-1": "g",
+      "0,-1|0,0": "b",
+      "0,0|1,0": "r",
+      "1,0|1,1": "g"
+    },
+    "targetMoves": 15
+  }
+]
