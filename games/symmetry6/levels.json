@@ -61,13 +61,7 @@
       "  ** ** ** ** ** **  ",
       "  ** ** ** ** ** ** **  "
     ],
-    "targetMoves": 6,
-    "interlude": {
-      "tutorial": {
-        "map": [],
-        "staticMap": []
-      }
-    }
+    "targetMoves": 6
   },
   {
     "objectiveString": "Surround the targets with matching blue and red tiles",
@@ -911,26 +905,91 @@
     "targetMoves": 50
   },
   {
-    "objectiveString": "Color-Gate Maze",
+    "objectiveString": "Match the target pattern.",
     "staticMap": [
-      "  ** ** **  ",
-      "  ** ** ** **  ",
-      "  "
+      "  ** ** **  "
     ],
     "map": [
-      "  ****** ****** ******  ",
-      "  [-rby] ****** ****** ******  ",
-      "  "
+      "  [-rby] ****** ******  "
     ],
     "objective": {
       "type": "match_map",
       "map": [
-        "  ** **  ",
-        "  ** rr **  ",
-        "  ** **  "
+        "  ** ** yy  "
       ]
     },
-    "targetMoves": 9,
+    "targetMoves": 2,
+    "interlude": {
+      "title": "Multi-Color Sequences",
+      "text": "Some tiles cycle through more than 2 colors as you flip them. Watch the sequence carefully!",
+      "tutorial": {
+        "map": [
+          "  [r-by] ****** ****** ****** ******  "
+        ],
+        "staticMap": [
+          "  ** ** ** ** **  "
+        ],
+        "objective": {
+          "type": "match_map",
+          "map": [
+            "  ** ** ** ** yy  "
+          ]
+        },
+        "steps": [
+          [
+            -2,
+            0,
+            -1,
+            0,
+            false
+          ],
+          [
+            -1,
+            0,
+            0,
+            0,
+            false
+          ],
+          [
+            0,
+            0,
+            1,
+            0,
+            false
+          ],
+          [
+            1,
+            0,
+            2,
+            0,
+            false
+          ]
+        ],
+        "targetMoves": 5
+      }
+    }
+  },
+  {
+    "objectiveString": "Color-Gate Corridor",
+    "staticMap": [
+      "  ****** ****** ****** ******  ",
+      "  ****** W123** W23Cb1 W23Cy1 W1****  ",
+      "  W3**** W23*** W23*** W2****  "
+    ],
+    "map": [
+      "  ****** ****** ****** ******  ",
+      "  ****** [b-yg] ****** ****** ******  ",
+      "  ****** ****** ****** ******  "
+    ],
+    "objective": {
+      "type": "match_map",
+      "map": [
+        "  ** ** ** **  ",
+        "  ** ** ** gg **  ",
+        "  ** ** ** **  "
+      ]
+    },
+    "targetMoves": 4,
     "interlude": {
       "title": "Color-Gates",
       "text": "You can only flip if the tile color exists on the gate",
@@ -960,103 +1019,5 @@
         "targetMoves": 5
       }
     }
-  },
-  {
-    "objectiveString": "Match the target pattern.",
-    "staticMap": [
-      "  ** ** **  "
-    ],
-    "map": [
-      "  [-rby] ****** ******  "
-    ],
-    "objective": {
-      "type": "match_map",
-      "map": [
-        "  ** ** yy  "
-      ]
-    },
-    "targetMoves": 2
-  },
-  {
-    "objectiveString": "Pass through the color gates",
-    "objective": {
-      "type": "match_map",
-      "map": [
-        "  ** ** ** ** ** Tr  "
-      ]
-    },
-    "map": [
-      "  rb ** ** ** ** **  "
-    ],
-    "staticMap": [
-      "  ** ** ** ** ** **  "
-    ],
-    "colorGates": {
-      "-2,0|-1,0": "r",
-      "0,0|1,0": "b"
-    },
-    "interlude": {
-      "title": "Color Gates",
-      "text": "You can only flip a tile across a color gate if the color facing upwards matches the gate's color!"
-    },
-    "targetMoves": 5
-  },
-  {
-    "objectiveString": "Navigate the multi-color cycle",
-    "objective": {
-      "type": "match_map",
-      "map": [
-        "  ** Tr ** Tb **  ",
-        "  ** ** ** ** **  ",
-        "  ** ** Ty ** **  "
-      ]
-    },
-    "map": [
-      "  ** ** ** ** **  ",
-      "  ** ** [-rby] ** **  ",
-      "  ** ** ** ** **  "
-    ],
-    "staticMap": [
-      "  ** Tr ** Tb **  ",
-      "  ** ** ** ** **  ",
-      "  ** ** Ty ** **  "
-    ],
-    "interlude": {
-      "title": "Multi-Color Sequences",
-      "text": "Some tiles cycle through more than 2 colors as you flip them. Watch the sequence carefully!"
-    },
-    "targetMoves": 8
-  },
-  {
-    "objectiveString": "Navigate the prism maze",
-    "objective": {
-      "type": "match_map",
-      "map": [
-        "  ** ** ** **  ",
-        "  ** ** ** **  ",
-        "  ** ** ** **  ",
-        "  ** ** ** Tb  "
-      ]
-    },
-    "map": [
-      "  [-rgb] ** ** **  ",
-      "  ** ** ** **  ",
-      "  ** ** ** **  ",
-      "  ** ** ** **  "
-    ],
-    "staticMap": [
-      "  ** ** ** **  ",
-      "  ** ** ** **  ",
-      "  ** ** ** **  ",
-      "  ** ** ** Tb  "
-    ],
-    "colorGates": {
-      "-1,-2|-1,-1": "r",
-      "-1,-1|0,-1": "g",
-      "0,-1|0,0": "b",
-      "0,0|1,0": "r",
-      "1,0|1,1": "g"
-    },
-    "targetMoves": 15
   }
 ]
