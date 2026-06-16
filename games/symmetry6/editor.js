@@ -1,18 +1,2759 @@
 var process = { env: { NODE_ENV: "production" } };
-var tt=Math.sqrt(3)*30,wt=2*30,ce={r:"#e74c3c",b:"#3498db",y:"#f1c40f",g:"#2ecc71",p:"#9b59b6",o:"#e67e22",c:"#00bcd4","*":"#838383","@":"#272727"},Oe={s:[[0,3]],c:[[0,1]],a:[[1,5]],C:[[0,1],[3,4]],B:[[0,1],[2,3]],A:[[1,5],[2,4]],t:[[0,1],[2,3],[4,5]],0:[[0,6]],1:[[1,6]],2:[[2,6]],3:[[3,6]],4:[[4,6]],5:[[5,6]]},nt=["s","c","a","C","B","t","A","0","1","2","3","4","5"],Ie=7,lt=5,we=Math.floor(lt/2),ot=Math.floor(Ie/2);function de(e,t){if(t<-we||t>we)return!0;let n=Ie;Math.abs(t)%2===0==(Ie%2===0)&&n--;let l=Math.floor(n/2),s=Math.ceil(-t/2)-l;return e<s||e>s+n-1}function De(e){let t=document.createElement("div");t.textContent=e,t.style.position="fixed",t.style.bottom="20px",t.style.left="50%",t.style.transform="translateX(-50%)",t.style.backgroundColor="rgba(0, 0, 0, 0.75)",t.style.color="white",t.style.padding="10px 20px",t.style.borderRadius="5px",t.style.zIndex="1000",t.style.opacity="0",t.style.transition="opacity 0.5s, bottom 0.5s",document.body.appendChild(t),requestAnimationFrame(()=>{t.style.opacity="1",t.style.bottom="30px"}),setTimeout(()=>{t.style.opacity="0",t.style.bottom="20px",t.addEventListener("transitionend",()=>{t.parentNode&&document.body.removeChild(t)})},2500)}var w=[],v=6,F=!1,q=!1,B=new Map,R=new Set,S=new Map,N=new Map,j=new Map,Ce=[],Me=[],K="paintTop",$e="rr",Xe="rr",ye=!1,V=!1,Q=!1,Z=!1,ie=0,G=null,Te=[],Ee=null,xe=0,oe=0,P=null,ee=null,fe=document.getElementById("grid");function ae(e,t){return{x:30*Math.sqrt(3)*(e+t/2),y:30*3/2*t}}function Ne(e,t){if(!e||e.length===0)return[];if(!Oe[e])return[];let n=(6+t)%6,l=[];for(let s of Oe[e]){let a=(s[0]+n)%6,d=s[1]===6?6:(s[1]+n)%6;a!==6&&l.push(a),d!==6&&l.push(d)}return l}function rt(e){if(!e||e.length===0)return"";let t=new Set(e.map(n=>(n%6+6)%6));for(let n=0;n<=5;n++)for(let l=0;l<6;l++){let s=new Set(Ne("0",l));if(s.size===t.size&&[...s].every(a=>t.has(a)))return l.toString()}for(let n of["s","c","a","C","B","A","t"])for(let l=0;l<6;l++){let s=new Set(Ne(n,l));if(s.size===t.size&&[...s].every(a=>t.has(a)))return`${n}${l}`}return""}function Pe(e){let t=[];for(let n=0;n<6;n++){let l=n/6*Math.PI*2;t.push(`${Math.sin(l)*e},${Math.cos(l)*e}`)}return t.join(" ")}function Se(e){let n=((10-e)%6+.5)*(Math.PI/3),l=tt/2;return{x:Math.sin(n)*l,y:Math.cos(n)*l}}function ge(){let e=Array.from(B.entries()).map(([t,n])=>[t,{...n,edges:[...n.edges]}]);Ce.push({grid:e,walls:Array.from(R),colorGates:Array.from(S.entries()),zones:Array.from(N.entries()),freezes:Array.from(j.entries())}),Me=[]}function Ze(e){B=new Map(e.grid.map(([t,n])=>[t,{...n,edges:[...n.edges]}])),R=new Set(e.walls),S=new Map(e.colorGates||[]),N=new Map(e.zones||[]),j=new Map(e.freezes||[]),H(),A()}function We(){if(V||Q||Z||Ce.length===0)return;let e=Array.from(B.entries()).map(([t,n])=>[t,{...n,edges:[...n.edges]}]);Me.push({grid:e,walls:Array.from(R),colorGates:Array.from(S.entries()),zones:Array.from(N.entries()),freezes:Array.from(j.entries())}),Ze(Ce.pop())}function Ae(){if(V||Q||Z||Me.length===0)return;let e=Array.from(B.entries()).map(([t,n])=>[t,{...n,edges:[...n.edges]}]);Ce.push({grid:e,walls:Array.from(R),colorGates:Array.from(S.entries()),zones:Array.from(N.entries()),freezes:Array.from(j.entries())}),Ze(Me.pop())}function it(e,t,n=!0){oe=0;let l=document.getElementById("target-moves-input");l&&(l.value=0),e.targetMoves=0,t==="objective-to-initial"?(e.map=JSON.parse(JSON.stringify(e.objective?.map||[])),n&&De("Copied Objective map to Initial Board.")):(e.objective||(e.objective={type:"match_map",map:[]}),e.objective.map=JSON.parse(JSON.stringify(e.map||[])),n&&De("Copied Initial Board to Objective map."))}var je=!1;function Ke(e,t,n){if(!e||!t)return!0;let l=`${e.q},${e.r}`,s=`${t.q},${t.r}`,a=l<s?`${l}|${s}`:`${s}|${l}`;if(n&&n.has(a))return!0;if(S.has(a)){let d=S.get(a),o=r=>!r||!r.topColor||r.topColor==="**"||r.topColor==="@@"||r.topColor.startsWith("T")?!0:d.includes(r.topColor[0]);if(!o(e)||!o(t))return!0}return!1}function st(e,t,n,l){if(!n||!l||!me(n)||!me(l))return!1;let s=ve(n.q,n.r,l.q,l.r);if(s===null)return!1;let a=`${n.q},${n.r}`,d=`${l.q},${l.r}`;if(Ke(n,l,t))return!1;let o=(c,E)=>(c%E+E)%E,r=(c,E)=>c.map(y=>o(2*E+3-y,6)),i=r(n.edges,s),g=(s+3)%6,p=r(l.edges,g),m=c=>!c.isBlocked&&!c.isTarget&&c.topColor!=="**"?(c.colorIndex||0)+1:c.colorIndex||0,b=m(n),h=m(l),f={...n,q:l.q,r:l.r,edges:i,path:pe(i),colorIndex:b};f.topColor=te(f,0).repeat(2),f.botColor=te(f,1).repeat(2);let u={...l,q:n.q,r:n.r,edges:p,path:pe(p),colorIndex:h};return u.topColor=te(u,0).repeat(2),u.botColor=te(u,1).repeat(2),e.set(a,u),e.set(d,f),!0}async function Ge(e,t,{flips:n=5,onFlip:l=null}){let s=Array.from(e.keys()).filter(r=>{let i=e.get(r);return me(i)});if(s.length===0)return;let a=[[-1,0],[0,-1],[1,-1],[1,0],[0,1],[-1,1]],d=0,o=0;for(;d<n&&o<n*100;){o++;let r=s[Math.floor(Math.random()*s.length)],i=e.get(r),g=Math.floor(Math.random()*6),[p,m]=[a[g][0],a[g][1]],b=`${i.q+p},${i.r+m}`,h=e.get(b);if(st(e,t,i,h)&&(d++,l)){let f=e.get(b),u=e.get(r);await l(f,u)}}}async function at(){try{w=await(await fetch("levels.json")).json()}catch{console.warn("Could not load levels.json, starting fresh."),w=[{id:1,map:[]}]}Y(),z(v),pt(),H()}var ke=document.getElementById("level-list-panel");function Ye(){ke&&ke.querySelectorAll(".reorder-item").forEach(e=>{let t=e.dataset.type==="interlude";parseInt(e.dataset.index)===v&&t===q?(e.classList.add("active"),e.scrollIntoView({behavior:"smooth",block:"nearest"})):e.classList.remove("active")})}function Y(){ke.innerHTML="",ue=[],w.forEach((e,t)=>{e.interlude&&ue.push({id:ue.length,type:"interlude",data:JSON.parse(JSON.stringify(e.interlude)),originalIndex:t}),ue.push({id:ue.length,type:"level",originalObj:e,originalIndex:t})}),ue.forEach(e=>{let t=document.createElement("div");if(t.className="reorder-item",t.draggable=!0,t.dataset.id=e.id,t.dataset.type=e.type,t.dataset.index=e.originalIndex,e.type==="interlude")t.style.backgroundColor="#2c3e50",t.style.borderColor="#34495e",t.innerHTML=`
+
+// editor.js
+var hexRadius = 30;
+var hexWidth = Math.sqrt(3) * hexRadius;
+var hexHeight = 2 * hexRadius;
+var colorMap = {
+  "r": "#e74c3c",
+  "b": "#3498db",
+  "y": "#f1c40f",
+  "g": "#2ecc71",
+  "p": "#9b59b6",
+  "o": "#e67e22",
+  "c": "#00bcd4",
+  "*": "#838383",
+  "@": "#272727"
+};
+var pathData = {
+  "s": [[0, 3]],
+  "c": [[0, 1]],
+  "a": [[1, 5]],
+  "C": [[0, 1], [3, 4]],
+  "B": [[0, 1], [2, 3]],
+  "A": [[1, 5], [2, 4]],
+  "t": [[0, 1], [2, 3], [4, 5]],
+  "0": [[0, 6]],
+  "1": [[1, 6]],
+  "2": [[2, 6]],
+  "3": [[3, 6]],
+  "4": [[4, 6]],
+  "5": [[5, 6]]
+};
+var allowedPathModels = ["s", "c", "a", "C", "B", "t", "A", "0", "1", "2", "3", "4", "5"];
+var EDITOR_MAX_COLS = 7;
+var EDITOR_MAX_ROWS = 5;
+var EDITOR_R_LIMIT = Math.floor(EDITOR_MAX_ROWS / 2);
+var EDITOR_Q_OFFSET = Math.floor(EDITOR_MAX_COLS / 2);
+function isOutOfBounds(q, r) {
+  if (r < -EDITOR_R_LIMIT || r > EDITOR_R_LIMIT)
+    return true;
+  let cols = EDITOR_MAX_COLS;
+  if (Math.abs(r) % 2 === 0 === (EDITOR_MAX_COLS % 2 === 0))
+    cols--;
+  const qOffset = Math.floor(cols / 2);
+  const qStart = Math.ceil(-r / 2) - qOffset;
+  return q < qStart || q > qStart + cols - 1;
+}
+function showToast(message) {
+  const toast = document.createElement("div");
+  toast.textContent = message;
+  toast.style.position = "fixed";
+  toast.style.bottom = "20px";
+  toast.style.left = "50%";
+  toast.style.transform = "translateX(-50%)";
+  toast.style.backgroundColor = "rgba(0, 0, 0, 0.75)";
+  toast.style.color = "white";
+  toast.style.padding = "10px 20px";
+  toast.style.borderRadius = "5px";
+  toast.style.zIndex = "1000";
+  toast.style.opacity = "0";
+  toast.style.transition = "opacity 0.5s, bottom 0.5s";
+  document.body.appendChild(toast);
+  requestAnimationFrame(() => {
+    toast.style.opacity = "1";
+    toast.style.bottom = "30px";
+  });
+  setTimeout(() => {
+    toast.style.opacity = "0";
+    toast.style.bottom = "20px";
+    toast.addEventListener("transitionend", () => {
+      if (toast.parentNode)
+        document.body.removeChild(toast);
+    });
+  }, 2500);
+}
+var levels = [];
+var currentLevelIdx = 6;
+var editingObjective = false;
+var editingInterlude = false;
+var grid = /* @__PURE__ */ new Map();
+var walls = /* @__PURE__ */ new Set();
+var colorGates = /* @__PURE__ */ new Map();
+var zoneMask = /* @__PURE__ */ new Map();
+var freezeMask = /* @__PURE__ */ new Map();
+var undoStack = [];
+var redoStack = [];
+var currentTool = "paintTop";
+var currentTopColor = "rr";
+var currentBotColor = "rr";
+var isDragging = false;
+var isTestMode = false;
+var isRecordingTutorial = false;
+var isPlayingTutorial = false;
+var playbackRunId = 0;
+var tutorialHandEl = null;
+var tutorialSteps = [];
+var tutorialStartConfig = null;
+var testSteps = 0;
+var flipsSinceCopy = 0;
+var lastDragTileStr = null;
+var selectedFlipTile = null;
+var svgGrid = document.getElementById("grid");
+function axialToPixel(q, r) {
+  return {
+    x: hexRadius * Math.sqrt(3) * (q + r / 2),
+    y: hexRadius * 3 / 2 * r
+  };
+}
+function pathTypeAndRotationToEdges(pathType, rot) {
+  if (!pathType || pathType.length === 0)
+    return [];
+  if (!pathData[pathType])
+    return [];
+  const totalRot = (6 + rot) % 6;
+  const edges = [];
+  for (const segment of pathData[pathType]) {
+    const e1 = (segment[0] + totalRot) % 6;
+    const e2 = segment[1] === 6 ? 6 : (segment[1] + totalRot) % 6;
+    if (e1 !== 6)
+      edges.push(e1);
+    if (e2 !== 6)
+      edges.push(e2);
+  }
+  return edges;
+}
+function edgesToPathString(edges) {
+  if (!edges || edges.length === 0)
+    return "";
+  const inputSet = new Set(edges.map((e) => (e % 6 + 6) % 6));
+  for (let p = 0; p <= 5; p++) {
+    for (let rot = 0; rot < 6; rot++) {
+      const candidate = new Set(pathTypeAndRotationToEdges("0", rot));
+      if (candidate.size === inputSet.size && [...candidate].every((e) => inputSet.has(e))) {
+        return rot.toString();
+      }
+    }
+  }
+  for (const type of ["s", "c", "a", "C", "B", "A", "t"]) {
+    for (let rot = 0; rot < 6; rot++) {
+      const candidate = new Set(pathTypeAndRotationToEdges(type, rot));
+      if (candidate.size === inputSet.size && [...candidate].every((e) => inputSet.has(e))) {
+        return `${type}${rot}`;
+      }
+    }
+  }
+  return "";
+}
+function getHexPolygonPoints(radius) {
+  let points = [];
+  for (let i = 0; i < 6; i++) {
+    let a = i / 6 * Math.PI * 2;
+    points.push(`${Math.sin(a) * radius},${Math.cos(a) * radius}`);
+  }
+  return points.join(" ");
+}
+function getEdgeMidpoint(edgeIdx) {
+  const mappedIdx = (10 - edgeIdx) % 6;
+  const angle = (mappedIdx + 0.5) * (Math.PI / 3);
+  const innerRadius = hexWidth / 2;
+  return {
+    x: Math.sin(angle) * innerRadius,
+    y: Math.cos(angle) * innerRadius
+  };
+}
+function saveHistoryState() {
+  const stateGrid = Array.from(grid.entries()).map(([k, v]) => [k, { ...v, edges: [...v.edges] }]);
+  undoStack.push({ grid: stateGrid, walls: Array.from(walls), colorGates: Array.from(colorGates.entries()), zones: Array.from(zoneMask.entries()), freezes: Array.from(freezeMask.entries()) });
+  redoStack = [];
+}
+function applyHistoryState(state) {
+  grid = new Map(state.grid.map(([k, v]) => [k, { ...v, edges: [...v.edges] }]));
+  walls = new Set(state.walls);
+  colorGates = new Map(state.colorGates || []);
+  zoneMask = new Map(state.zones || []);
+  freezeMask = new Map(state.freezes || []);
+  render();
+  saveCurrentToData();
+}
+function undo() {
+  if (isTestMode || isRecordingTutorial || isPlayingTutorial)
+    return;
+  if (undoStack.length === 0)
+    return;
+  const stateGrid = Array.from(grid.entries()).map(([k, v]) => [k, { ...v, edges: [...v.edges] }]);
+  redoStack.push({ grid: stateGrid, walls: Array.from(walls), colorGates: Array.from(colorGates.entries()), zones: Array.from(zoneMask.entries()), freezes: Array.from(freezeMask.entries()) });
+  applyHistoryState(undoStack.pop());
+}
+function redo() {
+  if (isTestMode || isRecordingTutorial || isPlayingTutorial)
+    return;
+  if (redoStack.length === 0)
+    return;
+  const stateGrid = Array.from(grid.entries()).map(([k, v]) => [k, { ...v, edges: [...v.edges] }]);
+  undoStack.push({ grid: stateGrid, walls: Array.from(walls), colorGates: Array.from(colorGates.entries()), zones: Array.from(zoneMask.entries()), freezes: Array.from(freezeMask.entries()) });
+  applyHistoryState(redoStack.pop());
+}
+function copyLayer(level, direction, showToastNotification = true) {
+  flipsSinceCopy = 0;
+  const targetMovesInput = document.getElementById("target-moves-input");
+  if (targetMovesInput)
+    targetMovesInput.value = 0;
+  level.targetMoves = 0;
+  if (direction === "objective-to-initial") {
+    level.map = JSON.parse(JSON.stringify(level.objective?.map || []));
+    if (showToastNotification)
+      showToast("Copied Objective map to Initial Board.");
+  } else {
+    if (!level.objective)
+      level.objective = { type: "match_map", map: [] };
+    level.objective.map = JSON.parse(JSON.stringify(level.map || []));
+    if (showToastNotification)
+      showToast("Copied Initial Board to Objective map.");
+  }
+}
+var isShuffling = false;
+function isBlockedEdge(tileA, tileB, wallSet) {
+  if (!tileA || !tileB)
+    return true;
+  let keyA = `${tileA.q},${tileA.r}`;
+  let keyB = `${tileB.q},${tileB.r}`;
+  let wallKey = keyA < keyB ? `${keyA}|${keyB}` : `${keyB}|${keyA}`;
+  if (wallSet && wallSet.has(wallKey))
+    return true;
+  if (colorGates.has(wallKey)) {
+    const allowedColors = colorGates.get(wallKey);
+    const isTileAllowed = (tile) => {
+      if (!tile || !tile.topColor || tile.topColor === "**" || tile.topColor === "@@" || tile.topColor.startsWith("T"))
+        return true;
+      return allowedColors.includes(tile.topColor[0]);
+    };
+    if (!isTileAllowed(tileA) || !isTileAllowed(tileB)) {
+      return true;
+    }
+  }
+  return false;
+}
+function performFlip(targetGrid, wallSet, tileA, tileB) {
+  if (!tileA || !tileB)
+    return false;
+  if (!isTileMovable(tileA) || !isTileMovable(tileB))
+    return false;
+  const edge = getAdjacentEdge(tileA.q, tileA.r, tileB.q, tileB.r);
+  if (edge === null)
+    return false;
+  let keyA = `${tileA.q},${tileA.r}`;
+  let keyB = `${tileB.q},${tileB.r}`;
+  if (isBlockedEdge(tileA, tileB, wallSet))
+    return false;
+  const mod = (n, m) => (n % m + m) % m;
+  const reflectEdges = (edges, flipDir) => edges.map((e) => mod(2 * flipDir + 3 - e, 6));
+  const aReflected = reflectEdges(tileA.edges, edge);
+  const targetFlipDir = (edge + 3) % 6;
+  const bReflected = reflectEdges(tileB.edges, targetFlipDir);
+  const advanceColorIndex = (tile) => {
+    if (!tile.isBlocked && !tile.isTarget && tile.topColor !== "**") {
+      return (tile.colorIndex || 0) + 1;
+    }
+    return tile.colorIndex || 0;
+  };
+  const newIdxA = advanceColorIndex(tileA);
+  const newIdxB = advanceColorIndex(tileB);
+  const newTileA = {
+    ...tileA,
+    q: tileB.q,
+    r: tileB.r,
+    edges: aReflected,
+    path: combineEdgesToPath(aReflected),
+    colorIndex: newIdxA
+  };
+  newTileA.topColor = getCurrentEditorColor(newTileA, 0).repeat(2);
+  newTileA.botColor = getCurrentEditorColor(newTileA, 1).repeat(2);
+  const newTileB = {
+    ...tileB,
+    q: tileA.q,
+    r: tileA.r,
+    edges: bReflected,
+    path: combineEdgesToPath(bReflected),
+    colorIndex: newIdxB
+  };
+  newTileB.topColor = getCurrentEditorColor(newTileB, 0).repeat(2);
+  newTileB.botColor = getCurrentEditorColor(newTileB, 1).repeat(2);
+  targetGrid.set(keyA, newTileB);
+  targetGrid.set(keyB, newTileA);
+  return true;
+}
+async function shuffleGrid(targetGrid, wallSet, { flips = 5, onFlip = null }) {
+  let flippableKeys = Array.from(targetGrid.keys()).filter((key) => {
+    let t = targetGrid.get(key);
+    return isTileMovable(t);
+  });
+  if (flippableKeys.length === 0)
+    return;
+  const neighbors = [[-1, 0], [0, -1], [1, -1], [1, 0], [0, 1], [-1, 1]];
+  let successfulFlips = 0;
+  let attempts = 0;
+  while (successfulFlips < flips && attempts < flips * 100) {
+    attempts++;
+    const randomKey = flippableKeys[Math.floor(Math.random() * flippableKeys.length)];
+    const tileA = targetGrid.get(randomKey);
+    const randomDirIdx = Math.floor(Math.random() * 6);
+    const [dq, dr] = [neighbors[randomDirIdx][0], neighbors[randomDirIdx][1]];
+    const nKey = `${tileA.q + dq},${tileA.r + dr}`;
+    const tileB = targetGrid.get(nKey);
+    if (!performFlip(targetGrid, wallSet, tileA, tileB))
+      continue;
+    successfulFlips++;
+    if (onFlip) {
+      const newA = targetGrid.get(nKey);
+      const newB = targetGrid.get(randomKey);
+      await onFlip(newA, newB);
+    }
+  }
+}
+async function init() {
+  try {
+    const res = await fetch("levels.json");
+    levels = await res.json();
+  } catch (e) {
+    console.warn("Could not load levels.json, starting fresh.");
+    levels = [{ id: 1, map: [] }];
+  }
+  populateLevelSelect();
+  loadLevel(currentLevelIdx);
+  setupEvents();
+  render();
+}
+var levelListPanel = document.getElementById("level-list-panel");
+var selectedReorderItems = /* @__PURE__ */ new Set();
+var lastSelectedReorderItem = null;
+function updateLevelListActiveState() {
+  if (!levelListPanel)
+    return;
+  levelListPanel.querySelectorAll(".reorder-item").forEach((el) => {
+    const isInterlude = el.dataset.type === "interlude";
+    if (parseInt(el.dataset.index) === currentLevelIdx && isInterlude === editingInterlude) {
+      el.classList.add("active");
+      el.scrollIntoView({ behavior: "smooth", block: "nearest" });
+    } else {
+      el.classList.remove("active");
+    }
+  });
+}
+function populateLevelSelect() {
+  levelListPanel.innerHTML = "";
+  reorderItems = [];
+  selectedReorderItems.clear();
+  lastSelectedReorderItem = null;
+  levels.forEach((lvl, i) => {
+    if (lvl.interlude) {
+      reorderItems.push({
+        id: reorderItems.length,
+        type: "interlude",
+        data: JSON.parse(JSON.stringify(lvl.interlude)),
+        originalIndex: i
+      });
+    }
+    reorderItems.push({
+      id: reorderItems.length,
+      type: "level",
+      originalObj: lvl,
+      originalIndex: i
+    });
+  });
+  reorderItems.forEach((item) => {
+    const div = document.createElement("div");
+    div.className = "reorder-item";
+    div.draggable = true;
+    div.dataset.id = item.id;
+    div.dataset.type = item.type;
+    div.dataset.index = item.originalIndex;
+    if (item.type === "interlude") {
+      div.style.backgroundColor = "#2c3e50";
+      div.style.borderColor = "#34495e";
+      div.innerHTML = `
                 <div style="flex-shrink: 0; width: 40px; height: 40px; background: #1a252f; border-radius: 4px; display: flex; align-items: center; justify-content: center; border: 1px solid #34495e; color: #f1c40f; font-size: 20px;">
                     \u{1F4AC}
                 </div>
                 <div style="display: flex; flex-direction: column; overflow: hidden; flex-grow: 1;">
                     <strong style="color: #f1c40f; font-size: 14px;">Interlude</strong> 
-                    <span style="color:#aaa; font-size:12px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${e.data.title||"Untitled"}</span>
+                    <span style="color:#aaa; font-size:12px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${item.data.title || "Untitled"}</span>
                 </div>
-            `;else{let n=e.originalObj;t.innerHTML=`
+            `;
+    } else {
+      let lvl = item.originalObj;
+      div.innerHTML = `
                 <div style="flex-shrink: 0; width: 40px; height: 40px; background: #222; border-radius: 4px; display: flex; align-items: center; justify-content: center; border: 1px solid #444;">
-                    ${mt(n)}
+                    ${generateMiniMapSVG(lvl)}
                 </div>
                 <div style="display: flex; flex-direction: column; overflow: hidden; flex-grow: 1;">
-                    <strong style="color: #eee; font-size: 14px;">Level ${e.originalIndex+1}</strong> 
-                    <span style="color:#aaa; font-size:12px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${n.objectiveString||"No objective"}</span>
+                    <strong style="color: #eee; font-size: 14px;">Level ${item.originalIndex + 1}</strong> 
+                    <span style="color:#aaa; font-size:12px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${lvl.objectiveString || "No objective"}</span>
                 </div>
-            `}t.addEventListener("click",()=>{if(X(),A(),q=e.type==="interlude",z(e.originalIndex),e.type==="interlude"){let n=document.getElementById("btn-edit-interlude");n&&n.click()}}),t.addEventListener("dragstart",ht),t.addEventListener("dragover",yt),t.addEventListener("drop",Et),t.addEventListener("dragenter",bt),t.addEventListener("dragleave",vt),t.addEventListener("dragend",xt),ke.appendChild(t)}),Ye()}function J(e,t,n){let l={q:e,r:t,staticColors:"",cyclingColors:"",colorIndex:0,topColor:"**",botColor:"**",isTarget:!1,isBlocked:!1,path:"",edges:[]};if(!n)return l;if(n.startsWith("@@"))return l.isBlocked=!0,l;if(/^\*+$/.test(n))return l;if(n.startsWith("T"))l.isTarget=!0,l.staticColors=n[1],l.topColor=n[1]+n[1],l.botColor=l.topColor,l.path=n.substring(2).replace(/\*+$/,"");else if(n.startsWith("**"))l.topColor="**",l.botColor="**",l.path=n.substring(2).replace(/\*+$/,"");else if(n.startsWith("[")){let d=n.indexOf("]");if(d!==-1){let o=n.substring(1,d),r=o.indexOf("-");r!==-1?(l.staticColors=o.substring(0,r),l.cyclingColors=o.substring(r+1)):(l.staticColors="",l.cyclingColors=o),l.path=n.substring(d+1).replace(/\*+$/,"")}}else l.staticColors="",l.cyclingColors=n.substring(0,Math.min(2,n.length)),l.cyclingColors.length===1&&(l.cyclingColors+=l.cyclingColors),l.path=n.substring(l.cyclingColors.length).replace(/\*+$/,"");let s=l.staticColors.length>0?l.staticColors[0]:l.cyclingColors.length>0?l.cyclingColors[0]:"*";l.topColor=s+s;let a="*";if(l.staticColors.length>1?a=l.staticColors[1]:l.staticColors.length===1&&l.cyclingColors.length>0?a=l.cyclingColors[0]:l.cyclingColors.length>1?a=l.cyclingColors[1]:l.cyclingColors.length===1&&(a=l.cyclingColors[0]),l.botColor=a+a,l.path){let d=l.path[l.path.length-1],o=null,r=0;/[0-5]/.test(d)?(r=parseInt(d,10),o=l.path.length>1?l.path[0]:"0",(o==="*"||/[0-5]/.test(o))&&(o="0")):o=l.path[0],o?l.edges=Ne(o,r):l.edges=[]}return l}function Je(e){if(e.isBlocked)return"@@";let t=e.path||"";if(e.isTarget)return"T"+(e.staticColors||e.topColor[0]||"*")+t;let n=e.staticColors!==void 0?e.staticColors:"",l=e.cyclingColors!==void 0?e.cyclingColors:(e.topColor[0]||"*")+(e.botColor[0]||"*");if(n===""&&l.length<=2){let s=l.padEnd(2,l[0]||"*");return s==="**"&&!t?"**":s+t}return`[${n}-${l}]${t}`}function ct(e,t,n){if(!n||n==="*"||n.startsWith("**"))return null;let l={q:e,r:t,isBlocked:!1,isTarget:!1,topColor:"**",botColor:"**",path:"",edges:[],freeze:0},s=!1;n.includes("@@")&&(l.isBlocked=!0,s=!0);let a=n.match(/T([a-zA-Z*])/);a&&(l.isTarget=!0,l.topColor=a[1]+a[1],l.botColor=l.topColor,s=!0);let d=n.match(/E([a-zA-Z*])?([1-6])/);if(d){let o=d[1]||"*",r=parseInt(d[2],10)-1;l.topColor=o+o,l.botColor=o+o,l.path="0"+r,l.edges=[r],s=!0}return s?l:null}function Be(){let e=document.getElementById("btn-edit-interlude");if(!e)return;let t=w[v]?.interlude;t&&(t.title||t.text||t.image||t.tutorial)?(e.innerHTML=q?"Edit Interlude Data":"Edit Interlude",e.style.borderColor="#f1c40f",e.style.color="#f1c40f"):(e.innerHTML=q?"Edit Interlude Data":"Add Interlude",e.style.borderColor="#555",e.style.color="#aaa"),q?e.style.backgroundColor="#2c3e50":e.style.backgroundColor="#333"}function z(e){v=e,B.clear(),R.clear(),S.clear(),N.clear(),j.clear(),Ce=[],Me=[];let t=w[e],n=t;q&&(t.interlude||(t.interlude={}),t.interlude.tutorial||(t.interlude.tutorial={map:[],staticMap:[]}),n=t.interlude.tutorial);let l=new Map;if(n.staticMap&&n.staticMap.length>0){let g=Math.floor(n.staticMap.length/2);for(let p=0;p<n.staticMap.length;p++){let m=p-g,b=n.staticMap[p].trim().split(/\s+/).filter(u=>u.length>0),h=b.length;if(h===0)continue;let f=Math.floor(-m/2-(h-1)/2);for(let u=0;u<h;u++){let c=f+u,E=b[u],y=E.match(/Z(\d+)/);y&&N.set(`${c},${m}`,parseInt(y[1],10));let C=E.match(/F(\d+)/);C&&j.set(`${c},${m}`,parseInt(C[1],10));let $=E.match(/W([1-6]+)/);$&&$[1].split("").map(Number).forEach(L=>{let O=L-1,k=[[-1,0],[0,-1],[1,-1],[1,0],[0,1],[-1,1]],W=c+k[O][0],U=m+k[O][1],re=`${c},${m}`,_=`${W},${U}`,D=re<_?`${re}|${_}`:`${_}|${re}`;R.add(D)});let x=[...E.matchAll(/C([a-zA-Z]+)([1-6]+)/g)];x.length>0&&x.forEach(T=>{let L=T[1];T[2].split("").map(Number).forEach(k=>{let W=k-1,U=[[-1,0],[0,-1],[1,-1],[1,0],[0,1],[-1,1]],re=c+U[W][0],_=m+U[W][1],D=`${c},${m}`,ne=`${re},${_}`,qe=D<ne?`${D}|${ne}`:`${ne}|${D}`;S.set(qe,L)})});let M=E.replace(/Z\d+/g,"").replace(/F\d+/g,"").replace(/W[1-6]+/g,"").replace(/C[a-zA-Z]+[1-6]+/g,"").replace(/E[a-zA-Z*]?[1-6]/g,""),I=ct(c,m,M);I||(I=J(c,m,"**")),I&&l.set(`${c},${m}`,I)}}}else{let g=n.zones||{},p=n.frozen||{},m=n.walls||[],b=n.colorGates||{};for(let[h,f]of Object.entries(g))N.set(h,f);for(let[h,f]of Object.entries(p))j.set(h,f);m.forEach(h=>R.add(h));for(let[h,f]of Object.entries(b))S.set(h,f)}let s=F&&n.objective?n.objective.map||[]:n.map||[];if(F&&n.objective&&n.objective.pieces)n.objective.pieces.forEach(g=>{let p=J(g.q,g.r,g.type);p.freeze=j.get(`${g.q},${g.r}`)||0,B.set(`${g.q},${g.r}`,p)});else if(!F&&n.initial)n.initial.forEach(g=>{let p=J(g.q,g.r,g.type);p.freeze=j.get(`${g.q},${g.r}`)||0,B.set(`${g.q},${g.r}`,p)});else if(s.length>0){let g=Math.floor(s.length/2);for(let p=0;p<s.length;p++){let m=p-g,b=s[p].trim().split(/\s+/).filter(u=>u.length>0),h=b.length;if(h===0)continue;let f=Math.floor(-m/2-(h-1)/2);for(let u=0;u<h;u++){let c=f+u,E=b[u],y=J(c,m,E);y.freeze=j.get(`${c},${m}`)||0,n.staticMap?/^\*+$/.test(E)||B.set(`${c},${m}`,y):B.set(`${c},${m}`,y)}}}l.forEach((g,p)=>{B.has(p)||(g.freeze=j.get(p)||0,B.set(p,g))}),H();let a=document.getElementById("objective-input");a&&(a.value=n.objectiveString||"");let d=document.getElementById("target-moves-input");d&&(d.value=n.targetMoves||0);let o=document.getElementById("interlude-title"),r=document.getElementById("interlude-text"),i=document.getElementById("interlude-image");if(o&&r&&i){let g=w[e].interlude||{};o.value=g.title||"",r.value=g.text||"",i.value=g.image||""}Be(),Ye()}function me(e){if(!e||e.isBlocked||e.isTarget||(V||Q||Z)&&e.freeze>0&&!Ve(e.freeze))return!1;if(e.path&&e.path.length>0){let n=e.path[e.path.length-1],l=e.path.length>1?e.path[0]:"0";if(l==="0"||l>="0"&&l<="5")return!1}let t=w[v];return q&&t.interlude&&t.interlude.tutorial&&(t=t.interlude.tutorial),!(t&&t.objective&&t.objective.type==="path_connect"&&Array.isArray(t.objective.targets)&&t.objective.targets.some(l=>l.q===e.q&&l.r===e.r))}function Ve(e){let t=w[v];if(q&&t.interlude&&t.interlude.tutorial&&(t=t.interlude.tutorial),!t||!t.objective||!t.objective.map)return!1;let n=t.objective.map,l=Math.floor(n.length/2);for(let s=0;s<n.length;s++){let a=s-l,d=n[s].trim().split(/\s+/).filter(i=>i.length>0),o=d.length;if(o===0)continue;let r=Math.floor(-a/2-(o-1)/2);for(let i=0;i<o;i++){let g=r+i;if(N.get(`${g},${a}`)!==e)continue;let p=d[i];if(/^\*+$/.test(p))continue;let m=B.get(`${g},${a}`);if(!m)return!1;let b=Je(m),h=p.length>2?p.substring(0,2)+p.substring(2).replace(/\*+$/,""):p,f=b.length>2?b.substring(0,2)+b.substring(2).replace(/\*+$/,""):b;if(h.startsWith("T")||h==="@@"){if(f[0]!==h[0])return!1}else if(h[0]!==f[0]||h.length>2&&h.substring(2)!==f.substring(2))return!1}}return!0}function te(e,t=0){if(e.isBlocked||e.isTarget)return e.isTarget&&(e.staticColors||e.topColor[0])||"*";let n=e.staticColors||"",l=e.cyclingColors||"";if(!n&&!l)return e.topColor?e.topColor[0]:"*";let s=(e.colorIndex||0)+t;if(s<n.length)return n[s];{let a=s-n.length;return l.length>0?l[a%l.length]:n.length>0?n[n.length-1]:"*"}}function dt(){let e=w[v];if(q&&e.interlude&&e.interlude.tutorial&&(e=e.interlude.tutorial),!e||!e.objective||!e.objective.map)return!1;let t=e.objective.map,n=Math.floor(t.length/2);for(let l=0;l<t.length;l++){let s=l-n,a=t[l].trim().split(/\s+/).filter(r=>r.length>0),d=a.length;if(d===0)continue;let o=Math.floor(-s/2-(d-1)/2);for(let r=0;r<d;r++){let i=o+r,g=a[r];if(/^\*+$/.test(g))continue;let p=B.get(`${i},${s}`);if(!p)return!1;if(g.startsWith("@@")){if(!p.isBlocked)return!1}else if(g.startsWith("T")){if(!p.isTarget||g[1]!==te(p))return!1}else if(g.startsWith("**")){if(p.isTarget||p.isBlocked)return!1}else{if(p.isBlocked||p.isTarget)return!1;let h=g[0];if(g.startsWith("[")&&(h=g.substring(1).replace("-","")[0]||"*"),h!==te(p))return!1}let m=g.replace(/^@@/,"").replace(/^\*\*/,"").replace(/^T./,"").replace(/^\[.*?\]/,"").replace(/^[a-z*]{2}/,"").replace(/\*+$/,""),b=p.path||"";if(m!==b)return!1}}return!0}function ze(e,t){if(!e||!t||!me(e)||!me(t))return!1;let n=ve(e.q,e.r,t.q,t.r);if(n===null)return!1;let l=`${e.q},${e.r}`,s=`${t.q},${t.r}`,a=Ke(e,t,R);if((e.freeze>0||t.freeze>0)&&(a=!0),Q&&(Te.push([e.q,e.r,t.q,t.r,a]),document.getElementById("tutorial-record-steps").innerText=Te.length),a)return!1;let d=(u,c)=>(u%c+c)%c,o=(u,c)=>u.map(E=>d(2*c+3-E,6)),r=o(e.edges,n),i=(n+3)%6,g=o(t.edges,i),p=u=>!u.isBlocked&&!u.isTarget&&u.topColor!=="**"?(u.colorIndex||0)+1:u.colorIndex||0,m=p(e),b=p(t),h={...e,q:t.q,r:t.r,edges:r,path:pe(r),colorIndex:m};h.topColor=te(h,0).repeat(2),h.botColor=te(h,1).repeat(2);let f={...t,q:e.q,r:e.r,edges:g,path:pe(g),colorIndex:b};if(f.topColor=te(f,0).repeat(2),f.botColor=te(f,1).repeat(2),B.set(l,f),B.set(s,h),!V&&!Q&&!F){oe++;let u=w[v];q?(u.interlude||(u.interlude={}),u.interlude.tutorial||(u.interlude.tutorial={}),u.interlude.tutorial.targetMoves=oe):u.targetMoves=oe;let c=document.getElementById("target-moves-input");c&&(c.value=oe)}if(V){xe++;let u=document.getElementById("test-steps");u&&(u.innerText=`Steps: ${xe}`),dt()&&setTimeout(()=>{let c=document.getElementById("test-win-modal"),E=document.getElementById("test-win-steps");E&&(E.innerText=`You completed the level in ${xe} steps.`),c&&c.showModal()},300)}return Re(),!0}function Ue(){B.forEach((o,r)=>{de(o.q,o.r)&&B.delete(r)}),R.forEach(o=>{let[r,i]=o.split("|"),[g,p]=r.split(",").map(Number),[m,b]=i.split(",").map(Number);(de(g,p)||de(m,b))&&R.delete(o)}),S.forEach((o,r)=>{let[i,g]=r.split("|"),[p,m]=i.split(",").map(Number),[b,h]=g.split(",").map(Number);(de(p,m)||de(b,h))&&S.delete(r)}),N.forEach((o,r)=>{let[i,g]=r.split(",").map(Number);de(i,g)&&N.delete(r)}),j.forEach((o,r)=>{let[i,g]=r.split(",").map(Number);de(i,g)&&j.delete(r)});let e=new Set,t=new Map,n=new Map;B.forEach((o,r)=>{e.add(r),me(o)?n.set(r,o):t.set(r,o)}),R.forEach(o=>{o.split("|").forEach(r=>e.add(r))}),S.forEach((o,r)=>{r.split("|").forEach(i=>e.add(i))}),N.forEach((o,r)=>e.add(r)),j.forEach((o,r)=>e.add(r));let l=new Map;R.forEach(o=>{let[r,i]=o.split("|"),[g,p]=r.split(",").map(Number),[m,b]=i.split(",").map(Number),h=ve(g,p,m,b),f=e.has(r),u=e.has(i);if(f&&u)h<3?(l.has(r)||l.set(r,[]),l.get(r).push(h+1)):(l.has(i)||l.set(i,[]),l.get(i).push((h+3)%6+1));else if(f)l.has(r)||l.set(r,[]),l.get(r).push(h+1);else if(u){let c=(h+3)%6;l.has(i)||l.set(i,[]),l.get(i).push(c+1)}});let s=new Map;S.forEach((o,r)=>{let[i,g]=r.split("|"),[p,m]=i.split(",").map(Number),[b,h]=g.split(",").map(Number),f=ve(p,m,b,h),u=e.has(i),c=e.has(g);if(u&&c)f<3?(s.has(i)||s.set(i,[]),s.get(i).push({edge:f+1,colors:o})):(s.has(g)||s.set(g,[]),s.get(g).push({edge:(f+3)%6+1,colors:o}));else if(u)s.has(i)||s.set(i,[]),s.get(i).push({edge:f+1,colors:o});else if(c){let E=(f+3)%6;s.has(g)||s.set(g,[]),s.get(g).push({edge:E+1,colors:o})}});let a=[],d=[];if(e.size>0){let o=1/0,r=-1/0;e.forEach(f=>{let u=parseInt(f.split(",")[1],10);u<o&&(o=u),u>r&&(r=u)});let i=Math.max(Math.abs(o),Math.abs(r)),g=i*2+1,p=[],m=[],b=2,h=2;for(let f=0;f<g;f++){let u=f-i,c=Array.from(e).map(I=>{let[T,L]=I.split(",");return{q:parseInt(T,10),r:parseInt(L,10)}}).filter(I=>I.r===u);if(c.length===0){p.push([]),m.push([]);continue}let E=Math.min(...c.map(I=>I.q)),y=Math.max(...c.map(I=>I.q)),C=y-E+1,$;for(;$=Math.floor(-u/2-(C-1)/2),!($<=E&&$+C-1>=y);)C++;let x=[],M=[];for(let I=0;I<C;I++){let L=`${$+I},${u}`,O="**",k=t.get(L),W="";if(k&&k.isBlocked&&(W+="@@"),k&&k.isTarget&&(W+="T"+(k.topColor[0]||"*")),k&&k.path&&k.path.length>0){let _=k.path[k.path.length-1],D=k.path.length>1?k.path[0]:"0";if(D==="0"||D>="0"&&D<="5"){let ne=parseInt(_,10)+1;W+="E"+(k.topColor[0]||"*")+ne}}if(N.has(L)&&(W+="Z"+N.get(L)),j.has(L)&&(W+="F"+j.get(L)),l.has(L)){let _=Array.from(new Set(l.get(L))).sort((D,ne)=>D-ne).join("");W+="W"+_}if(s.has(L)){let _={};s.get(L).forEach(D=>{_[D.colors]||(_[D.colors]=[]),_[D.colors].push(D.edge)});for(let D in _){let ne=Array.from(new Set(_[D])).sort((qe,et)=>qe-et).join("");W+="C"+D+ne}}W.length>0&&(O=W),O.length>b&&(b=O.length),x.push(O);let U="**",re=n.get(L);re&&(U=Je(re)),U==="*"&&(U="**"),U.length>h&&(h=U.length),M.push(U)}p.push(x),m.push(M)}a=p.map(f=>f.length===0?"  ":"  "+f.map(u=>u.padEnd(b,"*")).join(" ")+"  "),d=m.map(f=>f.length===0?"  ":"  "+f.map(u=>u.padEnd(h,"*")).join(" ")+"  ")}return{staticMap:a,map:d}}function A(){if(V||Q||Z)return;let e=Ue(),t=w[v];q&&(t.interlude||(t.interlude={}),t.interlude.tutorial||(t.interlude.tutorial={map:[],staticMap:[]}),t=t.interlude.tutorial),t.staticMap=e.staticMap,delete t.zones,delete t.frozen,delete t.walls,delete t.colorGates,delete t.initial,t.objective&&delete t.objective.pieces,F?(t.objective||(t.objective={type:"match_map"}),t.objective.map=e.map,t.objective.type="match_map"):t.map=e.map}function H(){let e=document.getElementById("grid-content");e||(fe.innerHTML='<g id="grid-content"></g><g id="grid-overlay"></g>',e=document.getElementById("grid-content")),e.innerHTML="";let t=Pe(30),n=Pe(30*.6),l=new Map,s=a=>{if(l.has(a))return l.get(a);let d=V||Q||Z?Ve(a):!1;return l.set(a,d),d};for(let a=-we;a<=we;a++){let d=Ie;Math.abs(a)%2===0==(Ie%2===0)&&d--;let o=Math.floor(d/2),r=Math.ceil(-a/2)-o;for(let i=r;i<=r+d-1;i++){let g=ae(i,a),p=document.createElementNS("http://www.w3.org/2000/svg","g");p.setAttribute("transform",`translate(${g.x}, ${g.y})`),p.dataset.q=i,p.dataset.r=a;let m=document.createElementNS("http://www.w3.org/2000/svg","polygon");m.setAttribute("points",t),m.setAttribute("class","hex-bg"),p.appendChild(m),e.appendChild(p);let b=B.get(`${i},${a}`);if(b){let h=ce[b.topColor[0]]||"#444",f=ce[b.botColor[0]]||"#444",u=document.createElementNS("http://www.w3.org/2000/svg","polygon");if(u.setAttribute("points",t),u.setAttribute("class","hex-top"),u.setAttribute("fill",b.isBlocked?ce["@"]:h),b.highlight&&(u.setAttribute("stroke","#ffffff"),u.setAttribute("stroke-width","4")),p.appendChild(u),!b.isBlocked&&!b.isTarget&&h!==f){let c=document.createElementNS("http://www.w3.org/2000/svg","polygon");c.setAttribute("points",n),c.setAttribute("class","hex-bot"),c.setAttribute("fill",f),p.appendChild(c)}if(b.isTarget){let c=document.createElementNS("http://www.w3.org/2000/svg","circle");c.setAttribute("r",30*.3),c.setAttribute("class","target-star"),p.appendChild(c)}if(b.path){if(!nt.includes(b.path[0])&&!/[0-5]/.test(b.path[0])){let c=document.createElementNS("http://www.w3.org/2000/svg","text");c.setAttribute("class","missing-warning"),c.textContent="!",p.appendChild(c)}else if(b.edges&&b.edges.length>0){if(b.edges.length%2===1){let c=Se(b.edges[b.edges.length-1]),E=document.createElementNS("http://www.w3.org/2000/svg","line");E.setAttribute("x1",0),E.setAttribute("y1",0),E.setAttribute("x2",c.x),E.setAttribute("y2",c.y),E.setAttribute("class","path-line"),p.appendChild(E)}for(let c=0;c<b.edges.length-1;c+=2){let E=Se(b.edges[c]),y=Se(b.edges[c+1]),C=document.createElementNS("http://www.w3.org/2000/svg","path");C.setAttribute("d",`M ${E.x} ${E.y} C ${E.x*.5} ${E.y*.5}, ${y.x*.5} ${y.y*.5}, ${y.x} ${y.y}`),C.setAttribute("class","path-line"),p.appendChild(C)}}}}if(j.has(`${i},${a}`)){let h=j.get(`${i},${a}`);if(h>0&&!s(h)){let f=document.createElementNS("http://www.w3.org/2000/svg","polygon");f.setAttribute("points",t),f.setAttribute("fill","none"),f.setAttribute("stroke","#00ffff"),f.setAttribute("stroke-width","3"),f.setAttribute("style","pointer-events: none;"),p.appendChild(f);let u=document.createElementNS("http://www.w3.org/2000/svg","text");u.textContent="\u2744\uFE0F",u.setAttribute("font-size","20"),u.setAttribute("x","0"),u.setAttribute("y","8"),u.setAttribute("text-anchor","middle"),u.setAttribute("dominant-baseline","central"),p.appendChild(u);let c=document.createElementNS("http://www.w3.org/2000/svg","text");c.textContent="F"+h,c.setAttribute("fill","#0ff"),c.setAttribute("font-size","14"),c.setAttribute("font-weight","bold"),c.setAttribute("y","-10"),c.setAttribute("text-anchor","middle"),c.style.textShadow="0 0 3px black",p.appendChild(c)}}if(N.has(`${i},${a}`)){let h=N.get(`${i},${a}`),f=document.createElementNS("http://www.w3.org/2000/svg","text");f.textContent="Z"+h,f.setAttribute("fill","#f39c12"),f.setAttribute("font-size","14"),f.setAttribute("y","15"),f.setAttribute("text-anchor","middle"),p.appendChild(f)}p.addEventListener("mousedown",h=>{(h.button===0||h.button===2)&&_e(i,a,h,!0)}),p.addEventListener("mouseenter",h=>_e(i,a,h,!1)),p.addEventListener("contextmenu",h=>h.preventDefault())}}R.forEach(a=>{let[d,o]=a.split("|"),r=ae(...d.split(",").map(Number)),i=ae(...o.split(",").map(Number)),g=(r.x+i.x)/2,p=(r.y+i.y)/2,m=i.x-r.x,b=i.y-r.y,h=Math.hypot(m,b),f=-b/h*30*.6,u=m/h*30*.6,c=document.createElementNS("http://www.w3.org/2000/svg","line");c.setAttribute("x1",g-f),c.setAttribute("y1",p-u),c.setAttribute("x2",g+f),c.setAttribute("y2",p+u),c.setAttribute("stroke","#e74c3c"),c.setAttribute("stroke-width","6"),c.setAttribute("stroke-linecap","round"),e.appendChild(c)}),S.forEach((a,d)=>{let[o,r]=d.split("|"),i=ae(...o.split(",").map(Number)),g=ae(...r.split(",").map(Number)),p=(i.x+g.x)/2,m=(i.y+g.y)/2,b=g.x-i.x,h=g.y-i.y,f=Math.hypot(b,h),u=-h/f*30*.6,c=b/f*30*.6,E=a.length;for(let y=0;y<E;y++){let C=a[y],$=ce[C]||"#ffffff",x=y/E*2-1,M=(y+1)/E*2-1,I=p+u*x,T=m+c*x,L=p+u*M,O=m+c*M,k=document.createElementNS("http://www.w3.org/2000/svg","line");k.setAttribute("x1",I),k.setAttribute("y1",T),k.setAttribute("x2",L),k.setAttribute("y2",O),k.setAttribute("stroke",$),k.setAttribute("stroke-width","6"),(y===0||y===E-1)&&k.setAttribute("stroke-linecap","round"),k.setAttribute("opacity","0.8"),e.appendChild(k)}})}function ve(e,t,n,l){let s=n-e,a=l-t;return s===0&&a===1?4:s===1&&a===0?3:s===1&&a===-1?2:s===0&&a===-1?1:s===-1&&a===0?0:s===-1&&a===1?5:null}function pe(e){if(!e||e.length===0)return"";let t=Array.from(new Set(e.map(l=>(l%6+6)%6))).sort((l,s)=>l-s),n=rt(t);if(n)return n;if(t.length===1)return t[0].toString();if(t.length===2){let[l,s]=t;if(Math.abs(l-s)===3)return"s0"}return""}function Fe(e,t){e.edges.includes(t)||e.edges.push(t),e.edges.length>6&&(e.edges.shift(),e.edges.shift()),e.path=pe(e.edges),e.edges.length>=6&&!["t"].includes(e.path[0])&&(e.edges.shift(),e.edges.shift(),e.path=pe(e.edges)),e.edges.length>=4&&["s","c","a"].includes(e.path[0])&&(e.edges.shift(),e.edges.shift(),e.path=pe(e.edges))}function _e(e,t,n,l){if(Z||Q&&K!=="flip")return;let s=!1;if(l?s=n.button===2:s=(n.buttons&2)!==0,l&&(ge(),ye=!0),!ye)return;let a=`${e},${t}`,d=B.get(a)||{q:e,r:t,topColor:"**",botColor:"**",isTarget:!1,isBlocked:!1,path:"",edges:[],freeze:0};if(K==="wall"){if(l){ge();let o=n.clientX!==void 0?n.clientX:n.touches?n.touches[0].clientX:0,r=n.clientY!==void 0?n.clientY:n.touches?n.touches[0].clientY:0,i=fe.createSVGPoint();i.x=o,i.y=r;let g=i.matrixTransform(fe.getScreenCTM().inverse()),p=null,m=1/0,b=[[1,0],[1,-1],[0,-1],[-1,0],[-1,1],[0,1]];for(let[h,f]of b){let u=ae(e+h,t+f),c=Math.hypot(g.x-u.x,g.y-u.y);c<m&&(m=c,p={q:e+h,r:t+f})}if(p){let h=`${e},${t}`,f=`${p.q},${p.r}`,u=h<f?`${h}|${f}`:`${f}|${h}`;R.has(u)?R.delete(u):R.add(u),Re(),H()}}return}if(K==="colorGate"){if(l){ge();let o=n.clientX!==void 0?n.clientX:n.touches?n.touches[0].clientX:0,r=n.clientY!==void 0?n.clientY:n.touches?n.touches[0].clientY:0,i=fe.createSVGPoint();i.x=o,i.y=r;let g=i.matrixTransform(fe.getScreenCTM().inverse()),p=null,m=1/0,b=[[1,0],[1,-1],[0,-1],[-1,0],[-1,1],[0,1]];for(let[h,f]of b){let u=ae(e+h,t+f),c=Math.hypot(g.x-u.x,g.y-u.y);c<m&&(m=c,p={q:e+h,r:t+f})}if(p){let h=`${e},${t}`,f=`${p.q},${p.r}`,u=h<f?`${h}|${f}`:`${f}|${h}`,c=$e?$e[0]:null;if(c&&c!=="*"&&c!=="@")if(s){if(S.has(u)){let E=S.get(u);E=E.replace(c,""),E===""?S.delete(u):S.set(u,E)}}else if(S.has(u)){let E=S.get(u);E.includes(c)||S.set(u,E+c)}else S.set(u,c);else(s||!s&&(!c||c==="*"||c==="@"))&&S.delete(u);Re(),H()}}return}if(K==="erase")B.delete(a),P=null;else if(K==="paintTop"){if(d.isTarget)return;let o=s?Xe:$e;if(o==="@@")d.isBlocked=!0;else{d.staticColors="",(d.cyclingColors===void 0||d.cyclingColors.length===0)&&(d.cyclingColors=d.topColor[0]+d.botColor[0]),s?d.cyclingColors.length>0?d.cyclingColors=d.cyclingColors[0]+o[0]:d.cyclingColors="*"+o[0]:d.cyclingColors.length>1?d.cyclingColors=o[0]+d.cyclingColors[1]:d.cyclingColors=o[0]+(d.cyclingColors[0]||"*");let r=d.cyclingColors;d.topColor=r[0]+r[0],d.botColor=(r[1]||r[0])+(r[1]||r[0]),d.isBlocked=!1}B.set(a,d),P=null}else if(K==="setMultiColor"){if(l){if(d.isTarget||d.isBlocked)return;openMultiColorModal(d)}P=null}else if(K==="paintTarget")d.isTarget=!0,d.isBlocked=!1,B.set(a,d),P=null;else if(K==="paintZone"){let o=parseInt(document.getElementById("tool-val-zone").value)||1;s?N.delete(a):N.set(a,Math.max(1,o)),P=null}else if(K==="paintFreeze"){let o=parseInt(document.getElementById("tool-val-freeze").value)||0;s?d.freeze=0:d.freeze=o,B.set(a,d),s||o<=0?j.delete(a):j.set(a,o),P=null}else if(K==="flip"){if(!me(d)){P=null,ee=null,H();return}if(l){if(!ee){ee=d,H();return}if(ee.q===d.q&&ee.r===d.r){ee=null,H();return}if(ze(ee,d)){ee=null,P=null;return}ee=d,H();return}if(ye&&P){let[o,r]=P.split(",").map(Number),i=B.get(`${o},${r}`);if(i&&ve(i.q,i.r,d.q,d.r)!==null&&ze(i,d)){ee=null,P=null,ye=!1;return}}l===!1&&!ye&&(P=a)}else if(K==="clearPath")d.path="",d.edges=[],B.set(a,d),P=null;else if(K==="path"){if(B.set(a,d),P&&P!==a){let[o,r]=P.split(",").map(Number),i=ve(o,r,e,t);if(i!==null){let g=B.get(P);Fe(g,i),Fe(d,(i+3)%6)}}P=a}H()}function X(){if(V){V=!1;let e=document.getElementById("btn-test-mode"),t=document.getElementById("test-steps");e&&(e.innerText="Test Mode: OFF",e.style.backgroundColor="transparent",e.style.color="#9b59b6"),t&&(t.style.display="none"),z(v)}}async function ut(){let e=document.getElementById("grid-overlay");e||(fe.innerHTML='<g id="grid-content"></g><g id="grid-overlay"></g>',e=document.getElementById("grid-overlay")),G||(G=document.createElementNS("http://www.w3.org/2000/svg","text"),G.textContent="\u{1F446}",G.setAttribute("font-size","40"),G.setAttribute("style","pointer-events: none; transition: transform 0.6s ease-in-out, opacity 0.3s;"),e.appendChild(G)),G.style.display="block",G.style.opacity="0";let t=(s,a,d=1)=>{let o=ae(s,a);G.setAttribute("transform",`translate(${o.x-15}, ${o.y+15}) scale(${d})`)},n=w[v].interlude.tutorial.steps,l=++ie;for(;Z&&l===ie;){z(v),n.length>0&&(G.style.transition="none",t(n[0][0],n[0][1],1),G.getBoundingClientRect(),G.style.transition="transform 0.6s ease-in-out, opacity 0.3s"),G.style.opacity="1",await new Promise(s=>setTimeout(s,800));for(let s of n){if(!Z||l!==ie)break;let[a,d,o,r]=s;if(t(a,d,1),await new Promise(p=>setTimeout(p,600)),!Z||l!==ie||(t(a,d,.8),await new Promise(p=>setTimeout(p,200)),!Z||l!==ie)||(t(o,r,.8),await new Promise(p=>setTimeout(p,600)),!Z||l!==ie))break;t(o,r,1);let i=B.get(`${a},${d}`),g=B.get(`${o},${r}`);i&&g&&ze(i,g),await new Promise(p=>setTimeout(p,800))}if(!Z||l!==ie)break;G.style.opacity="0",await new Promise(s=>setTimeout(s,800))}}function he(){let e=w[v].interlude||{};document.getElementById("interlude-title").value=e.title||"",document.getElementById("interlude-text").value=e.text||"",document.getElementById("interlude-image").value=e.image||"";let t=document.getElementById("interlude-tutorial-status"),n=document.getElementById("btn-tutorial-clear"),l=document.getElementById("btn-record-tutorial"),s=document.getElementById("btn-tutorial-preview");e.tutorial&&e.tutorial.steps?(t.innerText=`Recorded: ${e.tutorial.steps.length} steps`,t.style.color="#2ecc71",l.innerText="Re-record",n.style.display="block",s&&(s.style.display="block")):(t.innerText="No tutorial recorded.",t.style.color="#ccc",l.innerText="Record",n.style.display="none",s&&(s.style.display="none"))}var se=null,le=null,Qe=!1;function Le(e,t=!1){let n=document.createElement("div");return n.className="color-swatch",n.dataset.color=e,n.style.backgroundColor=ce[e]||"#fff",n.draggable=!0,n.addEventListener("dragstart",l=>{le=n,Qe=t,l.dataTransfer.setData("text/plain",e),setTimeout(()=>n.classList.add("dragging"),0)}),n.addEventListener("dragend",()=>{n.classList.remove("dragging"),le=null}),n.addEventListener("click",()=>{!t&&n.parentElement&&n.parentElement.removeChild(n)}),n}function He(e){let t=document.getElementById(e);t&&(t.addEventListener("dragover",n=>{n.preventDefault(),t.classList.add("drag-over")}),t.addEventListener("dragleave",()=>{t.classList.remove("drag-over")}),t.addEventListener("drop",n=>{n.preventDefault(),t.classList.remove("drag-over");let l=n.dataTransfer.getData("text/plain");if(!l)return;let s=ft(t,n.clientX);if(Qe){let a=Le(l,!1);s==null?t.appendChild(a):t.insertBefore(a,s)}else(le&&le.parentElement!==t||le)&&(s==null?t.appendChild(le):t.insertBefore(le,s))}))}function ft(e,t){return[...e.querySelectorAll(".color-swatch:not(.dragging)")].reduce((l,s)=>{let a=s.getBoundingClientRect(),d=t-(a.left+a.width/2);return d<0&&d>l.offset?{offset:d,element:s}:l},{offset:Number.NEGATIVE_INFINITY}).element}function gt(){let e=document.getElementById("multi-color-palette");if(!e||e.children.length>0)return;["r","b","y","g","p","o","c","*","@"].forEach(n=>{e.appendChild(Le(n,!0))}),He("multi-static-list"),He("multi-cycling-list")}window.openMultiColorModal=function(e){se=e;let t=document.getElementById("multi-color-modal");if(!t)return;gt();let n=document.getElementById("multi-static-list"),l=document.getElementById("multi-cycling-list");n.innerHTML="",l.innerHTML="";let s=e.staticColors||"";for(let d of s)n.appendChild(Le(d,!1));let a=e.cyclingColors||"";for(let d of a)l.appendChild(Le(d,!1));t.showModal()};document.getElementById("btn-multi-cancel")?.addEventListener("click",()=>{document.getElementById("multi-color-modal").close()});document.getElementById("btn-multi-save")?.addEventListener("click",()=>{if(se){ge();let e=[...document.getElementById("multi-static-list").children].map(d=>d.dataset.color).join(""),t=[...document.getElementById("multi-cycling-list").children].map(d=>d.dataset.color).join("");se.staticColors=e,se.cyclingColors=t;let n=se.staticColors,l=se.cyclingColors,s=n.length>0?n[0]:l.length>0?l[0]:"*";se.topColor=s+s;let a="*";n.length>1?a=n[1]:n.length===1&&l.length>0?a=l[0]:l.length>1?a=l[1]:l.length===1&&(a=l[0]),se.botColor=a+a,H()}document.getElementById("multi-color-modal").close()});function pt(){window.addEventListener("mouseup",()=>{ye=!1,P=null,A()}),fe.addEventListener("contextmenu",o=>o.preventDefault()),window.addEventListener("keydown",o=>{(o.ctrlKey||o.metaKey)&&o.key.toLowerCase()==="z"&&(o.preventDefault(),o.shiftKey?Ae():We()),(o.ctrlKey||o.metaKey)&&o.key.toLowerCase()==="y"&&(o.preventDefault(),Ae())}),document.querySelectorAll("[data-tool]").forEach(o=>{o.addEventListener("click",r=>{document.querySelectorAll("[data-tool]").forEach(i=>i.classList.remove("active")),r.target.classList.add("active"),K=r.target.dataset.tool})}),document.querySelectorAll(".swatch").forEach(o=>{o.addEventListener("click",r=>{document.querySelectorAll(".swatch").forEach(i=>i.classList.remove("active")),r.target.classList.add("active"),$e=r.target.dataset.color}),o.addEventListener("contextmenu",r=>{r.preventDefault(),document.querySelectorAll(".swatch").forEach(i=>{i.classList.remove("active-bot"),i.style.outline=""}),r.target.classList.add("active-bot"),r.target.style.outline="2px dashed #ffffff",r.target.style.outlineOffset="-4px",Xe=r.target.dataset.color})}),document.getElementById("btn-undo").addEventListener("click",We),document.getElementById("btn-redo").addEventListener("click",Ae);let e=document.getElementById("test-win-modal");e&&e.addEventListener("close",X);let t=document.getElementById("btn-test-win-close");t&&t.addEventListener("click",()=>{e&&e.close()});let n=document.getElementById("objective-input");if(n){n.addEventListener("input",r=>{if(q){let i=w[v];i.interlude||(i.interlude={}),i.interlude.tutorial||(i.interlude.tutorial={}),i.interlude.tutorial.objectiveString=r.target.value}else w[v].objectiveString=r.target.value;A()});let o=document.getElementById("target-moves-input");o&&o.addEventListener("input",r=>{let i=w[v];q?(i.interlude||(i.interlude={}),i.interlude.tutorial||(i.interlude.tutorial={}),i.interlude.tutorial.targetMoves=parseInt(r.target.value,10)||0):i.targetMoves=parseInt(r.target.value,10)||0,A()}),Be(),document.getElementById("btn-edit-interlude").addEventListener("click",()=>{X(),A(),q||(q=!0,z(v)),he(),document.getElementById("interlude-modal").showModal()}),document.getElementById("btn-interlude-cancel").addEventListener("click",()=>{document.getElementById("interlude-modal").close()}),document.getElementById("btn-tutorial-clear").addEventListener("click",()=>{w[v].interlude&&delete w[v].interlude.tutorial,he(),Y()}),document.getElementById("btn-tutorial-preview").addEventListener("click",()=>{w[v].interlude||(w[v].interlude={}),w[v].interlude.title=document.getElementById("interlude-title").value.trim(),w[v].interlude.text=document.getElementById("interlude-text").value.trim(),w[v].interlude.image=document.getElementById("interlude-image").value.trim(),document.getElementById("interlude-modal").close(),A(),q||(q=!0),F&&(F=!1,document.getElementById("layer-initial").classList.add("active"),document.getElementById("layer-objective").classList.remove("active"),document.getElementById("btn-copy-layer").innerText="Copy to Objective"),z(v),Z=!0,document.getElementById("tutorial-playback-hud").style.display="flex",document.getElementById("sidebar").style.pointerEvents="none",document.getElementById("sidebar").style.opacity="0.5",document.getElementById("topbar").style.pointerEvents="none",document.getElementById("topbar").style.opacity="0.5",ut()}),document.getElementById("btn-tutorial-stop-playback").addEventListener("click",()=>{Z=!1,ie++,G&&(G.style.opacity="0"),document.getElementById("tutorial-playback-hud").style.display="none",document.getElementById("sidebar").style.pointerEvents="auto",document.getElementById("sidebar").style.opacity="1",document.getElementById("topbar").style.pointerEvents="auto",document.getElementById("topbar").style.opacity="1",z(v),he(),document.getElementById("interlude-modal").showModal()}),document.getElementById("btn-record-tutorial").addEventListener("click",()=>{w[v].interlude||(w[v].interlude={}),w[v].interlude.title=document.getElementById("interlude-title").value.trim(),w[v].interlude.text=document.getElementById("interlude-text").value.trim(),w[v].interlude.image=document.getElementById("interlude-image").value.trim(),document.getElementById("interlude-modal").close(),A(),q||(q=!0),F&&(F=!1,document.getElementById("layer-initial").classList.add("active"),document.getElementById("layer-objective").classList.remove("active"),document.getElementById("btn-copy-layer").innerText="Copy to Objective"),z(v),Q=!0,Te=[];let r=Ue(),i=w[v].interlude.tutorial||{};Ee=JSON.parse(JSON.stringify(i)),Ee.map=r.map,Ee.staticMap=r.staticMap,document.getElementById("tutorial-record-hud").style.display="flex",document.getElementById("tutorial-record-steps").innerText="0",document.getElementById("sidebar").style.pointerEvents="none",document.getElementById("sidebar").style.opacity="0.5",document.getElementById("topbar").style.pointerEvents="none",document.getElementById("topbar").style.opacity="0.5";let g=document.querySelector('[data-tool="flip"]');g&&g.click()}),document.getElementById("btn-tutorial-stop").addEventListener("click",()=>{Q=!1,document.getElementById("tutorial-record-hud").style.display="none",document.getElementById("sidebar").style.pointerEvents="auto",document.getElementById("sidebar").style.opacity="1",document.getElementById("topbar").style.pointerEvents="auto",document.getElementById("topbar").style.opacity="1",Ee.steps=Te,w[v].interlude||(w[v].interlude={}),w[v].interlude.tutorial=Ee,z(v),he(),Y(),document.getElementById("interlude-modal").showModal()}),document.getElementById("btn-tutorial-cancel").addEventListener("click",()=>{Q=!1,document.getElementById("tutorial-record-hud").style.display="none",document.getElementById("sidebar").style.pointerEvents="auto",document.getElementById("sidebar").style.opacity="1",document.getElementById("topbar").style.pointerEvents="auto",document.getElementById("topbar").style.opacity="1",z(v),he(),document.getElementById("interlude-modal").showModal()}),document.getElementById("btn-interlude-clear").addEventListener("click",()=>{document.getElementById("interlude-title").value="",document.getElementById("interlude-text").value="",document.getElementById("interlude-image").value="",w[v].interlude&&delete w[v].interlude,A(),he(),Y(),document.getElementById("interlude-modal").close()}),document.getElementById("btn-interlude-save").addEventListener("click",()=>{let r=document.getElementById("interlude-title").value.trim(),i=document.getElementById("interlude-text").value.trim(),g=document.getElementById("interlude-image").value.trim(),p=w[v].interlude?.tutorial;r||i||g||p?w[v].interlude={...r&&{title:r},...i&&{text:i},...g&&{image:g},...p&&{tutorial:p}}:delete w[v].interlude,A(),Be(),Y(),document.getElementById("interlude-modal").close()})}let l=document.getElementById("btn-clean-level");l&&l.addEventListener("click",()=>{if(X(),!confirm("Are you sure you want to completely clean this level (both initial and objective maps)?"))return;ge();let o=w[v];q&&(o.interlude||(o.interlude={}),o.interlude.tutorial||(o.interlude.tutorial={map:[],staticMap:[]}),o=o.interlude.tutorial),o.map=[],o.staticMap=[],delete o.initial,delete o.walls,delete o.zones,delete o.frozen,delete o.colorGates,R.clear(),S.clear(),N.clear(),j.clear(),o.objective&&(o.objective.map=[],delete o.objective.pieces),z(v)}),document.getElementById("btn-clear-board").addEventListener("click",()=>{X(),confirm("Are you sure you want to clear the entire board?")&&(ge(),B.clear(),R.clear(),S.clear(),N.clear(),j.clear(),A(),H())}),document.getElementById("layer-initial").addEventListener("click",o=>{V||(A(),F=!1,o.target.classList.add("active"),document.getElementById("layer-objective").classList.remove("active"),document.getElementById("btn-copy-layer").innerText="Copy to Objective",z(v))}),document.getElementById("layer-objective").addEventListener("click",o=>{X(),A(),F=!0,o.target.classList.add("active"),document.getElementById("layer-initial").classList.remove("active"),document.getElementById("btn-copy-layer").innerText="Copy to Initial",z(v)}),document.getElementById("btn-add").addEventListener("click",()=>{X(),A(),q=!1;let o={objectiveString:"Match the target pattern.",staticMap:[],map:[],objective:{type:"match_map",map:[]}};w.splice(v+1,0,o),Y(),z(v+1)});let s=document.getElementById("btn-duplicate");s&&s.addEventListener("click",()=>{X(),A(),q=!1;let o=JSON.parse(JSON.stringify(w[v]));delete o.interlude,w.splice(v+1,0,o),Y(),z(v+1)}),document.getElementById("btn-delete").addEventListener("click",()=>{if(X(),q){delete w[v].interlude,q=!1,A(),Be(),Y(),z(v);return}if(w.length<=1)return alert("Cannot delete the last level.");q=!1,w.splice(v,1),v>=w.length&&(v=w.length-1),Y(),z(v)}),document.getElementById("btn-copy-layer").addEventListener("click",()=>{X(),A();let o=F?"objective-to-initial":"initial-to-objective",r=w[v];q&&(r.interlude||(r.interlude={}),r.interlude.tutorial||(r.interlude.tutorial={map:[],staticMap:[]}),r=r.interlude.tutorial),it(r,o,!0),z(v)});let a=document.getElementById("btn-test-mode"),d=document.getElementById("test-steps");a&&a.addEventListener("click",()=>{if(V)X();else{A(),F&&(F=!1,document.getElementById("layer-initial").classList.add("active"),document.getElementById("layer-objective").classList.remove("active"),document.getElementById("btn-copy-layer").innerText="Copy to Objective",z(v)),V=!0,a.innerText="Test Mode: ON",a.style.backgroundColor="#9b59b6",a.style.color="#fff",xe=0,d.style.display="inline",d.innerText=`Steps: ${xe}`;let o=document.querySelector('[data-tool="flip"]');o&&o.click()}}),document.getElementById("btn-shuffle").addEventListener("click",async()=>{if(je)return;if(X(),je=!0,ge(),await Ge(B,R,{flips:5,onFlip:async(r,i)=>{r.highlight=!0,i.highlight=!0,H(),await new Promise(g=>setTimeout(g,600)),r.highlight=!1,i.highlight=!1}}),!F){oe+=5;let r=w[v];q?(r.interlude||(r.interlude={}),r.interlude.tutorial||(r.interlude.tutorial={}),r.interlude.tutorial.targetMoves=oe):r.targetMoves=oe;let i=document.getElementById("target-moves-input");i&&(i.value=oe)}A(),H(),je=!1}),document.getElementById("btn-export").addEventListener("click",()=>{X(),A();let o=JSON.stringify(w,null,2),r=new Blob([o],{type:"application/json"}),i=URL.createObjectURL(r),g=Object.assign(document.createElement("a"),{href:i,download:"levels.json"});document.body.appendChild(g).click(),document.body.removeChild(g),URL.revokeObjectURL(i)}),document.getElementById("btn-generate-n").addEventListener("click",async()=>{X();let o=document.getElementById("btn-generate-n"),r=parseInt(document.getElementById("gen-n-input").value)||1;if(confirm(`Generate ${r} new levels? This will append them to your current list.`)){o.disabled=!0,o.innerText="Generating...",A();for(let i=0;i<r;i++){let g=w.length+1;B.clear(),R.clear(),N.clear(),j.clear();let p=Math.min(we,ot),m=Math.min(1+Math.floor(g/5),p),b=["rr","bb","yy","gg","pp","oo","cc"].sort(()=>Math.random()-.5),h=Math.min(2+Math.floor(g/4),b.length),f=b.slice(0,h),u="",c=Math.floor(Math.random()*6);if(c===0){u="Surround the center with matching colored rings.";for(let y=-m;y<=m;y++){let C=Math.max(-m,-y-m),$=Math.min(m,-y+m);for(let x=C;x<=$;x++){let M=(Math.abs(x)+Math.abs(x+y)+Math.abs(y))/2,I="**";if(M===0)I="T"+f[0][0];else if(M<=m){let T=f[M%f.length],L=T;g>=4&&Math.random()>.6&&(L=f[(M+1)%f.length]),I=T[0]+L[0]}M>1&&Math.random()<.1&&(I="@@"),B.set(`${x},${y}`,J(x,y,I))}}}else if(c===1){u="Form parallel stripes of color.";for(let y=-m;y<=m;y++){let C=Math.max(-m,-y-m),$=Math.min(m,-y+m),x=f[(y+m)%f.length];for(let M=C;M<=$;M++){let I=x;g>=5&&Math.random()>.7&&(I=x[0]+f[0][0]),M===0&&y===0&&(I="T"+x[0]),B.set(`${M},${y}`,J(M,y,I))}}}else if(c===2){u="Group the matching colors into clusters.";for(let y=-m;y<=m;y++){let C=Math.max(-m,-y-m),$=Math.min(m,-y+m);for(let x=C;x<=$;x++){let M="**";x>0?M=f[0]:x<0?M=f[1%f.length]:M=f[2%f.length],x===Math.floor(m/2)&&y===0&&(M="T"+f[0][0]),x===-Math.floor(m/2)&&y===0&&(M="T"+f[1%f.length][0]),B.set(`${x},${y}`,J(x,y,M))}}}else if(c===3){u="Connect the matching endpoints with a path.",m=Math.max(m,2);let y=f[0];for(let C=-m;C<=m;C++){let $=Math.max(-m,-C-m),x=Math.min(m,-C+m);for(let M=$;M<=x;M++){let I=f[1%f.length];if(M===0)C===-m?I=y[0]+y[0]+"4":C===m?I=y[0]+y[0]+"1":I=y[0]+(g>=6?f[1][0]:y[0])+"s1";else{let T=(Math.abs(M)+Math.abs(M+C)+Math.abs(C))/2;I=f[(T+1)%f.length]}B.set(`${M},${C}`,J(M,C,I))}}}else if(c===4){u="Circle the target with a continuous colored path.",m=Math.max(m,1);let y=f[0],C=f[1%f.length],$={"0,-1":"4","1,-1":"5","1,0":"0","0,1":"1","-1,1":"2","-1,0":"3"};for(let x=-m;x<=m;x++){let M=Math.max(-m,-x-m),I=Math.min(m,-x+m);for(let T=M;T<=I;T++){let L=(Math.abs(T)+Math.abs(T+x)+Math.abs(x))/2,O=C;if(L===0)O="T"+C[0];else if(L===1){let k=`${T},${x}`,W=$[k]||"0";O=y[0]+(g>=5?C[0]:y[0])+"a"+W}else L>1&&(O=f[L%f.length]);B.set(`${T},${x}`,J(T,x,O))}}}else if(c===5){u="Match the inner tiles to unfreeze the outer tiles.",m=Math.max(m,2);let y=f[0],C=f[1%f.length];for(let $=-m;$<=m;$++){let x=Math.max(-m,-$-m),M=Math.min(m,-$+m);for(let I=x;I<=M;I++){let T=(Math.abs(I)+Math.abs(I+$)+Math.abs($))/2,O=J(I,$,"**");T<=1?(O=J(I,$,"T"+y[0]),N.set(`${I},${$}`,1)):T<=m&&(O=J(I,$,"T"+C[0]),N.set(`${I},${$}`,2)),T>1&&Math.random()<.1&&(O.isBlocked=!0),B.set(`${I},${$}`,O)}}}w.push({objectiveString:u,staticMap:[],map:[],objective:{type:"match_map",map:[]}}),v=w.length-1,F=!0,A();let E=[[-1,0],[0,-1],[1,-1],[1,0],[0,1],[-1,1]];if(g>=3){let y=Math.floor(g/2),C=Array.from(B.keys());for(let $=0;$<y;$++){let x=C[Math.floor(Math.random()*C.length)],M=Math.floor(Math.random()*6),I=B.get(x),T=`${I.q+E[M][0]},${I.r+E[M][1]}`;B.has(T)&&R.add(x<T?`${x}|${T}`:`${T}|${x}`)}}Ge(),A()}Y(),z(w.length-1),o.disabled=!1,o.innerText="Generate Levels"}})}function Re(){A(),H()}var be=null,ue=[];function mt(e){let t=new Map;if(e.staticMap&&e.staticMap.length>0){let u=Math.floor(e.staticMap.length/2);for(let c=0;c<e.staticMap.length;c++){let E=c-u,y=e.staticMap[c].trim().split(/\s+/).filter(x=>x.length>0),C=y.length;if(C===0)continue;let $=Math.floor(-E/2-(C-1)/2);for(let x=0;x<C;x++){let M=$+x,I=y[x];if(I.includes("@@"))t.set(`${M},${E}`,"#272727");else{let T=I.match(/T([a-zA-Z*])/);T&&T[1]!=="*"&&t.set(`${M},${E}`,ce[T[1]]||"#444")}}}}let n=e.objective&&e.objective.map?e.objective.map:e.map||[];if(n.length>0){let u=Math.floor(n.length/2);for(let c=0;c<n.length;c++){let E=c-u,y=n[c].trim().split(/\s+/).filter(x=>x.length>0),C=y.length;if(C===0)continue;let $=Math.floor(-E/2-(C-1)/2);for(let x=0;x<C;x++){let M=$+x,I=y[x];/^\*+$/.test(I)||(I.startsWith("@@")?t.set(`${M},${E}`,"#272727"):I.startsWith("T")?t.set(`${M},${E}`,ce[I[1]]||"#444"):I.startsWith("**")?t.has(`${M},${E}`)||t.set(`${M},${E}`,"#838383"):t.set(`${M},${E}`,ce[I[0]]||"#444"))}}}if(t.size===0)return'<svg viewBox="0 0 100 100"></svg>';let l=1/0,s=-1/0,a=1/0,d=-1/0,o=10,r=Math.sqrt(3)*o,i=2*o,g=[];t.forEach((u,c)=>{let[E,y]=c.split(",").map(Number),C=r*(E+y/2),$=i*.75*y;l=Math.min(l,C-r),s=Math.max(s,C+r),a=Math.min(a,$-i),d=Math.max(d,$+i),g.push({cx:C,cy:$,fill:u})});let p=10,m=s-l+p*2,b=d-a+p*2,h=`<svg viewBox="${l-p} ${a-p} ${m} ${b}" style="width: 100%; height: 100%; display: block;">`,f=Array.from({length:6},(u,c)=>`${Math.sin(c*Math.PI/3)*o},${Math.cos(c*Math.PI/3)*o}`).join(" ");for(let u of g)h+=`<polygon points="${f}" transform="translate(${u.cx}, ${u.cy})" fill="${u.fill}" stroke="#111" stroke-width="1"/>`;return h+"</svg>"}function ht(e){be=this,e.dataTransfer.effectAllowed="move",e.dataTransfer.setData("text/plain",this.dataset.id),this.classList.add("dragging")}function yt(e){return e.preventDefault&&e.preventDefault(),e.dataTransfer.dropEffect="move",!1}function bt(e){this!==be&&this.classList.add("drag-over")}function vt(e){this.classList.remove("drag-over")}function Et(e){if(e.stopPropagation&&e.stopPropagation(),be!==this){let t=this.parentNode,n=Array.from(t.querySelectorAll(".reorder-item")),l=n.indexOf(be),s=n.indexOf(this);l<s?this.parentNode.insertBefore(be,this.nextSibling):this.parentNode.insertBefore(be,this),t.id==="level-list-panel"&&It(t)}return!1}function xt(e){this.classList.remove("dragging"),document.querySelectorAll(".reorder-item").forEach(t=>t.classList.remove("drag-over"))}function It(e){if(!e)return!1;let t=Array.from(e.querySelectorAll(".reorder-item"));for(let a=0;a<t.length;a++)if(t[a].dataset.type==="interlude"){if(a===t.length-1)return alert("An interlude cannot be the last element."),e.id==="level-list-panel"&&Y(),!1;if(t[a+1].dataset.type==="interlude")return alert("Cannot place two interludes consecutively."),e.id==="level-list-panel"&&Y(),!1}let n=w[v],l=[],s=null;return t.forEach(a=>{let d=parseInt(a.dataset.id,10),o=ue.find(r=>r.id===d);if(o.type==="interlude")s=o.data;else{let r=o.originalObj;s?(r.interlude=s,s=null):delete r.interlude,l.push(r)}}),w.splice(0,w.length,...l),v=w.indexOf(n),v===-1&&(v=0),Y(),z(v),!0}at();
+            `;
+    }
+    div.addEventListener("click", (e) => {
+      disableTestMode();
+      saveCurrentToData();
+      const allItems = Array.from(levelListPanel.querySelectorAll(".reorder-item"));
+      if (e.shiftKey && lastSelectedReorderItem) {
+        const currentIndex = allItems.indexOf(div);
+        const lastIndex = allItems.indexOf(lastSelectedReorderItem);
+        const min = Math.min(currentIndex, lastIndex);
+        const max = Math.max(currentIndex, lastIndex);
+        selectedReorderItems.clear();
+        for (let i = min; i <= max; i++) {
+          selectedReorderItems.add(allItems[i]);
+        }
+      } else if (e.ctrlKey || e.metaKey) {
+        if (selectedReorderItems.has(div)) {
+          selectedReorderItems.delete(div);
+        } else {
+          selectedReorderItems.add(div);
+        }
+        lastSelectedReorderItem = div;
+      } else {
+        selectedReorderItems.clear();
+        selectedReorderItems.add(div);
+        lastSelectedReorderItem = div;
+      }
+      allItems.forEach((el) => el.classList.remove("selected"));
+      selectedReorderItems.forEach((el) => el.classList.add("selected"));
+      editingInterlude = item.type === "interlude";
+      loadLevel(item.originalIndex);
+      if (item.type === "interlude") {
+        const btnInterlude = document.getElementById("btn-edit-interlude");
+        if (btnInterlude)
+          btnInterlude.click();
+      }
+    });
+    div.addEventListener("dragstart", handleDragStart);
+    div.addEventListener("dragover", handleDragOver);
+    div.addEventListener("drop", handleDrop);
+    div.addEventListener("dragenter", handleDragEnter);
+    div.addEventListener("dragleave", handleDragLeave);
+    div.addEventListener("dragend", handleDragEnd);
+    levelListPanel.appendChild(div);
+  });
+  updateLevelListActiveState();
+}
+function parseTile(q, r, typeStr) {
+  const tile = { q, r, staticColors: "", cyclingColors: "", colorIndex: 0, topColor: "**", botColor: "**", isTarget: false, isBlocked: false, path: "", edges: [] };
+  if (!typeStr)
+    return tile;
+  if (typeStr.startsWith("@@")) {
+    tile.isBlocked = true;
+    return tile;
+  }
+  if (/^\*+$/.test(typeStr)) {
+    return tile;
+  }
+  if (typeStr.startsWith("T")) {
+    tile.isTarget = true;
+    tile.staticColors = typeStr[1];
+    tile.topColor = typeStr[1] + typeStr[1];
+    tile.botColor = tile.topColor;
+    tile.path = typeStr.substring(2).replace(/\*+$/, "");
+  } else if (typeStr.startsWith("**")) {
+    tile.topColor = "**";
+    tile.botColor = "**";
+    tile.path = typeStr.substring(2).replace(/\*+$/, "");
+  } else if (typeStr.startsWith("[")) {
+    let closeIdx = typeStr.indexOf("]");
+    if (closeIdx !== -1) {
+      let colorsPart = typeStr.substring(1, closeIdx);
+      let dashIdx = colorsPart.indexOf("-");
+      if (dashIdx !== -1) {
+        tile.staticColors = colorsPart.substring(0, dashIdx);
+        tile.cyclingColors = colorsPart.substring(dashIdx + 1);
+      } else {
+        tile.staticColors = "";
+        tile.cyclingColors = colorsPart;
+      }
+      tile.path = typeStr.substring(closeIdx + 1).replace(/\*+$/, "");
+    }
+  } else {
+    tile.staticColors = "";
+    tile.cyclingColors = typeStr.substring(0, Math.min(2, typeStr.length));
+    if (tile.cyclingColors.length === 1)
+      tile.cyclingColors += tile.cyclingColors;
+    tile.path = typeStr.substring(tile.cyclingColors.length).replace(/\*+$/, "");
+  }
+  let firstColor = tile.staticColors.length > 0 ? tile.staticColors[0] : tile.cyclingColors.length > 0 ? tile.cyclingColors[0] : "*";
+  tile.topColor = firstColor + firstColor;
+  let nextColor = "*";
+  if (tile.staticColors.length > 1)
+    nextColor = tile.staticColors[1];
+  else if (tile.staticColors.length === 1 && tile.cyclingColors.length > 0)
+    nextColor = tile.cyclingColors[0];
+  else if (tile.cyclingColors.length > 1)
+    nextColor = tile.cyclingColors[1];
+  else if (tile.cyclingColors.length === 1)
+    nextColor = tile.cyclingColors[0];
+  tile.botColor = nextColor + nextColor;
+  if (tile.path) {
+    const lastChar = tile.path[tile.path.length - 1];
+    let pathType = null;
+    let rot = 0;
+    if (/[0-5]/.test(lastChar)) {
+      rot = parseInt(lastChar, 10);
+      pathType = tile.path.length > 1 ? tile.path[0] : "0";
+      if (pathType === "*" || /[0-5]/.test(pathType))
+        pathType = "0";
+    } else {
+      pathType = tile.path[0];
+    }
+    if (pathType) {
+      tile.edges = pathTypeAndRotationToEdges(pathType, rot);
+    } else {
+      tile.edges = [];
+    }
+  }
+  return tile;
+}
+function encodeTile(tile) {
+  if (tile.isBlocked)
+    return "@@";
+  let pStr = tile.path || "";
+  if (tile.isTarget) {
+    return "T" + (tile.staticColors || tile.topColor[0] || "*") + pStr;
+  }
+  let sc = tile.staticColors !== void 0 ? tile.staticColors : "";
+  let cc = tile.cyclingColors !== void 0 ? tile.cyclingColors : (tile.topColor[0] || "*") + (tile.botColor[0] || "*");
+  if (sc === "" && cc.length <= 2) {
+    let cStr = cc.padEnd(2, cc[0] || "*");
+    if (cStr === "**" && !pStr)
+      return "**";
+    return cStr + pStr;
+  }
+  return `[${sc}-${cc}]${pStr}`;
+}
+function parseStaticTile(q, r, s) {
+  if (!s || s === "*" || s.startsWith("**"))
+    return null;
+  let tile = { q, r, isBlocked: false, isTarget: false, topColor: "**", botColor: "**", path: "", edges: [], freeze: 0 };
+  let hasData = false;
+  if (s.includes("@@")) {
+    tile.isBlocked = true;
+    hasData = true;
+  }
+  let matchT = s.match(/T([a-zA-Z*])/);
+  if (matchT) {
+    tile.isTarget = true;
+    tile.topColor = matchT[1] + matchT[1];
+    tile.botColor = tile.topColor;
+    hasData = true;
+  }
+  let matchE = s.match(/E([a-zA-Z*])?([1-6])/);
+  if (matchE) {
+    let c = matchE[1] || "*";
+    let dir = parseInt(matchE[2], 10) - 1;
+    tile.topColor = c + c;
+    tile.botColor = c + c;
+    tile.path = "0" + dir;
+    tile.edges = [dir];
+    hasData = true;
+  }
+  return hasData ? tile : null;
+}
+function updateInterludeButton() {
+  const btn = document.getElementById("btn-edit-interlude");
+  if (!btn)
+    return;
+  const interlude = levels[currentLevelIdx]?.interlude;
+  if (interlude && (interlude.title || interlude.text || interlude.image || interlude.tutorial)) {
+    btn.innerHTML = editingInterlude ? "Edit Interlude Data" : "Edit Interlude";
+    btn.style.borderColor = "#f1c40f";
+    btn.style.color = "#f1c40f";
+  } else {
+    btn.innerHTML = editingInterlude ? "Edit Interlude Data" : "Add Interlude";
+    btn.style.borderColor = "#555";
+    btn.style.color = "#aaa";
+  }
+  if (editingInterlude) {
+    btn.style.backgroundColor = "#2c3e50";
+  } else {
+    btn.style.backgroundColor = "#333";
+  }
+}
+function loadLevel(idx) {
+  currentLevelIdx = idx;
+  grid.clear();
+  walls.clear();
+  colorGates.clear();
+  zoneMask.clear();
+  freezeMask.clear();
+  undoStack = [];
+  redoStack = [];
+  const baseLvl = levels[idx];
+  let lvl = baseLvl;
+  if (editingInterlude) {
+    if (!baseLvl.interlude)
+      baseLvl.interlude = {};
+    if (!baseLvl.interlude.tutorial)
+      baseLvl.interlude.tutorial = { map: [], staticMap: [] };
+    lvl = baseLvl.interlude.tutorial;
+  }
+  let staticGrid = /* @__PURE__ */ new Map();
+  if (lvl.staticMap && lvl.staticMap.length > 0) {
+    let halfRows = Math.floor(lvl.staticMap.length / 2);
+    for (let i = 0; i < lvl.staticMap.length; i++) {
+      let r = i - halfRows;
+      const rowTiles = lvl.staticMap[i].trim().split(/\s+/).filter((t) => t.length > 0);
+      const N = rowTiles.length;
+      if (N === 0)
+        continue;
+      let qStart = Math.floor(-r / 2 - (N - 1) / 2);
+      for (let j = 0; j < N; j++) {
+        let q = qStart + j;
+        let s = rowTiles[j];
+        let matchZ = s.match(/Z(\d+)/);
+        if (matchZ)
+          zoneMask.set(`${q},${r}`, parseInt(matchZ[1], 10));
+        let matchF = s.match(/F(\d+)/);
+        if (matchF)
+          freezeMask.set(`${q},${r}`, parseInt(matchF[1], 10));
+        let matchW = s.match(/W([1-6]+)/);
+        if (matchW) {
+          let dirs = matchW[1].split("").map(Number);
+          dirs.forEach((d) => {
+            let edge = d - 1;
+            const neighbors = [[-1, 0], [0, -1], [1, -1], [1, 0], [0, 1], [-1, 1]];
+            let nq = q + neighbors[edge][0];
+            let nr = r + neighbors[edge][1];
+            let k1 = `${q},${r}`;
+            let k2 = `${nq},${nr}`;
+            let wallKey = k1 < k2 ? `${k1}|${k2}` : `${k2}|${k1}`;
+            walls.add(wallKey);
+          });
+        }
+        let matchC = [...s.matchAll(/C([a-zA-Z]+)([1-6]+)/g)];
+        if (matchC.length > 0) {
+          matchC.forEach((m) => {
+            let colors = m[1];
+            let dirs = m[2].split("").map(Number);
+            dirs.forEach((d) => {
+              let edge = d - 1;
+              const neighbors = [[-1, 0], [0, -1], [1, -1], [1, 0], [0, 1], [-1, 1]];
+              let nq = q + neighbors[edge][0];
+              let nr = r + neighbors[edge][1];
+              let k1 = `${q},${r}`;
+              let k2 = `${nq},${nr}`;
+              let wallKey = k1 < k2 ? `${k1}|${k2}` : `${k2}|${k1}`;
+              colorGates.set(wallKey, colors);
+            });
+          });
+        }
+        let tileStr = s.replace(/Z\d+/g, "").replace(/F\d+/g, "").replace(/W[1-6]+/g, "").replace(/C[a-zA-Z]+[1-6]+/g, "").replace(/E[a-zA-Z*]?[1-6]/g, "");
+        let t = parseStaticTile(q, r, tileStr);
+        if (!t)
+          t = parseTile(q, r, "**");
+        if (t)
+          staticGrid.set(`${q},${r}`, t);
+      }
+    }
+  } else {
+    const zones = lvl.zones || {};
+    const frozen = lvl.frozen || {};
+    const lvlWalls = lvl.walls || [];
+    const lvlColorGates = lvl.colorGates || {};
+    for (const [k, v] of Object.entries(zones))
+      zoneMask.set(k, v);
+    for (const [k, v] of Object.entries(frozen))
+      freezeMask.set(k, v);
+    lvlWalls.forEach((w) => walls.add(w));
+    for (const [k, v] of Object.entries(lvlColorGates))
+      colorGates.set(k, v);
+  }
+  let movablesMap = editingObjective && lvl.objective ? lvl.objective.map || [] : lvl.map || [];
+  if (editingObjective && lvl.objective && lvl.objective.pieces) {
+    lvl.objective.pieces.forEach((p) => {
+      let parsed = parseTile(p.q, p.r, p.type);
+      parsed.freeze = freezeMask.get(`${p.q},${p.r}`) || 0;
+      grid.set(`${p.q},${p.r}`, parsed);
+    });
+  } else if (!editingObjective && lvl.initial) {
+    lvl.initial.forEach((p) => {
+      let parsed = parseTile(p.q, p.r, p.type);
+      parsed.freeze = freezeMask.get(`${p.q},${p.r}`) || 0;
+      grid.set(`${p.q},${p.r}`, parsed);
+    });
+  } else if (movablesMap.length > 0) {
+    let halfRows = Math.floor(movablesMap.length / 2);
+    for (let i = 0; i < movablesMap.length; i++) {
+      let r = i - halfRows;
+      const rowTiles = movablesMap[i].trim().split(/\s+/).filter((t) => t.length > 0);
+      const N = rowTiles.length;
+      if (N === 0)
+        continue;
+      let qStart = Math.floor(-r / 2 - (N - 1) / 2);
+      for (let j = 0; j < N; j++) {
+        let q = qStart + j;
+        let type = rowTiles[j];
+        let parsed = parseTile(q, r, type);
+        parsed.freeze = freezeMask.get(`${q},${r}`) || 0;
+        if (lvl.staticMap) {
+          if (!/^\*+$/.test(type))
+            grid.set(`${q},${r}`, parsed);
+        } else {
+          grid.set(`${q},${r}`, parsed);
+        }
+      }
+    }
+  }
+  staticGrid.forEach((t, k) => {
+    if (!grid.has(k)) {
+      t.freeze = freezeMask.get(k) || 0;
+      grid.set(k, t);
+    }
+  });
+  render();
+  const objInput = document.getElementById("objective-input");
+  if (objInput) {
+    objInput.value = lvl.objectiveString || "";
+  }
+  const targetMovesInput = document.getElementById("target-moves-input");
+  if (targetMovesInput) {
+    targetMovesInput.value = lvl.targetMoves || 0;
+  }
+  const intTitle = document.getElementById("interlude-title");
+  const intText = document.getElementById("interlude-text");
+  const intImg = document.getElementById("interlude-image");
+  if (intTitle && intText && intImg) {
+    const interlude = levels[idx].interlude || {};
+    intTitle.value = interlude.title || "";
+    intText.value = interlude.text || "";
+    intImg.value = interlude.image || "";
+  }
+  updateInterludeButton();
+  updateLevelListActiveState();
+}
+function isTileMovable(tile) {
+  if (!tile)
+    return false;
+  if (tile.isBlocked)
+    return false;
+  if (tile.isTarget)
+    return false;
+  if ((isTestMode || isRecordingTutorial || isPlayingTutorial) && tile.freeze > 0) {
+    if (!isZoneComplete(tile.freeze))
+      return false;
+  }
+  if (tile.path && tile.path.length > 0) {
+    const lastChar = tile.path[tile.path.length - 1];
+    const pType = tile.path.length > 1 ? tile.path[0] : "0";
+    if (pType === "0" || pType >= "0" && pType <= "5")
+      return false;
+  }
+  let lvl = levels[currentLevelIdx];
+  if (editingInterlude && lvl.interlude && lvl.interlude.tutorial) {
+    lvl = lvl.interlude.tutorial;
+  }
+  if (lvl && lvl.objective && lvl.objective.type === "path_connect" && Array.isArray(lvl.objective.targets)) {
+    const targetMatch = lvl.objective.targets.some((t) => t.q === tile.q && t.r === tile.r);
+    if (targetMatch)
+      return false;
+  }
+  return true;
+}
+function isZoneComplete(zoneId) {
+  let lvl = levels[currentLevelIdx];
+  if (editingInterlude && lvl.interlude && lvl.interlude.tutorial) {
+    lvl = lvl.interlude.tutorial;
+  }
+  if (!lvl || !lvl.objective || !lvl.objective.map)
+    return false;
+  const objMap = lvl.objective.map;
+  let halfRows = Math.floor(objMap.length / 2);
+  for (let i = 0; i < objMap.length; i++) {
+    let r = i - halfRows;
+    const rowTiles = objMap[i].trim().split(/\s+/).filter((t) => t.length > 0);
+    const N = rowTiles.length;
+    if (N === 0)
+      continue;
+    let qStart = Math.floor(-r / 2 - (N - 1) / 2);
+    for (let j = 0; j < N; j++) {
+      let q = qStart + j;
+      if (zoneMask.get(`${q},${r}`) !== zoneId)
+        continue;
+      let expectedType = rowTiles[j];
+      if (/^\*+$/.test(expectedType))
+        continue;
+      const tile = grid.get(`${q},${r}`);
+      if (!tile)
+        return false;
+      const currentType = encodeTile(tile);
+      const cleanExpected = expectedType.length > 2 ? expectedType.substring(0, 2) + expectedType.substring(2).replace(/\*+$/, "") : expectedType;
+      const cleanCurrent = currentType.length > 2 ? currentType.substring(0, 2) + currentType.substring(2).replace(/\*+$/, "") : currentType;
+      if (cleanExpected.startsWith("T") || cleanExpected === "@@") {
+        if (cleanCurrent[0] !== cleanExpected[0])
+          return false;
+      } else {
+        if (cleanExpected[0] !== cleanCurrent[0])
+          return false;
+        if (cleanExpected.length > 2) {
+          if (cleanExpected.substring(2) !== cleanCurrent.substring(2))
+            return false;
+        }
+      }
+    }
+  }
+  return true;
+}
+function getCurrentEditorColor(tile, offset = 0) {
+  if (tile.isBlocked || tile.isTarget) {
+    return tile.isTarget ? tile.staticColors || tile.topColor[0] || "*" : "*";
+  }
+  let sc = tile.staticColors || "";
+  let cc = tile.cyclingColors || "";
+  if (!sc && !cc) {
+    return tile.topColor ? tile.topColor[0] : "*";
+  }
+  let idx = (tile.colorIndex || 0) + offset;
+  if (idx < sc.length) {
+    return sc[idx];
+  } else {
+    let cIdx = idx - sc.length;
+    if (cc.length > 0) {
+      return cc[cIdx % cc.length];
+    } else {
+      return sc.length > 0 ? sc[sc.length - 1] : "*";
+    }
+  }
+}
+function checkTestModeWin() {
+  let lvl = levels[currentLevelIdx];
+  if (editingInterlude && lvl.interlude && lvl.interlude.tutorial) {
+    lvl = lvl.interlude.tutorial;
+  }
+  if (!lvl || !lvl.objective || !lvl.objective.map)
+    return false;
+  const objMap = lvl.objective.map;
+  let halfRows = Math.floor(objMap.length / 2);
+  for (let i = 0; i < objMap.length; i++) {
+    let r = i - halfRows;
+    const rowTiles = objMap[i].trim().split(/\s+/).filter((t) => t.length > 0);
+    const N = rowTiles.length;
+    if (N === 0)
+      continue;
+    let qStart = Math.floor(-r / 2 - (N - 1) / 2);
+    for (let j = 0; j < N; j++) {
+      let q = qStart + j;
+      let expectedType = rowTiles[j];
+      if (/^\*+$/.test(expectedType))
+        continue;
+      const tile = grid.get(`${q},${r}`);
+      if (!tile)
+        return false;
+      if (expectedType.startsWith("@@")) {
+        if (!tile.isBlocked)
+          return false;
+      } else if (expectedType.startsWith("T")) {
+        if (!tile.isTarget)
+          return false;
+        if (expectedType[1] !== getCurrentEditorColor(tile))
+          return false;
+      } else if (expectedType.startsWith("**")) {
+        if (tile.isTarget || tile.isBlocked)
+          return false;
+      } else {
+        if (tile.isBlocked || tile.isTarget)
+          return false;
+        let expectedTop = expectedType[0];
+        if (expectedType.startsWith("[")) {
+          expectedTop = expectedType.substring(1).replace("-", "")[0] || "*";
+        }
+        if (expectedTop !== getCurrentEditorColor(tile))
+          return false;
+      }
+      let expectedPath = expectedType.replace(/^@@/, "").replace(/^\*\*/, "").replace(/^T./, "").replace(/^\[.*?\]/, "").replace(/^[a-z*]{2}/, "").replace(/\*+$/, "");
+      let currentPath = tile.path || "";
+      if (expectedPath !== currentPath)
+        return false;
+    }
+  }
+  return true;
+}
+function flipTwoTiles(tileA, tileB) {
+  if (!tileA || !tileB)
+    return false;
+  if (!isTileMovable(tileA) || !isTileMovable(tileB))
+    return false;
+  const edge = getAdjacentEdge(tileA.q, tileA.r, tileB.q, tileB.r);
+  if (edge === null)
+    return false;
+  let keyA = `${tileA.q},${tileA.r}`;
+  let keyB = `${tileB.q},${tileB.r}`;
+  let isBlocked = isBlockedEdge(tileA, tileB, walls);
+  if (tileA.freeze > 0 || tileB.freeze > 0)
+    isBlocked = true;
+  if (isRecordingTutorial) {
+    tutorialSteps.push([tileA.q, tileA.r, tileB.q, tileB.r, isBlocked]);
+    document.getElementById("tutorial-record-steps").innerText = tutorialSteps.length;
+  }
+  if (isBlocked)
+    return false;
+  const mod = (n, m) => (n % m + m) % m;
+  const reflectEdges = (edges, flipDir) => edges.map((e) => mod(2 * flipDir + 3 - e, 6));
+  const aReflected = reflectEdges(tileA.edges, edge);
+  const targetFlipDir = (edge + 3) % 6;
+  const bReflected = reflectEdges(tileB.edges, targetFlipDir);
+  const advanceColorIndex = (tile) => {
+    if (!tile.isBlocked && !tile.isTarget && tile.topColor !== "**") {
+      return (tile.colorIndex || 0) + 1;
+    }
+    return tile.colorIndex || 0;
+  };
+  const newIdxA = advanceColorIndex(tileA);
+  const newIdxB = advanceColorIndex(tileB);
+  const newTileA = {
+    ...tileA,
+    q: tileB.q,
+    r: tileB.r,
+    edges: aReflected,
+    path: combineEdgesToPath(aReflected),
+    colorIndex: newIdxA
+  };
+  newTileA.topColor = getCurrentEditorColor(newTileA, 0).repeat(2);
+  newTileA.botColor = getCurrentEditorColor(newTileA, 1).repeat(2);
+  const newTileB = {
+    ...tileB,
+    q: tileA.q,
+    r: tileA.r,
+    edges: bReflected,
+    path: combineEdgesToPath(bReflected),
+    colorIndex: newIdxB
+  };
+  newTileB.topColor = getCurrentEditorColor(newTileB, 0).repeat(2);
+  newTileB.botColor = getCurrentEditorColor(newTileB, 1).repeat(2);
+  grid.set(keyA, newTileB);
+  grid.set(keyB, newTileA);
+  if (!isTestMode && !isRecordingTutorial && !editingObjective) {
+    flipsSinceCopy++;
+    let targetLvl = levels[currentLevelIdx];
+    if (editingInterlude) {
+      if (!targetLvl.interlude)
+        targetLvl.interlude = {};
+      if (!targetLvl.interlude.tutorial)
+        targetLvl.interlude.tutorial = {};
+      targetLvl.interlude.tutorial.targetMoves = flipsSinceCopy;
+    } else {
+      targetLvl.targetMoves = flipsSinceCopy;
+    }
+    const targetMovesInput = document.getElementById("target-moves-input");
+    if (targetMovesInput)
+      targetMovesInput.value = flipsSinceCopy;
+  }
+  if (isTestMode) {
+    testSteps++;
+    const testStepsDisplay = document.getElementById("test-steps");
+    if (testStepsDisplay)
+      testStepsDisplay.innerText = `Steps: ${testSteps}`;
+    if (checkTestModeWin()) {
+      setTimeout(() => {
+        const winModal = document.getElementById("test-win-modal");
+        const stepsText = document.getElementById("test-win-steps");
+        if (stepsText)
+          stepsText.innerText = `You completed the level in ${testSteps} steps.`;
+        if (winModal)
+          winModal.showModal();
+      }, 300);
+    }
+  }
+  commitGridState();
+  return true;
+}
+function exportGridState() {
+  grid.forEach((t, k) => {
+    if (isOutOfBounds(t.q, t.r)) {
+      grid.delete(k);
+    }
+  });
+  walls.forEach((w) => {
+    const [k1, k2] = w.split("|");
+    const [q1, r1] = k1.split(",").map(Number);
+    const [q2, r2] = k2.split(",").map(Number);
+    if (isOutOfBounds(q1, r1) || isOutOfBounds(q2, r2)) {
+      walls.delete(w);
+    }
+  });
+  colorGates.forEach((colors, w) => {
+    const [k1, k2] = w.split("|");
+    const [q1, r1] = k1.split(",").map(Number);
+    const [q2, r2] = k2.split(",").map(Number);
+    if (isOutOfBounds(q1, r1) || isOutOfBounds(q2, r2)) {
+      colorGates.delete(w);
+    }
+  });
+  zoneMask.forEach((v, k) => {
+    const [q, r] = k.split(",").map(Number);
+    if (isOutOfBounds(q, r)) {
+      zoneMask.delete(k);
+    }
+  });
+  freezeMask.forEach((v, k) => {
+    const [q, r] = k.split(",").map(Number);
+    if (isOutOfBounds(q, r)) {
+      freezeMask.delete(k);
+    }
+  });
+  let allCoords = /* @__PURE__ */ new Set();
+  let unmovables = /* @__PURE__ */ new Map();
+  let movables = /* @__PURE__ */ new Map();
+  grid.forEach((t, k) => {
+    allCoords.add(k);
+    if (!isTileMovable(t)) {
+      unmovables.set(k, t);
+    } else {
+      movables.set(k, t);
+    }
+  });
+  walls.forEach((w) => {
+    w.split("|").forEach((k) => allCoords.add(k));
+  });
+  colorGates.forEach((colors, w) => {
+    w.split("|").forEach((k) => allCoords.add(k));
+  });
+  zoneMask.forEach((v, k) => allCoords.add(k));
+  freezeMask.forEach((v, k) => allCoords.add(k));
+  let tileWalls = /* @__PURE__ */ new Map();
+  walls.forEach((w) => {
+    const [k1, k2] = w.split("|");
+    const [q1, r1] = k1.split(",").map(Number);
+    const [q2, r2] = k2.split(",").map(Number);
+    let d = getAdjacentEdge(q1, r1, q2, r2);
+    let t1 = allCoords.has(k1);
+    let t2 = allCoords.has(k2);
+    if (t1 && t2) {
+      if (d < 3) {
+        if (!tileWalls.has(k1))
+          tileWalls.set(k1, []);
+        tileWalls.get(k1).push(d + 1);
+      } else {
+        if (!tileWalls.has(k2))
+          tileWalls.set(k2, []);
+        tileWalls.get(k2).push((d + 3) % 6 + 1);
+      }
+    } else if (t1) {
+      if (!tileWalls.has(k1))
+        tileWalls.set(k1, []);
+      tileWalls.get(k1).push(d + 1);
+    } else if (t2) {
+      let d2 = (d + 3) % 6;
+      if (!tileWalls.has(k2))
+        tileWalls.set(k2, []);
+      tileWalls.get(k2).push(d2 + 1);
+    }
+  });
+  let tileColorGates = /* @__PURE__ */ new Map();
+  colorGates.forEach((colors, w) => {
+    const [k1, k2] = w.split("|");
+    const [q1, r1] = k1.split(",").map(Number);
+    const [q2, r2] = k2.split(",").map(Number);
+    let d = getAdjacentEdge(q1, r1, q2, r2);
+    let t1 = allCoords.has(k1);
+    let t2 = allCoords.has(k2);
+    if (t1 && t2) {
+      if (d < 3) {
+        if (!tileColorGates.has(k1))
+          tileColorGates.set(k1, []);
+        tileColorGates.get(k1).push({ edge: d + 1, colors });
+      } else {
+        if (!tileColorGates.has(k2))
+          tileColorGates.set(k2, []);
+        tileColorGates.get(k2).push({ edge: (d + 3) % 6 + 1, colors });
+      }
+    } else if (t1) {
+      if (!tileColorGates.has(k1))
+        tileColorGates.set(k1, []);
+      tileColorGates.get(k1).push({ edge: d + 1, colors });
+    } else if (t2) {
+      let d2 = (d + 3) % 6;
+      if (!tileColorGates.has(k2))
+        tileColorGates.set(k2, []);
+      tileColorGates.get(k2).push({ edge: d2 + 1, colors });
+    }
+  });
+  let linesStatic = [];
+  let linesMovable = [];
+  if (allCoords.size > 0) {
+    let minR = Infinity, maxR = -Infinity;
+    allCoords.forEach((k) => {
+      let r = parseInt(k.split(",")[1], 10);
+      if (r < minR)
+        minR = r;
+      if (r > maxR)
+        maxR = r;
+    });
+    let maxAbsR = Math.max(Math.abs(minR), Math.abs(maxR));
+    let numRows = maxAbsR * 2 + 1;
+    let rawStatic = [];
+    let rawMovable = [];
+    let maxLenStatic = 2;
+    let maxLenMovable = 2;
+    for (let i = 0; i < numRows; i++) {
+      let r = i - maxAbsR;
+      let rowCoords = Array.from(allCoords).map((k) => {
+        let [qStr, rStr] = k.split(",");
+        return { q: parseInt(qStr, 10), r: parseInt(rStr, 10) };
+      }).filter((c) => c.r === r);
+      if (rowCoords.length === 0) {
+        rawStatic.push([]);
+        rawMovable.push([]);
+        continue;
+      }
+      let minQ = Math.min(...rowCoords.map((c) => c.q));
+      let maxQ = Math.max(...rowCoords.map((c) => c.q));
+      let N = maxQ - minQ + 1;
+      let qStart;
+      while (true) {
+        qStart = Math.floor(-r / 2 - (N - 1) / 2);
+        if (qStart <= minQ && qStart + N - 1 >= maxQ)
+          break;
+        N++;
+      }
+      let rowStatic = [];
+      let rowMovable = [];
+      for (let j = 0; j < N; j++) {
+        let q = qStart + j;
+        let k = `${q},${r}`;
+        let sStr = "**";
+        let tUn = unmovables.get(k);
+        let sParts = "";
+        if (tUn && tUn.isBlocked)
+          sParts += "@@";
+        if (tUn && tUn.isTarget)
+          sParts += "T" + (tUn.topColor[0] || "*");
+        if (tUn && tUn.path && tUn.path.length > 0) {
+          const lastChar = tUn.path[tUn.path.length - 1];
+          const pType = tUn.path.length > 1 ? tUn.path[0] : "0";
+          if (pType === "0" || pType >= "0" && pType <= "5") {
+            let dir = parseInt(lastChar, 10) + 1;
+            sParts += "E" + (tUn.topColor[0] || "*") + dir;
+          }
+        }
+        if (zoneMask.has(k))
+          sParts += "Z" + zoneMask.get(k);
+        if (freezeMask.has(k))
+          sParts += "F" + freezeMask.get(k);
+        if (tileWalls.has(k)) {
+          let dirs = Array.from(new Set(tileWalls.get(k))).sort((a, b) => a - b).join("");
+          sParts += "W" + dirs;
+        }
+        if (tileColorGates.has(k)) {
+          let gatesByColors = {};
+          tileColorGates.get(k).forEach((g) => {
+            if (!gatesByColors[g.colors])
+              gatesByColors[g.colors] = [];
+            gatesByColors[g.colors].push(g.edge);
+          });
+          for (let colors in gatesByColors) {
+            let dirs = Array.from(new Set(gatesByColors[colors])).sort((a, b) => a - b).join("");
+            sParts += "C" + colors + dirs;
+          }
+        }
+        if (sParts.length > 0)
+          sStr = sParts;
+        if (sStr.length > maxLenStatic)
+          maxLenStatic = sStr.length;
+        rowStatic.push(sStr);
+        let mStr = "**";
+        let tM = movables.get(k);
+        if (tM) {
+          mStr = encodeTile(tM);
+        }
+        if (mStr === "*")
+          mStr = "**";
+        if (mStr.length > maxLenMovable)
+          maxLenMovable = mStr.length;
+        rowMovable.push(mStr);
+      }
+      rawStatic.push(rowStatic);
+      rawMovable.push(rowMovable);
+    }
+    linesStatic = rawStatic.map((row) => {
+      if (row.length === 0)
+        return "  ";
+      return "  " + row.map((s) => s.padEnd(maxLenStatic, "*")).join(" ") + "  ";
+    });
+    linesMovable = rawMovable.map((row) => {
+      if (row.length === 0)
+        return "  ";
+      return "  " + row.map((s) => s.padEnd(maxLenMovable, "*")).join(" ") + "  ";
+    });
+  }
+  return { staticMap: linesStatic, map: linesMovable };
+}
+function saveCurrentToData() {
+  if (isTestMode || isRecordingTutorial || isPlayingTutorial)
+    return;
+  const exported = exportGridState();
+  let targetLvl = levels[currentLevelIdx];
+  if (editingInterlude) {
+    if (!targetLvl.interlude)
+      targetLvl.interlude = {};
+    if (!targetLvl.interlude.tutorial)
+      targetLvl.interlude.tutorial = { map: [], staticMap: [] };
+    targetLvl = targetLvl.interlude.tutorial;
+  }
+  targetLvl.staticMap = exported.staticMap;
+  delete targetLvl.zones;
+  delete targetLvl.frozen;
+  delete targetLvl.walls;
+  delete targetLvl.colorGates;
+  delete targetLvl.initial;
+  if (targetLvl.objective) {
+    delete targetLvl.objective.pieces;
+  }
+  if (editingObjective) {
+    if (!targetLvl.objective)
+      targetLvl.objective = { type: "match_map" };
+    targetLvl.objective.map = exported.map;
+    targetLvl.objective.type = "match_map";
+  } else {
+    targetLvl.map = exported.map;
+  }
+}
+function render() {
+  let svgContent = document.getElementById("grid-content");
+  if (!svgContent) {
+    svgGrid.innerHTML = '<g id="grid-content"></g><g id="grid-overlay"></g>';
+    svgContent = document.getElementById("grid-content");
+  }
+  svgContent.innerHTML = "";
+  const hexPointsOuter = getHexPolygonPoints(hexRadius);
+  const hexPointsInner = getHexPolygonPoints(hexRadius * 0.6);
+  const completedZonesCache = /* @__PURE__ */ new Map();
+  const checkZone = (z) => {
+    if (completedZonesCache.has(z))
+      return completedZonesCache.get(z);
+    const res = isTestMode || isRecordingTutorial || isPlayingTutorial ? isZoneComplete(z) : false;
+    completedZonesCache.set(z, res);
+    return res;
+  };
+  for (let r = -EDITOR_R_LIMIT; r <= EDITOR_R_LIMIT; r++) {
+    let cols = EDITOR_MAX_COLS;
+    if (Math.abs(r) % 2 === 0 === (EDITOR_MAX_COLS % 2 === 0))
+      cols--;
+    const qOffset = Math.floor(cols / 2);
+    const qStart = Math.ceil(-r / 2) - qOffset;
+    for (let q = qStart; q <= qStart + cols - 1; q++) {
+      const pos = axialToPixel(q, r);
+      const g = document.createElementNS("http://www.w3.org/2000/svg", "g");
+      g.setAttribute("transform", `translate(${pos.x}, ${pos.y})`);
+      g.dataset.q = q;
+      g.dataset.r = r;
+      const poly = document.createElementNS("http://www.w3.org/2000/svg", "polygon");
+      poly.setAttribute("points", hexPointsOuter);
+      poly.setAttribute("class", "hex-bg");
+      g.appendChild(poly);
+      svgContent.appendChild(g);
+      const tile = grid.get(`${q},${r}`);
+      if (tile) {
+        const tColor = colorMap[tile.topColor[0]] || "#444";
+        const bColor = colorMap[tile.botColor[0]] || "#444";
+        const topPoly = document.createElementNS("http://www.w3.org/2000/svg", "polygon");
+        topPoly.setAttribute("points", hexPointsOuter);
+        topPoly.setAttribute("class", "hex-top");
+        topPoly.setAttribute("fill", tile.isBlocked ? colorMap["@"] : tColor);
+        if (tile.highlight) {
+          topPoly.setAttribute("stroke", "#ffffff");
+          topPoly.setAttribute("stroke-width", "4");
+        }
+        g.appendChild(topPoly);
+        if (!tile.isBlocked && !tile.isTarget && tColor !== bColor) {
+          const botPoly = document.createElementNS("http://www.w3.org/2000/svg", "polygon");
+          botPoly.setAttribute("points", hexPointsInner);
+          botPoly.setAttribute("class", "hex-bot");
+          botPoly.setAttribute("fill", bColor);
+          g.appendChild(botPoly);
+        }
+        if (tile.isTarget) {
+          const star = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+          star.setAttribute("r", hexRadius * 0.3);
+          star.setAttribute("class", "target-star");
+          g.appendChild(star);
+        }
+        if (tile.path) {
+          if (!allowedPathModels.includes(tile.path[0]) && !/[0-5]/.test(tile.path[0])) {
+            const warn = document.createElementNS("http://www.w3.org/2000/svg", "text");
+            warn.setAttribute("class", "missing-warning");
+            warn.textContent = "!";
+            g.appendChild(warn);
+          } else if (tile.edges && tile.edges.length > 0) {
+            if (tile.edges.length % 2 === 1) {
+              const p1 = getEdgeMidpoint(tile.edges[tile.edges.length - 1]);
+              const pathEl = document.createElementNS("http://www.w3.org/2000/svg", "line");
+              pathEl.setAttribute("x1", 0);
+              pathEl.setAttribute("y1", 0);
+              pathEl.setAttribute("x2", p1.x);
+              pathEl.setAttribute("y2", p1.y);
+              pathEl.setAttribute("class", "path-line");
+              g.appendChild(pathEl);
+            }
+            for (let i = 0; i < tile.edges.length - 1; i += 2) {
+              const p1 = getEdgeMidpoint(tile.edges[i]);
+              const p2 = getEdgeMidpoint(tile.edges[i + 1]);
+              const pathEl = document.createElementNS("http://www.w3.org/2000/svg", "path");
+              pathEl.setAttribute("d", `M ${p1.x} ${p1.y} C ${p1.x * 0.5} ${p1.y * 0.5}, ${p2.x * 0.5} ${p2.y * 0.5}, ${p2.x} ${p2.y}`);
+              pathEl.setAttribute("class", "path-line");
+              g.appendChild(pathEl);
+            }
+          }
+        }
+      }
+      if (freezeMask.has(`${q},${r}`)) {
+        let fVal = freezeMask.get(`${q},${r}`);
+        if (fVal > 0 && !checkZone(fVal)) {
+          const iceBorder = document.createElementNS("http://www.w3.org/2000/svg", "polygon");
+          iceBorder.setAttribute("points", hexPointsOuter);
+          iceBorder.setAttribute("fill", "none");
+          iceBorder.setAttribute("stroke", "#00ffff");
+          iceBorder.setAttribute("stroke-width", "3");
+          iceBorder.setAttribute("style", "pointer-events: none;");
+          g.appendChild(iceBorder);
+          const snowflake = document.createElementNS("http://www.w3.org/2000/svg", "text");
+          snowflake.textContent = "\u2744\uFE0F";
+          snowflake.setAttribute("font-size", "20");
+          snowflake.setAttribute("x", "0");
+          snowflake.setAttribute("y", "8");
+          snowflake.setAttribute("text-anchor", "middle");
+          snowflake.setAttribute("dominant-baseline", "central");
+          g.appendChild(snowflake);
+          const txt = document.createElementNS("http://www.w3.org/2000/svg", "text");
+          txt.textContent = "F" + fVal;
+          txt.setAttribute("fill", "#0ff");
+          txt.setAttribute("font-size", "14");
+          txt.setAttribute("font-weight", "bold");
+          txt.setAttribute("y", "-10");
+          txt.setAttribute("text-anchor", "middle");
+          txt.style.textShadow = "0 0 3px black";
+          g.appendChild(txt);
+        }
+      }
+      if (zoneMask.has(`${q},${r}`)) {
+        let zVal = zoneMask.get(`${q},${r}`);
+        const txt = document.createElementNS("http://www.w3.org/2000/svg", "text");
+        txt.textContent = "Z" + zVal;
+        txt.setAttribute("fill", "#f39c12");
+        txt.setAttribute("font-size", "14");
+        txt.setAttribute("y", "15");
+        txt.setAttribute("text-anchor", "middle");
+        g.appendChild(txt);
+      }
+      g.addEventListener("mousedown", (e) => {
+        if (e.button === 0 || e.button === 2)
+          onHexInteract(q, r, e, true);
+      });
+      g.addEventListener("mouseenter", (e) => onHexInteract(q, r, e, false));
+      g.addEventListener("contextmenu", (e) => e.preventDefault());
+    }
+  }
+  walls.forEach((wallKey) => {
+    const [k1, k2] = wallKey.split("|");
+    const p1 = axialToPixel(...k1.split(",").map(Number));
+    const p2 = axialToPixel(...k2.split(",").map(Number));
+    const midX = (p1.x + p2.x) / 2;
+    const midY = (p1.y + p2.y) / 2;
+    const dx = p2.x - p1.x;
+    const dy = p2.y - p1.y;
+    const len = Math.hypot(dx, dy);
+    const nx = -dy / len * hexRadius * 0.6;
+    const ny = dx / len * hexRadius * 0.6;
+    const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
+    line.setAttribute("x1", midX - nx);
+    line.setAttribute("y1", midY - ny);
+    line.setAttribute("x2", midX + nx);
+    line.setAttribute("y2", midY + ny);
+    line.setAttribute("stroke", "#e74c3c");
+    line.setAttribute("stroke-width", "6");
+    line.setAttribute("stroke-linecap", "round");
+    svgContent.appendChild(line);
+  });
+  colorGates.forEach((colors, wallKey) => {
+    const [k1, k2] = wallKey.split("|");
+    const p1 = axialToPixel(...k1.split(",").map(Number));
+    const p2 = axialToPixel(...k2.split(",").map(Number));
+    const midX = (p1.x + p2.x) / 2;
+    const midY = (p1.y + p2.y) / 2;
+    const dx = p2.x - p1.x;
+    const dy = p2.y - p1.y;
+    const len = Math.hypot(dx, dy);
+    const nx = -dy / len * hexRadius * 0.6;
+    const ny = dx / len * hexRadius * 0.6;
+    const numColors = colors.length;
+    for (let i = 0; i < numColors; i++) {
+      const colorChar = colors[i];
+      const hexColor = colorMap[colorChar] || "#ffffff";
+      const startRatio = i / numColors * 2 - 1;
+      const endRatio = (i + 1) / numColors * 2 - 1;
+      const x1 = midX + nx * startRatio;
+      const y1 = midY + ny * startRatio;
+      const x2 = midX + nx * endRatio;
+      const y2 = midY + ny * endRatio;
+      const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
+      line.setAttribute("x1", x1);
+      line.setAttribute("y1", y1);
+      line.setAttribute("x2", x2);
+      line.setAttribute("y2", y2);
+      line.setAttribute("stroke", hexColor);
+      line.setAttribute("stroke-width", "6");
+      if (i === 0 || i === numColors - 1)
+        line.setAttribute("stroke-linecap", "round");
+      line.setAttribute("opacity", "0.8");
+      svgContent.appendChild(line);
+    }
+  });
+}
+function getAdjacentEdge(q1, r1, q2, r2) {
+  const dq = q2 - q1;
+  const dr = r2 - r1;
+  if (dq === 0 && dr === 1)
+    return 4;
+  if (dq === 1 && dr === 0)
+    return 3;
+  if (dq === 1 && dr === -1)
+    return 2;
+  if (dq === 0 && dr === -1)
+    return 1;
+  if (dq === -1 && dr === 0)
+    return 0;
+  if (dq === -1 && dr === 1)
+    return 5;
+  return null;
+}
+function combineEdgesToPath(edges) {
+  if (!edges || edges.length === 0)
+    return "";
+  const normalizedEdges = Array.from(new Set(edges.map((e) => (e % 6 + 6) % 6))).sort((a, b) => a - b);
+  const path = edgesToPathString(normalizedEdges);
+  if (path)
+    return path;
+  if (normalizedEdges.length === 1)
+    return normalizedEdges[0].toString();
+  if (normalizedEdges.length === 2) {
+    const [e1, e2] = normalizedEdges;
+    const diff = Math.abs(e1 - e2);
+    if (diff === 3)
+      return "s0";
+  }
+  return "";
+}
+function addEdgeToTile(tile, edge) {
+  if (!tile.edges.includes(edge))
+    tile.edges.push(edge);
+  if (tile.edges.length > 6) {
+    tile.edges.shift();
+    tile.edges.shift();
+  }
+  tile.path = combineEdgesToPath(tile.edges);
+  if (tile.edges.length >= 6 && !["t"].includes(tile.path[0])) {
+    tile.edges.shift();
+    tile.edges.shift();
+    tile.path = combineEdgesToPath(tile.edges);
+  }
+  if (tile.edges.length >= 4 && ["s", "c", "a"].includes(tile.path[0])) {
+    tile.edges.shift();
+    tile.edges.shift();
+    tile.path = combineEdgesToPath(tile.edges);
+  }
+}
+function onHexInteract(q, r, event, isClick) {
+  if (isPlayingTutorial)
+    return;
+  if (isRecordingTutorial && currentTool !== "flip")
+    return;
+  let isRightClick = false;
+  if (isClick) {
+    isRightClick = event.button === 2;
+  } else {
+    isRightClick = (event.buttons & 2) !== 0;
+  }
+  if (isClick) {
+    saveHistoryState();
+    isDragging = true;
+  }
+  if (!isDragging)
+    return;
+  const key = `${q},${r}`;
+  let tile = grid.get(key) || { q, r, topColor: "**", botColor: "**", isTarget: false, isBlocked: false, path: "", edges: [], freeze: 0 };
+  if (currentTool === "wall") {
+    if (isClick) {
+      saveHistoryState();
+      let clientX = event.clientX !== void 0 ? event.clientX : event.touches ? event.touches[0].clientX : 0;
+      let clientY = event.clientY !== void 0 ? event.clientY : event.touches ? event.touches[0].clientY : 0;
+      let pt = svgGrid.createSVGPoint();
+      pt.x = clientX;
+      pt.y = clientY;
+      let svgP = pt.matrixTransform(svgGrid.getScreenCTM().inverse());
+      let closestNeighbor = null, minD = Infinity;
+      const neighbors = [[1, 0], [1, -1], [0, -1], [-1, 0], [-1, 1], [0, 1]];
+      for (let [dq, dr] of neighbors) {
+        let nPos = axialToPixel(q + dq, r + dr);
+        let dist = Math.hypot(svgP.x - nPos.x, svgP.y - nPos.y);
+        if (dist < minD) {
+          minD = dist;
+          closestNeighbor = { q: q + dq, r: r + dr };
+        }
+      }
+      if (closestNeighbor) {
+        let key1 = `${q},${r}`;
+        let key2 = `${closestNeighbor.q},${closestNeighbor.r}`;
+        let wallKey = key1 < key2 ? `${key1}|${key2}` : `${key2}|${key1}`;
+        if (walls.has(wallKey))
+          walls.delete(wallKey);
+        else
+          walls.add(wallKey);
+        commitGridState();
+        render();
+      }
+    }
+    return;
+  }
+  if (currentTool === "colorGate") {
+    if (isClick) {
+      saveHistoryState();
+      let clientX = event.clientX !== void 0 ? event.clientX : event.touches ? event.touches[0].clientX : 0;
+      let clientY = event.clientY !== void 0 ? event.clientY : event.touches ? event.touches[0].clientY : 0;
+      let pt = svgGrid.createSVGPoint();
+      pt.x = clientX;
+      pt.y = clientY;
+      let svgP = pt.matrixTransform(svgGrid.getScreenCTM().inverse());
+      let closestNeighbor = null, minD = Infinity;
+      const neighbors = [[1, 0], [1, -1], [0, -1], [-1, 0], [-1, 1], [0, 1]];
+      for (let [dq, dr] of neighbors) {
+        let nPos = axialToPixel(q + dq, r + dr);
+        let dist = Math.hypot(svgP.x - nPos.x, svgP.y - nPos.y);
+        if (dist < minD) {
+          minD = dist;
+          closestNeighbor = { q: q + dq, r: r + dr };
+        }
+      }
+      if (closestNeighbor) {
+        let key1 = `${q},${r}`;
+        let key2 = `${closestNeighbor.q},${closestNeighbor.r}`;
+        let wallKey = key1 < key2 ? `${key1}|${key2}` : `${key2}|${key1}`;
+        let selectedChar = currentTopColor ? currentTopColor[0] : null;
+        if (selectedChar && selectedChar !== "*" && selectedChar !== "@") {
+          if (isRightClick) {
+            if (colorGates.has(wallKey)) {
+              let colors = colorGates.get(wallKey);
+              colors = colors.replace(selectedChar, "");
+              if (colors === "")
+                colorGates.delete(wallKey);
+              else
+                colorGates.set(wallKey, colors);
+            }
+          } else {
+            if (colorGates.has(wallKey)) {
+              let colors = colorGates.get(wallKey);
+              if (!colors.includes(selectedChar)) {
+                colorGates.set(wallKey, colors + selectedChar);
+              }
+            } else {
+              colorGates.set(wallKey, selectedChar);
+            }
+          }
+        } else if (isRightClick || !isRightClick && (!selectedChar || selectedChar === "*" || selectedChar === "@")) {
+          colorGates.delete(wallKey);
+        }
+        commitGridState();
+        render();
+      }
+    }
+    return;
+  }
+  if (currentTool === "erase") {
+    grid.delete(key);
+    lastDragTileStr = null;
+  } else if (currentTool === "paintTop") {
+    if (tile.isTarget)
+      return;
+    const newColor = isRightClick ? currentBotColor : currentTopColor;
+    if (newColor === "@@") {
+      tile.isBlocked = true;
+    } else {
+      tile.staticColors = "";
+      if (tile.cyclingColors === void 0 || tile.cyclingColors.length === 0) {
+        tile.cyclingColors = tile.topColor[0] + tile.botColor[0];
+      }
+      if (isRightClick) {
+        if (tile.cyclingColors.length > 0) {
+          tile.cyclingColors = tile.cyclingColors[0] + newColor[0];
+        } else {
+          tile.cyclingColors = "*" + newColor[0];
+        }
+      } else {
+        if (tile.cyclingColors.length > 1) {
+          tile.cyclingColors = newColor[0] + tile.cyclingColors[1];
+        } else {
+          tile.cyclingColors = newColor[0] + (tile.cyclingColors[0] || "*");
+        }
+      }
+      let cc = tile.cyclingColors;
+      tile.topColor = cc[0] + cc[0];
+      tile.botColor = (cc[1] || cc[0]) + (cc[1] || cc[0]);
+      tile.isBlocked = false;
+    }
+    grid.set(key, tile);
+    lastDragTileStr = null;
+  } else if (currentTool === "setMultiColor") {
+    if (isClick) {
+      if (tile.isTarget || tile.isBlocked)
+        return;
+      openMultiColorModal(tile);
+    }
+    lastDragTileStr = null;
+  } else if (currentTool === "paintTarget") {
+    tile.isTarget = true;
+    tile.isBlocked = false;
+    grid.set(key, tile);
+    lastDragTileStr = null;
+  } else if (currentTool === "paintZone") {
+    const zVal = parseInt(document.getElementById("tool-val-zone").value) || 1;
+    if (isRightClick) {
+      zoneMask.delete(key);
+    } else {
+      zoneMask.set(key, Math.max(1, zVal));
+    }
+    lastDragTileStr = null;
+  } else if (currentTool === "paintFreeze") {
+    const fVal = parseInt(document.getElementById("tool-val-freeze").value) || 0;
+    if (isRightClick)
+      tile.freeze = 0;
+    else
+      tile.freeze = fVal;
+    grid.set(key, tile);
+    if (isRightClick || fVal <= 0)
+      freezeMask.delete(key);
+    else
+      freezeMask.set(key, fVal);
+    lastDragTileStr = null;
+  } else if (currentTool === "flip") {
+    if (!isTileMovable(tile)) {
+      lastDragTileStr = null;
+      selectedFlipTile = null;
+      render();
+      return;
+    }
+    if (isClick) {
+      if (!selectedFlipTile) {
+        selectedFlipTile = tile;
+        render();
+        return;
+      }
+      if (selectedFlipTile.q === tile.q && selectedFlipTile.r === tile.r) {
+        selectedFlipTile = null;
+        render();
+        return;
+      }
+      if (flipTwoTiles(selectedFlipTile, tile)) {
+        selectedFlipTile = null;
+        lastDragTileStr = null;
+        return;
+      }
+      selectedFlipTile = tile;
+      render();
+      return;
+    }
+    if (isDragging && lastDragTileStr) {
+      const [lq, lr] = lastDragTileStr.split(",").map(Number);
+      const dragTile = grid.get(`${lq},${lr}`);
+      if (dragTile && getAdjacentEdge(dragTile.q, dragTile.r, tile.q, tile.r) !== null) {
+        if (flipTwoTiles(dragTile, tile)) {
+          selectedFlipTile = null;
+          lastDragTileStr = null;
+          isDragging = false;
+          return;
+        }
+      }
+    }
+    if (isClick === false && !isDragging) {
+      lastDragTileStr = key;
+    }
+  } else if (currentTool === "clearPath") {
+    tile.path = "";
+    tile.edges = [];
+    grid.set(key, tile);
+    lastDragTileStr = null;
+  } else if (currentTool === "path") {
+    grid.set(key, tile);
+    if (lastDragTileStr && lastDragTileStr !== key) {
+      let [lq, lr] = lastDragTileStr.split(",").map(Number);
+      let edgeDir = getAdjacentEdge(lq, lr, q, r);
+      if (edgeDir !== null) {
+        let lastTile = grid.get(lastDragTileStr);
+        addEdgeToTile(lastTile, edgeDir);
+        addEdgeToTile(tile, (edgeDir + 3) % 6);
+      }
+    }
+    lastDragTileStr = key;
+  }
+  render();
+}
+function disableTestMode() {
+  if (isTestMode) {
+    isTestMode = false;
+    const btnTestMode = document.getElementById("btn-test-mode");
+    const testStepsDisplay = document.getElementById("test-steps");
+    if (btnTestMode) {
+      btnTestMode.innerText = "Test Mode: OFF";
+      btnTestMode.style.backgroundColor = "transparent";
+      btnTestMode.style.color = "#9b59b6";
+    }
+    if (testStepsDisplay)
+      testStepsDisplay.style.display = "none";
+    loadLevel(currentLevelIdx);
+  }
+}
+async function runTutorialPlayback() {
+  let overlay = document.getElementById("grid-overlay");
+  if (!overlay) {
+    svgGrid.innerHTML = '<g id="grid-content"></g><g id="grid-overlay"></g>';
+    overlay = document.getElementById("grid-overlay");
+  }
+  if (!tutorialHandEl) {
+    tutorialHandEl = document.createElementNS("http://www.w3.org/2000/svg", "text");
+    tutorialHandEl.textContent = "\u{1F446}";
+    tutorialHandEl.setAttribute("font-size", "40");
+    tutorialHandEl.setAttribute("style", "pointer-events: none; transition: transform 0.6s ease-in-out, opacity 0.3s;");
+    overlay.appendChild(tutorialHandEl);
+  }
+  tutorialHandEl.style.display = "block";
+  tutorialHandEl.style.opacity = "0";
+  const moveHand = (q, r, scale = 1) => {
+    const pos = axialToPixel(q, r);
+    tutorialHandEl.setAttribute("transform", `translate(${pos.x - 15}, ${pos.y + 15}) scale(${scale})`);
+  };
+  const steps = levels[currentLevelIdx].interlude.tutorial.steps;
+  const myRunId = ++playbackRunId;
+  while (isPlayingTutorial && myRunId === playbackRunId) {
+    loadLevel(currentLevelIdx);
+    if (steps.length > 0) {
+      tutorialHandEl.style.transition = "none";
+      moveHand(steps[0][0], steps[0][1], 1);
+      void tutorialHandEl.getBoundingClientRect();
+      tutorialHandEl.style.transition = "transform 0.6s ease-in-out, opacity 0.3s";
+    }
+    tutorialHandEl.style.opacity = "1";
+    await new Promise((r) => setTimeout(r, 800));
+    for (const step of steps) {
+      if (!isPlayingTutorial || myRunId !== playbackRunId)
+        break;
+      const [q1, r1, q2, r2] = step;
+      moveHand(q1, r1, 1);
+      await new Promise((r) => setTimeout(r, 600));
+      if (!isPlayingTutorial || myRunId !== playbackRunId)
+        break;
+      moveHand(q1, r1, 0.8);
+      await new Promise((r) => setTimeout(r, 200));
+      if (!isPlayingTutorial || myRunId !== playbackRunId)
+        break;
+      moveHand(q2, r2, 0.8);
+      await new Promise((r) => setTimeout(r, 600));
+      if (!isPlayingTutorial || myRunId !== playbackRunId)
+        break;
+      moveHand(q2, r2, 1);
+      const t1 = grid.get(`${q1},${r1}`);
+      const t2 = grid.get(`${q2},${r2}`);
+      if (t1 && t2)
+        flipTwoTiles(t1, t2);
+      await new Promise((r) => setTimeout(r, 800));
+    }
+    if (!isPlayingTutorial || myRunId !== playbackRunId)
+      break;
+    tutorialHandEl.style.opacity = "0";
+    await new Promise((r) => setTimeout(r, 800));
+  }
+}
+function updateInterludeModalUI() {
+  const interlude = levels[currentLevelIdx].interlude || {};
+  document.getElementById("interlude-title").value = interlude.title || "";
+  document.getElementById("interlude-text").value = interlude.text || "";
+  document.getElementById("interlude-image").value = interlude.image || "";
+  const status = document.getElementById("interlude-tutorial-status");
+  const btnClear = document.getElementById("btn-tutorial-clear");
+  const btnRecord = document.getElementById("btn-record-tutorial");
+  const btnPreview = document.getElementById("btn-tutorial-preview");
+  if (interlude.tutorial && interlude.tutorial.steps) {
+    status.innerText = `Recorded: ${interlude.tutorial.steps.length} steps`;
+    status.style.color = "#2ecc71";
+    btnRecord.innerText = "Re-record";
+    btnClear.style.display = "block";
+    if (btnPreview)
+      btnPreview.style.display = "block";
+  } else {
+    status.innerText = "No tutorial recorded.";
+    status.style.color = "#ccc";
+    btnRecord.innerText = "Record";
+    btnClear.style.display = "none";
+    if (btnPreview)
+      btnPreview.style.display = "none";
+  }
+}
+var currentMultiColorTile = null;
+var draggedSwatch = null;
+var isFromPalette = false;
+function createSwatch(colorChar, isPalette = false) {
+  const el = document.createElement("div");
+  el.className = "color-swatch";
+  el.dataset.color = colorChar;
+  el.style.backgroundColor = colorMap[colorChar] || "#fff";
+  el.draggable = true;
+  el.addEventListener("dragstart", (e) => {
+    draggedSwatch = el;
+    isFromPalette = isPalette;
+    e.dataTransfer.setData("text/plain", colorChar);
+    setTimeout(() => el.classList.add("dragging"), 0);
+  });
+  el.addEventListener("dragend", () => {
+    el.classList.remove("dragging");
+    draggedSwatch = null;
+  });
+  el.addEventListener("click", () => {
+    if (!isPalette && el.parentElement) {
+      el.parentElement.removeChild(el);
+    }
+  });
+  return el;
+}
+function setupDropZone(listId) {
+  const listEl = document.getElementById(listId);
+  if (!listEl)
+    return;
+  listEl.addEventListener("dragover", (e) => {
+    e.preventDefault();
+    listEl.classList.add("drag-over");
+  });
+  listEl.addEventListener("dragleave", () => {
+    listEl.classList.remove("drag-over");
+  });
+  listEl.addEventListener("drop", (e) => {
+    e.preventDefault();
+    listEl.classList.remove("drag-over");
+    const colorChar = e.dataTransfer.getData("text/plain");
+    if (!colorChar)
+      return;
+    const afterElement = getDragAfterElement(listEl, e.clientX);
+    if (isFromPalette) {
+      const newSwatch = createSwatch(colorChar, false);
+      if (afterElement == null) {
+        listEl.appendChild(newSwatch);
+      } else {
+        listEl.insertBefore(newSwatch, afterElement);
+      }
+    } else if (draggedSwatch && draggedSwatch.parentElement !== listEl) {
+      if (afterElement == null) {
+        listEl.appendChild(draggedSwatch);
+      } else {
+        listEl.insertBefore(draggedSwatch, afterElement);
+      }
+    } else if (draggedSwatch) {
+      if (afterElement == null) {
+        listEl.appendChild(draggedSwatch);
+      } else {
+        listEl.insertBefore(draggedSwatch, afterElement);
+      }
+    }
+  });
+}
+function getDragAfterElement(container, x) {
+  const draggableElements = [...container.querySelectorAll(".color-swatch:not(.dragging)")];
+  return draggableElements.reduce((closest, child) => {
+    const box = child.getBoundingClientRect();
+    const offset = x - (box.left + box.width / 2);
+    if (offset < 0 && offset > closest.offset) {
+      return { offset, element: child };
+    } else {
+      return closest;
+    }
+  }, { offset: Number.NEGATIVE_INFINITY }).element;
+}
+function initPalette() {
+  const palette = document.getElementById("multi-color-palette");
+  if (!palette || palette.children.length > 0)
+    return;
+  const validColors = ["r", "b", "y", "g", "p", "o", "c", "*", "@"];
+  validColors.forEach((c) => {
+    palette.appendChild(createSwatch(c, true));
+  });
+  setupDropZone("multi-static-list");
+  setupDropZone("multi-cycling-list");
+}
+window.openMultiColorModal = function(tile) {
+  currentMultiColorTile = tile;
+  const modal = document.getElementById("multi-color-modal");
+  if (!modal)
+    return;
+  initPalette();
+  const staticList = document.getElementById("multi-static-list");
+  const cyclingList = document.getElementById("multi-cycling-list");
+  staticList.innerHTML = "";
+  cyclingList.innerHTML = "";
+  const sColors = tile.staticColors || "";
+  for (let c of sColors) {
+    staticList.appendChild(createSwatch(c, false));
+  }
+  const cColors = tile.cyclingColors || "";
+  for (let c of cColors) {
+    cyclingList.appendChild(createSwatch(c, false));
+  }
+  modal.showModal();
+};
+document.getElementById("btn-multi-cancel")?.addEventListener("click", () => {
+  document.getElementById("multi-color-modal").close();
+});
+document.getElementById("btn-multi-save")?.addEventListener("click", () => {
+  if (currentMultiColorTile) {
+    saveHistoryState();
+    const staticColors = [...document.getElementById("multi-static-list").children].map((el) => el.dataset.color).join("");
+    const cyclingColors = [...document.getElementById("multi-cycling-list").children].map((el) => el.dataset.color).join("");
+    currentMultiColorTile.staticColors = staticColors;
+    currentMultiColorTile.cyclingColors = cyclingColors;
+    let sc = currentMultiColorTile.staticColors;
+    let cc = currentMultiColorTile.cyclingColors;
+    let firstColor = sc.length > 0 ? sc[0] : cc.length > 0 ? cc[0] : "*";
+    currentMultiColorTile.topColor = firstColor + firstColor;
+    let nextColor = "*";
+    if (sc.length > 1)
+      nextColor = sc[1];
+    else if (sc.length === 1 && cc.length > 0)
+      nextColor = cc[0];
+    else if (cc.length > 1)
+      nextColor = cc[1];
+    else if (cc.length === 1)
+      nextColor = cc[0];
+    currentMultiColorTile.botColor = nextColor + nextColor;
+    render();
+  }
+  document.getElementById("multi-color-modal").close();
+});
+function setupEvents() {
+  window.addEventListener("mouseup", () => {
+    isDragging = false;
+    lastDragTileStr = null;
+    saveCurrentToData();
+  });
+  svgGrid.addEventListener("contextmenu", (e) => e.preventDefault());
+  window.addEventListener("keydown", (e) => {
+    if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "z") {
+      e.preventDefault();
+      if (e.shiftKey)
+        redo();
+      else
+        undo();
+    }
+    if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "y") {
+      e.preventDefault();
+      redo();
+    }
+  });
+  document.querySelectorAll("[data-tool]").forEach((btn) => {
+    btn.addEventListener("click", (e) => {
+      document.querySelectorAll("[data-tool]").forEach((b) => b.classList.remove("active"));
+      e.target.classList.add("active");
+      currentTool = e.target.dataset.tool;
+    });
+  });
+  document.querySelectorAll(".swatch").forEach((sw) => {
+    sw.addEventListener("click", (e) => {
+      document.querySelectorAll(".swatch").forEach((s) => s.classList.remove("active"));
+      e.target.classList.add("active");
+      currentTopColor = e.target.dataset.color;
+    });
+    sw.addEventListener("contextmenu", (e) => {
+      e.preventDefault();
+      document.querySelectorAll(".swatch").forEach((s) => {
+        s.classList.remove("active-bot");
+        s.style.outline = "";
+      });
+      e.target.classList.add("active-bot");
+      e.target.style.outline = "2px dashed #ffffff";
+      e.target.style.outlineOffset = "-4px";
+      currentBotColor = e.target.dataset.color;
+    });
+  });
+  document.getElementById("btn-undo").addEventListener("click", undo);
+  document.getElementById("btn-redo").addEventListener("click", redo);
+  const testWinModal = document.getElementById("test-win-modal");
+  if (testWinModal) {
+    testWinModal.addEventListener("close", disableTestMode);
+  }
+  const btnTestWinClose = document.getElementById("btn-test-win-close");
+  if (btnTestWinClose) {
+    btnTestWinClose.addEventListener("click", () => {
+      if (testWinModal)
+        testWinModal.close();
+    });
+  }
+  const objInput = document.getElementById("objective-input");
+  if (objInput) {
+    objInput.addEventListener("input", (e) => {
+      if (editingInterlude) {
+        let targetLvl = levels[currentLevelIdx];
+        if (!targetLvl.interlude)
+          targetLvl.interlude = {};
+        if (!targetLvl.interlude.tutorial)
+          targetLvl.interlude.tutorial = {};
+        targetLvl.interlude.tutorial.objectiveString = e.target.value;
+      } else {
+        levels[currentLevelIdx].objectiveString = e.target.value;
+      }
+      saveCurrentToData();
+    });
+    const targetMovesInput = document.getElementById("target-moves-input");
+    if (targetMovesInput) {
+      targetMovesInput.addEventListener("input", (e) => {
+        let targetLvl = levels[currentLevelIdx];
+        if (editingInterlude) {
+          if (!targetLvl.interlude)
+            targetLvl.interlude = {};
+          if (!targetLvl.interlude.tutorial)
+            targetLvl.interlude.tutorial = {};
+          targetLvl.interlude.tutorial.targetMoves = parseInt(e.target.value, 10) || 0;
+        } else {
+          targetLvl.targetMoves = parseInt(e.target.value, 10) || 0;
+        }
+        saveCurrentToData();
+      });
+    }
+    updateInterludeButton();
+    document.getElementById("btn-edit-interlude").addEventListener("click", () => {
+      disableTestMode();
+      saveCurrentToData();
+      if (!editingInterlude) {
+        editingInterlude = true;
+        loadLevel(currentLevelIdx);
+      }
+      updateInterludeModalUI();
+      document.getElementById("interlude-modal").showModal();
+    });
+    document.getElementById("btn-interlude-cancel").addEventListener("click", () => {
+      document.getElementById("interlude-modal").close();
+    });
+    document.getElementById("btn-tutorial-clear").addEventListener("click", () => {
+      if (levels[currentLevelIdx].interlude) {
+        delete levels[currentLevelIdx].interlude.tutorial;
+      }
+      updateInterludeModalUI();
+      populateLevelSelect();
+    });
+    document.getElementById("btn-tutorial-preview").addEventListener("click", () => {
+      if (!levels[currentLevelIdx].interlude)
+        levels[currentLevelIdx].interlude = {};
+      levels[currentLevelIdx].interlude.title = document.getElementById("interlude-title").value.trim();
+      levels[currentLevelIdx].interlude.text = document.getElementById("interlude-text").value.trim();
+      levels[currentLevelIdx].interlude.image = document.getElementById("interlude-image").value.trim();
+      document.getElementById("interlude-modal").close();
+      saveCurrentToData();
+      if (!editingInterlude) {
+        editingInterlude = true;
+      }
+      if (editingObjective) {
+        editingObjective = false;
+        document.getElementById("layer-initial").classList.add("active");
+        document.getElementById("layer-objective").classList.remove("active");
+        document.getElementById("btn-copy-layer").innerText = "Copy to Objective";
+      }
+      loadLevel(currentLevelIdx);
+      isPlayingTutorial = true;
+      document.getElementById("tutorial-playback-hud").style.display = "flex";
+      document.getElementById("sidebar").style.pointerEvents = "none";
+      document.getElementById("sidebar").style.opacity = "0.5";
+      document.getElementById("topbar").style.pointerEvents = "none";
+      document.getElementById("topbar").style.opacity = "0.5";
+      runTutorialPlayback();
+    });
+    document.getElementById("btn-tutorial-stop-playback").addEventListener("click", () => {
+      isPlayingTutorial = false;
+      playbackRunId++;
+      if (tutorialHandEl)
+        tutorialHandEl.style.opacity = "0";
+      document.getElementById("tutorial-playback-hud").style.display = "none";
+      document.getElementById("sidebar").style.pointerEvents = "auto";
+      document.getElementById("sidebar").style.opacity = "1";
+      document.getElementById("topbar").style.pointerEvents = "auto";
+      document.getElementById("topbar").style.opacity = "1";
+      loadLevel(currentLevelIdx);
+      updateInterludeModalUI();
+      document.getElementById("interlude-modal").showModal();
+    });
+    document.getElementById("btn-record-tutorial").addEventListener("click", () => {
+      if (!levels[currentLevelIdx].interlude)
+        levels[currentLevelIdx].interlude = {};
+      levels[currentLevelIdx].interlude.title = document.getElementById("interlude-title").value.trim();
+      levels[currentLevelIdx].interlude.text = document.getElementById("interlude-text").value.trim();
+      levels[currentLevelIdx].interlude.image = document.getElementById("interlude-image").value.trim();
+      document.getElementById("interlude-modal").close();
+      saveCurrentToData();
+      if (!editingInterlude) {
+        editingInterlude = true;
+      }
+      if (editingObjective) {
+        editingObjective = false;
+        document.getElementById("layer-initial").classList.add("active");
+        document.getElementById("layer-objective").classList.remove("active");
+        document.getElementById("btn-copy-layer").innerText = "Copy to Objective";
+      }
+      loadLevel(currentLevelIdx);
+      isRecordingTutorial = true;
+      tutorialSteps = [];
+      const exported = exportGridState();
+      const existingTutorial = levels[currentLevelIdx].interlude.tutorial || {};
+      tutorialStartConfig = JSON.parse(JSON.stringify(existingTutorial));
+      tutorialStartConfig.map = exported.map;
+      tutorialStartConfig.staticMap = exported.staticMap;
+      document.getElementById("tutorial-record-hud").style.display = "flex";
+      document.getElementById("tutorial-record-steps").innerText = "0";
+      document.getElementById("sidebar").style.pointerEvents = "none";
+      document.getElementById("sidebar").style.opacity = "0.5";
+      document.getElementById("topbar").style.pointerEvents = "none";
+      document.getElementById("topbar").style.opacity = "0.5";
+      const flipBtn = document.querySelector('[data-tool="flip"]');
+      if (flipBtn)
+        flipBtn.click();
+    });
+    document.getElementById("btn-tutorial-stop").addEventListener("click", () => {
+      isRecordingTutorial = false;
+      document.getElementById("tutorial-record-hud").style.display = "none";
+      document.getElementById("sidebar").style.pointerEvents = "auto";
+      document.getElementById("sidebar").style.opacity = "1";
+      document.getElementById("topbar").style.pointerEvents = "auto";
+      document.getElementById("topbar").style.opacity = "1";
+      tutorialStartConfig.steps = tutorialSteps;
+      if (!levels[currentLevelIdx].interlude)
+        levels[currentLevelIdx].interlude = {};
+      levels[currentLevelIdx].interlude.tutorial = tutorialStartConfig;
+      loadLevel(currentLevelIdx);
+      updateInterludeModalUI();
+      populateLevelSelect();
+      document.getElementById("interlude-modal").showModal();
+    });
+    document.getElementById("btn-tutorial-cancel").addEventListener("click", () => {
+      isRecordingTutorial = false;
+      document.getElementById("tutorial-record-hud").style.display = "none";
+      document.getElementById("sidebar").style.pointerEvents = "auto";
+      document.getElementById("sidebar").style.opacity = "1";
+      document.getElementById("topbar").style.pointerEvents = "auto";
+      document.getElementById("topbar").style.opacity = "1";
+      loadLevel(currentLevelIdx);
+      updateInterludeModalUI();
+      document.getElementById("interlude-modal").showModal();
+    });
+    document.getElementById("btn-interlude-clear").addEventListener("click", () => {
+      document.getElementById("interlude-title").value = "";
+      document.getElementById("interlude-text").value = "";
+      document.getElementById("interlude-image").value = "";
+      if (levels[currentLevelIdx].interlude)
+        delete levels[currentLevelIdx].interlude;
+      saveCurrentToData();
+      updateInterludeModalUI();
+      populateLevelSelect();
+      document.getElementById("interlude-modal").close();
+    });
+    document.getElementById("btn-interlude-save").addEventListener("click", () => {
+      const title = document.getElementById("interlude-title").value.trim();
+      const text = document.getElementById("interlude-text").value.trim();
+      const image = document.getElementById("interlude-image").value.trim();
+      const existingTutorial = levels[currentLevelIdx].interlude?.tutorial;
+      if (title || text || image || existingTutorial) {
+        levels[currentLevelIdx].interlude = { ...title && { title }, ...text && { text }, ...image && { image }, ...existingTutorial && { tutorial: existingTutorial } };
+      } else {
+        delete levels[currentLevelIdx].interlude;
+      }
+      saveCurrentToData();
+      updateInterludeButton();
+      populateLevelSelect();
+      document.getElementById("interlude-modal").close();
+    });
+  }
+  const btnCleanLevel = document.getElementById("btn-clean-level");
+  if (btnCleanLevel) {
+    btnCleanLevel.addEventListener("click", () => {
+      disableTestMode();
+      if (!confirm("Are you sure you want to completely clean this level (both initial and objective maps)?"))
+        return;
+      saveHistoryState();
+      let targetLvl = levels[currentLevelIdx];
+      if (editingInterlude) {
+        if (!targetLvl.interlude)
+          targetLvl.interlude = {};
+        if (!targetLvl.interlude.tutorial)
+          targetLvl.interlude.tutorial = { map: [], staticMap: [] };
+        targetLvl = targetLvl.interlude.tutorial;
+      }
+      targetLvl.map = [];
+      targetLvl.staticMap = [];
+      delete targetLvl.initial;
+      delete targetLvl.walls;
+      delete targetLvl.zones;
+      delete targetLvl.frozen;
+      delete targetLvl.colorGates;
+      walls.clear();
+      colorGates.clear();
+      zoneMask.clear();
+      freezeMask.clear();
+      if (targetLvl.objective) {
+        targetLvl.objective.map = [];
+        delete targetLvl.objective.pieces;
+      }
+      loadLevel(currentLevelIdx);
+    });
+  }
+  document.getElementById("btn-clear-board").addEventListener("click", () => {
+    disableTestMode();
+    if (!confirm("Are you sure you want to clear the entire board?"))
+      return;
+    saveHistoryState();
+    grid.clear();
+    walls.clear();
+    colorGates.clear();
+    zoneMask.clear();
+    freezeMask.clear();
+    saveCurrentToData();
+    render();
+  });
+  document.getElementById("layer-initial").addEventListener("click", (e) => {
+    if (!isTestMode) {
+      saveCurrentToData();
+      editingObjective = false;
+      e.target.classList.add("active");
+      document.getElementById("layer-objective").classList.remove("active");
+      document.getElementById("btn-copy-layer").innerText = "Copy to Objective";
+      loadLevel(currentLevelIdx);
+    }
+  });
+  document.getElementById("layer-objective").addEventListener("click", (e) => {
+    disableTestMode();
+    saveCurrentToData();
+    editingObjective = true;
+    e.target.classList.add("active");
+    document.getElementById("layer-initial").classList.remove("active");
+    document.getElementById("btn-copy-layer").innerText = "Copy to Initial";
+    loadLevel(currentLevelIdx);
+  });
+  document.getElementById("btn-add").addEventListener("click", () => {
+    disableTestMode();
+    saveCurrentToData();
+    editingInterlude = false;
+    const newLevel = { objectiveString: "Match the target pattern.", staticMap: [], map: [], objective: { type: "match_map", map: [] } };
+    levels.splice(currentLevelIdx + 1, 0, newLevel);
+    populateLevelSelect();
+    loadLevel(currentLevelIdx + 1);
+  });
+  const btnDuplicate = document.getElementById("btn-duplicate");
+  if (btnDuplicate) {
+    btnDuplicate.addEventListener("click", () => {
+      disableTestMode();
+      saveCurrentToData();
+      editingInterlude = false;
+      const newLevel = JSON.parse(JSON.stringify(levels[currentLevelIdx]));
+      delete newLevel.interlude;
+      levels.splice(currentLevelIdx + 1, 0, newLevel);
+      populateLevelSelect();
+      loadLevel(currentLevelIdx + 1);
+    });
+  }
+  document.getElementById("btn-delete").addEventListener("click", () => {
+    disableTestMode();
+    if (editingInterlude) {
+      delete levels[currentLevelIdx].interlude;
+      editingInterlude = false;
+      saveCurrentToData();
+      updateInterludeButton();
+      populateLevelSelect();
+      loadLevel(currentLevelIdx);
+      return;
+    }
+    if (levels.length <= 1)
+      return alert("Cannot delete the last level.");
+    editingInterlude = false;
+    levels.splice(currentLevelIdx, 1);
+    if (currentLevelIdx >= levels.length)
+      currentLevelIdx = levels.length - 1;
+    populateLevelSelect();
+    loadLevel(currentLevelIdx);
+  });
+  document.getElementById("btn-copy-layer").addEventListener("click", () => {
+    disableTestMode();
+    saveCurrentToData();
+    const direction = editingObjective ? "objective-to-initial" : "initial-to-objective";
+    let targetLvl = levels[currentLevelIdx];
+    if (editingInterlude) {
+      if (!targetLvl.interlude)
+        targetLvl.interlude = {};
+      if (!targetLvl.interlude.tutorial)
+        targetLvl.interlude.tutorial = { map: [], staticMap: [] };
+      targetLvl = targetLvl.interlude.tutorial;
+    }
+    copyLayer(targetLvl, direction, true);
+    loadLevel(currentLevelIdx);
+  });
+  const btnTestMode = document.getElementById("btn-test-mode");
+  const testStepsDisplay = document.getElementById("test-steps");
+  if (btnTestMode) {
+    btnTestMode.addEventListener("click", () => {
+      if (!isTestMode) {
+        saveCurrentToData();
+        if (editingObjective) {
+          editingObjective = false;
+          document.getElementById("layer-initial").classList.add("active");
+          document.getElementById("layer-objective").classList.remove("active");
+          document.getElementById("btn-copy-layer").innerText = "Copy to Objective";
+          loadLevel(currentLevelIdx);
+        }
+        isTestMode = true;
+        btnTestMode.innerText = "Test Mode: ON";
+        btnTestMode.style.backgroundColor = "#9b59b6";
+        btnTestMode.style.color = "#fff";
+        testSteps = 0;
+        testStepsDisplay.style.display = "inline";
+        testStepsDisplay.innerText = `Steps: ${testSteps}`;
+        const flipBtn = document.querySelector('[data-tool="flip"]');
+        if (flipBtn)
+          flipBtn.click();
+      } else {
+        disableTestMode();
+      }
+    });
+  }
+  document.getElementById("btn-shuffle").addEventListener("click", async () => {
+    if (isShuffling)
+      return;
+    disableTestMode();
+    isShuffling = true;
+    saveHistoryState();
+    const onFlip = async (tileA, tileB) => {
+      tileA.highlight = true;
+      tileB.highlight = true;
+      render();
+      await new Promise((r) => setTimeout(r, 600));
+      tileA.highlight = false;
+      tileB.highlight = false;
+    };
+    await shuffleGrid(grid, walls, { flips: 5, onFlip });
+    if (!editingObjective) {
+      flipsSinceCopy += 5;
+      let targetLvl = levels[currentLevelIdx];
+      if (editingInterlude) {
+        if (!targetLvl.interlude)
+          targetLvl.interlude = {};
+        if (!targetLvl.interlude.tutorial)
+          targetLvl.interlude.tutorial = {};
+        targetLvl.interlude.tutorial.targetMoves = flipsSinceCopy;
+      } else {
+        targetLvl.targetMoves = flipsSinceCopy;
+      }
+      const targetMovesInput = document.getElementById("target-moves-input");
+      if (targetMovesInput)
+        targetMovesInput.value = flipsSinceCopy;
+    }
+    saveCurrentToData();
+    render();
+    isShuffling = false;
+  });
+  document.getElementById("btn-export").addEventListener("click", () => {
+    disableTestMode();
+    saveCurrentToData();
+    const json = JSON.stringify(levels, null, 2);
+    const blob = new Blob([json], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const a = Object.assign(document.createElement("a"), { href: url, download: "levels.json" });
+    document.body.appendChild(a).click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  });
+  document.getElementById("btn-import").addEventListener("click", () => {
+    document.getElementById("file-import").click();
+  });
+  document.getElementById("file-import").addEventListener("change", (e) => {
+    const file = e.target.files[0];
+    if (!file)
+      return;
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      try {
+        const importedLevels = JSON.parse(event.target.result);
+        if (!Array.isArray(importedLevels)) {
+          throw new Error("Invalid file format: root object should be an array of levels.");
+        }
+        disableTestMode();
+        levels = importedLevels;
+        currentLevelIdx = 0;
+        editingInterlude = false;
+        populateLevelSelect();
+        loadLevel(0);
+      } catch (err) {
+        alert("Error loading file: " + err.message);
+        console.error(err);
+      }
+      e.target.value = "";
+    };
+    reader.readAsText(file);
+  });
+  document.getElementById("btn-generate-n").addEventListener("click", async () => {
+    disableTestMode();
+    const btn = document.getElementById("btn-generate-n");
+    let n = parseInt(document.getElementById("gen-n-input").value) || 1;
+    if (!confirm(`Generate ${n} new levels? This will append them to your current list.`))
+      return;
+    btn.disabled = true;
+    btn.innerText = "Generating...";
+    saveCurrentToData();
+    for (let i = 0; i < n; i++) {
+      let difficulty = levels.length + 1;
+      grid.clear();
+      walls.clear();
+      zoneMask.clear();
+      freezeMask.clear();
+      let maxGenRadius = Math.min(EDITOR_R_LIMIT, EDITOR_Q_OFFSET);
+      let radius = Math.min(1 + Math.floor(difficulty / 5), maxGenRadius);
+      let availableColors = ["rr", "bb", "yy", "gg", "pp", "oo", "cc"].sort(() => Math.random() - 0.5);
+      let numColors = Math.min(2 + Math.floor(difficulty / 4), availableColors.length);
+      let activeColors = availableColors.slice(0, numColors);
+      let objectiveString = "";
+      let theme = Math.floor(Math.random() * 6);
+      if (theme === 0) {
+        objectiveString = "Surround the center with matching colored rings.";
+        for (let r = -radius; r <= radius; r++) {
+          let q1 = Math.max(-radius, -r - radius);
+          let q2 = Math.min(radius, -r + radius);
+          for (let q = q1; q <= q2; q++) {
+            let dist = (Math.abs(q) + Math.abs(q + r) + Math.abs(r)) / 2;
+            let typeStr = "**";
+            if (dist === 0) {
+              typeStr = "T" + activeColors[0][0];
+            } else if (dist <= radius) {
+              let c1 = activeColors[dist % activeColors.length];
+              let c2 = c1;
+              if (difficulty >= 4 && Math.random() > 0.6)
+                c2 = activeColors[(dist + 1) % activeColors.length];
+              typeStr = c1[0] + c2[0];
+            }
+            if (dist > 1 && Math.random() < 0.1)
+              typeStr = "@@";
+            grid.set(`${q},${r}`, parseTile(q, r, typeStr));
+          }
+        }
+      } else if (theme === 1) {
+        objectiveString = "Form parallel stripes of color.";
+        for (let r = -radius; r <= radius; r++) {
+          let q1 = Math.max(-radius, -r - radius);
+          let q2 = Math.min(radius, -r + radius);
+          let rowColor = activeColors[(r + radius) % activeColors.length];
+          for (let q = q1; q <= q2; q++) {
+            let typeStr = rowColor;
+            if (difficulty >= 5 && Math.random() > 0.7)
+              typeStr = rowColor[0] + activeColors[0][0];
+            if (q === 0 && r === 0)
+              typeStr = "T" + rowColor[0];
+            grid.set(`${q},${r}`, parseTile(q, r, typeStr));
+          }
+        }
+      } else if (theme === 2) {
+        objectiveString = "Group the matching colors into clusters.";
+        for (let r = -radius; r <= radius; r++) {
+          let q1 = Math.max(-radius, -r - radius);
+          let q2 = Math.min(radius, -r + radius);
+          for (let q = q1; q <= q2; q++) {
+            let typeStr = "**";
+            if (q > 0)
+              typeStr = activeColors[0];
+            else if (q < 0)
+              typeStr = activeColors[1 % activeColors.length];
+            else
+              typeStr = activeColors[2 % activeColors.length];
+            if (q === Math.floor(radius / 2) && r === 0)
+              typeStr = "T" + activeColors[0][0];
+            if (q === -Math.floor(radius / 2) && r === 0)
+              typeStr = "T" + activeColors[1 % activeColors.length][0];
+            grid.set(`${q},${r}`, parseTile(q, r, typeStr));
+          }
+        }
+      } else if (theme === 3) {
+        objectiveString = "Connect the matching endpoints with a path.";
+        radius = Math.max(radius, 2);
+        let pColor = activeColors[0];
+        for (let r = -radius; r <= radius; r++) {
+          let q1 = Math.max(-radius, -r - radius);
+          let q2 = Math.min(radius, -r + radius);
+          for (let q = q1; q <= q2; q++) {
+            let typeStr = activeColors[1 % activeColors.length];
+            if (q === 0) {
+              if (r === -radius)
+                typeStr = pColor[0] + pColor[0] + "4";
+              else if (r === radius)
+                typeStr = pColor[0] + pColor[0] + "1";
+              else
+                typeStr = pColor[0] + (difficulty >= 6 ? activeColors[1][0] : pColor[0]) + "s1";
+            } else {
+              let dist = (Math.abs(q) + Math.abs(q + r) + Math.abs(r)) / 2;
+              let c1 = activeColors[(dist + 1) % activeColors.length];
+              typeStr = c1;
+            }
+            grid.set(`${q},${r}`, parseTile(q, r, typeStr));
+          }
+        }
+      } else if (theme === 4) {
+        objectiveString = "Circle the target with a continuous colored path.";
+        radius = Math.max(radius, 1);
+        let ringColor = activeColors[0];
+        let centerColor = activeColors[1 % activeColors.length];
+        const ringRot = { "0,-1": "4", "1,-1": "5", "1,0": "0", "0,1": "1", "-1,1": "2", "-1,0": "3" };
+        for (let r = -radius; r <= radius; r++) {
+          let q1 = Math.max(-radius, -r - radius);
+          let q2 = Math.min(radius, -r + radius);
+          for (let q = q1; q <= q2; q++) {
+            let dist = (Math.abs(q) + Math.abs(q + r) + Math.abs(r)) / 2;
+            let typeStr = centerColor;
+            if (dist === 0)
+              typeStr = "T" + centerColor[0];
+            else if (dist === 1) {
+              let key = `${q},${r}`;
+              let rot = ringRot[key] || "0";
+              typeStr = ringColor[0] + (difficulty >= 5 ? centerColor[0] : ringColor[0]) + "a" + rot;
+            } else if (dist > 1) {
+              typeStr = activeColors[dist % activeColors.length];
+            }
+            grid.set(`${q},${r}`, parseTile(q, r, typeStr));
+          }
+        }
+      } else if (theme === 5) {
+        objectiveString = "Match the inner tiles to unfreeze the outer tiles.";
+        radius = Math.max(radius, 2);
+        let innerColor = activeColors[0];
+        let outerColor = activeColors[1 % activeColors.length];
+        for (let r = -radius; r <= radius; r++) {
+          let q1 = Math.max(-radius, -r - radius);
+          let q2 = Math.min(radius, -r + radius);
+          for (let q = q1; q <= q2; q++) {
+            let dist = (Math.abs(q) + Math.abs(q + r) + Math.abs(r)) / 2;
+            let typeStr = "**";
+            let tile = parseTile(q, r, typeStr);
+            if (dist <= 1) {
+              tile = parseTile(q, r, "T" + innerColor[0]);
+              zoneMask.set(`${q},${r}`, 1);
+            } else if (dist <= radius) {
+              tile = parseTile(q, r, "T" + outerColor[0]);
+              zoneMask.set(`${q},${r}`, 2);
+            }
+            if (dist > 1 && Math.random() < 0.1)
+              tile.isBlocked = true;
+            grid.set(`${q},${r}`, tile);
+          }
+        }
+      }
+      levels.push({ objectiveString, staticMap: [], map: [], objective: { type: "match_map", map: [] } });
+      currentLevelIdx = levels.length - 1;
+      editingObjective = true;
+      saveCurrentToData();
+      const neighbors = [[-1, 0], [0, -1], [1, -1], [1, 0], [0, 1], [-1, 1]];
+      if (difficulty >= 3) {
+        let wallCount = Math.floor(difficulty / 2);
+        let keys = Array.from(grid.keys());
+        for (let j = 0; j < wallCount; j++) {
+          let k = keys[Math.floor(Math.random() * keys.length)];
+          let dir = Math.floor(Math.random() * 6);
+          let t = grid.get(k);
+          let nKey = `${t.q + neighbors[dir][0]},${t.r + neighbors[dir][1]}`;
+          if (grid.has(nKey)) {
+            walls.add(k < nKey ? `${k}|${nKey}` : `${nKey}|${k}`);
+          }
+        }
+      }
+      shuffleGrid();
+      saveCurrentToData();
+    }
+    populateLevelSelect();
+    loadLevel(levels.length - 1);
+    btn.disabled = false;
+    btn.innerText = "Generate Levels";
+  });
+}
+function commitGridState() {
+  saveCurrentToData();
+  render();
+}
+var dragSourceEl = null;
+var reorderItems = [];
+function generateMiniMapSVG(level) {
+  let tempGrid = /* @__PURE__ */ new Map();
+  if (level.staticMap && level.staticMap.length > 0) {
+    let halfRows = Math.floor(level.staticMap.length / 2);
+    for (let i = 0; i < level.staticMap.length; i++) {
+      let r = i - halfRows;
+      const rowTiles = level.staticMap[i].trim().split(/\s+/).filter((t) => t.length > 0);
+      const N = rowTiles.length;
+      if (N === 0)
+        continue;
+      let qStart = Math.floor(-r / 2 - (N - 1) / 2);
+      for (let j = 0; j < N; j++) {
+        let q = qStart + j;
+        let type = rowTiles[j];
+        if (type.includes("@@"))
+          tempGrid.set(`${q},${r}`, "#272727");
+        else {
+          let matchT = type.match(/T([a-zA-Z*])/);
+          if (matchT && matchT[1] !== "*")
+            tempGrid.set(`${q},${r}`, colorMap[matchT[1]] || "#444");
+        }
+      }
+    }
+  }
+  let movablesMap = level.objective && level.objective.map ? level.objective.map : level.map || [];
+  if (movablesMap.length > 0) {
+    let halfRows = Math.floor(movablesMap.length / 2);
+    for (let i = 0; i < movablesMap.length; i++) {
+      let r = i - halfRows;
+      const rowTiles = movablesMap[i].trim().split(/\s+/).filter((t) => t.length > 0);
+      const N = rowTiles.length;
+      if (N === 0)
+        continue;
+      let qStart = Math.floor(-r / 2 - (N - 1) / 2);
+      for (let j = 0; j < N; j++) {
+        let q = qStart + j;
+        let type = rowTiles[j];
+        if (/^\*+$/.test(type))
+          continue;
+        if (type.startsWith("@@"))
+          tempGrid.set(`${q},${r}`, "#272727");
+        else if (type.startsWith("T"))
+          tempGrid.set(`${q},${r}`, colorMap[type[1]] || "#444");
+        else if (!type.startsWith("**"))
+          tempGrid.set(`${q},${r}`, colorMap[type[0]] || "#444");
+        else if (!tempGrid.has(`${q},${r}`))
+          tempGrid.set(`${q},${r}`, "#838383");
+      }
+    }
+  }
+  if (tempGrid.size === 0)
+    return '<svg viewBox="0 0 100 100"></svg>';
+  let minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity;
+  const r_scale = 10, w_scale = Math.sqrt(3) * r_scale, h_scale = 2 * r_scale;
+  let hexes = [];
+  tempGrid.forEach((fill, key) => {
+    let [q, r] = key.split(",").map(Number);
+    let cx = w_scale * (q + r / 2);
+    let cy = h_scale * 0.75 * r;
+    minX = Math.min(minX, cx - w_scale);
+    maxX = Math.max(maxX, cx + w_scale);
+    minY = Math.min(minY, cy - h_scale);
+    maxY = Math.max(maxY, cy + h_scale);
+    hexes.push({ cx, cy, fill });
+  });
+  let padding = 10;
+  let width = maxX - minX + padding * 2;
+  let height = maxY - minY + padding * 2;
+  let svg = `<svg viewBox="${minX - padding} ${minY - padding} ${width} ${height}" style="width: 100%; height: 100%; display: block;">`;
+  let points = Array.from({ length: 6 }, (_, i) => `${Math.sin(i * Math.PI / 3) * r_scale},${Math.cos(i * Math.PI / 3) * r_scale}`).join(" ");
+  for (let hex of hexes)
+    svg += `<polygon points="${points}" transform="translate(${hex.cx}, ${hex.cy})" fill="${hex.fill}" stroke="#111" stroke-width="1"/>`;
+  return svg + `</svg>`;
+}
+function handleDragStart(e) {
+  if (!selectedReorderItems.has(this)) {
+    selectedReorderItems.clear();
+    selectedReorderItems.add(this);
+    lastSelectedReorderItem = this;
+    document.querySelectorAll(".reorder-item").forEach((el) => el.classList.remove("selected"));
+    this.classList.add("selected");
+  }
+  dragSourceEl = this;
+  e.dataTransfer.effectAllowed = "move";
+  e.dataTransfer.setData("text/plain", this.dataset.id);
+  selectedReorderItems.forEach((el) => el.classList.add("dragging"));
+}
+function handleDragOver(e) {
+  if (e.preventDefault)
+    e.preventDefault();
+  e.dataTransfer.dropEffect = "move";
+  return false;
+}
+function handleDragEnter(e) {
+  if (!selectedReorderItems.has(this))
+    this.classList.add("drag-over");
+}
+function handleDragLeave(e) {
+  this.classList.remove("drag-over");
+}
+function handleDrop(e) {
+  if (e.stopPropagation)
+    e.stopPropagation();
+  if (!selectedReorderItems.has(this)) {
+    const list = this.parentNode;
+    const allItems = Array.from(list.querySelectorAll(".reorder-item"));
+    const sourceIndex = allItems.indexOf(dragSourceEl);
+    const targetIndex = allItems.indexOf(this);
+    const sortedSelected = Array.from(selectedReorderItems).sort((a, b) => {
+      return allItems.indexOf(a) - allItems.indexOf(b);
+    });
+    let refNode = sourceIndex < targetIndex ? this.nextSibling : this;
+    while (refNode && selectedReorderItems.has(refNode)) {
+      refNode = refNode.nextSibling;
+    }
+    sortedSelected.forEach((el) => {
+      list.insertBefore(el, refNode);
+    });
+    if (list.id === "level-list-panel") {
+      applyReorder(list);
+    }
+  }
+  return false;
+}
+function handleDragEnd(e) {
+  document.querySelectorAll(".reorder-item").forEach((item) => {
+    item.classList.remove("dragging");
+    item.classList.remove("drag-over");
+  });
+}
+function applyReorder(list) {
+  if (!list)
+    return false;
+  const items = Array.from(list.querySelectorAll(".reorder-item"));
+  for (let i = 0; i < items.length; i++) {
+    const type = items[i].dataset.type;
+    if (type === "interlude") {
+      if (i === items.length - 1) {
+        alert("An interlude cannot be the last element.");
+        if (list.id === "level-list-panel")
+          populateLevelSelect();
+        return false;
+      }
+      const nextType = items[i + 1].dataset.type;
+      if (nextType === "interlude") {
+        alert("Cannot place two interludes consecutively.");
+        if (list.id === "level-list-panel")
+          populateLevelSelect();
+        return false;
+      }
+    }
+  }
+  const currentLevelObj = levels[currentLevelIdx];
+  const newLevels = [];
+  let pendingInterlude = null;
+  items.forEach((itemEl) => {
+    const id = parseInt(itemEl.dataset.id, 10);
+    const item = reorderItems.find((r) => r.id === id);
+    if (item.type === "interlude") {
+      pendingInterlude = item.data;
+    } else {
+      let lvl = item.originalObj;
+      if (pendingInterlude) {
+        lvl.interlude = pendingInterlude;
+        pendingInterlude = null;
+      } else {
+        delete lvl.interlude;
+      }
+      newLevels.push(lvl);
+    }
+  });
+  levels.splice(0, levels.length, ...newLevels);
+  currentLevelIdx = levels.indexOf(currentLevelObj);
+  if (currentLevelIdx === -1)
+    currentLevelIdx = 0;
+  populateLevelSelect();
+  loadLevel(currentLevelIdx);
+  return true;
+}
+init();
+//# sourceMappingURL=editor.js.map
