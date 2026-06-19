@@ -253,40 +253,6 @@ var pathMat = new THREE.MeshPhysicalMaterial({
 });
 var pathEndpointMat = new THREE.MeshStandardMaterial({ color: "#ffffff", emissive: "#ffffff", emissiveIntensity: 0.8, toneMapped: false, side: THREE.DoubleSide });
 pathEndpointMat.userData.isTargetEmissive = true;
-var pathData = {
-  "s": [[0, 3]],
-  // Single Straight
-  "c": [[0, 1]],
-  // Single Corner (adjacent)
-  "C": [[0, 1], [3, 4]],
-  // Double Corner
-  "B": [[0, 1], [2, 3]],
-  // Double Corner B
-  "a": [[1, 5]],
-  // Single Arc (TL-BL)
-  "A": [[1, 5], [2, 4]],
-  // Double Arc
-  "x": [[0, 3], [1, 4]],
-  // Double Straight
-  "t": [[0, 1], [2, 3], [4, 5]],
-  // Triple Corner
-  "S": [[0, 3], [1, 4], [2, 5]],
-  // Triple Straight
-  "U": [[0, 5], [1, 4], [2, 3]],
-  // U-Turn (2 corners, 1 straight)
-  "0": [[0, 6]],
-  // Endpoint pointing to Edge 0
-  "1": [[1, 6]],
-  // Endpoint pointing to Edge 1
-  "2": [[2, 6]],
-  // Endpoint pointing to Edge 2
-  "3": [[3, 6]],
-  // Endpoint pointing to Edge 3
-  "4": [[4, 6]],
-  // Endpoint pointing to Edge 4
-  "5": [[5, 6]]
-  // Endpoint pointing to Edge 5
-};
 var colorHexes = {
   "r": "#e74c3c",
   // red
@@ -571,7 +537,7 @@ function showSolutionHint() {
     console.warn("[Hint] Hint system currently supports match_map / match_pieces puzzles.");
     return false;
   }
-  const state = getObjectiveState();
+  const state = gameState.getObjectiveState();
   if (!state)
     return false;
   const zonesConfig = levelConfig.zones || {};
@@ -779,451 +745,72 @@ function resetInteractionState() {
   }
 }
 function isFixedTile(tile) {
-  if (!tile || !tile.userData || !tile.userData.type)
+  if (!tile || !tile.userData || !tile.userData.logicTile)
     return true;
-  const type = tile.userData.type;
-  if (type === "@@")
-    return true;
-  if (type.startsWith("T"))
-    return true;
-  if (tile.userData.isPathTarget)
-    return true;
-  if (tile.userData.freezeLevel > 0 && !completedZones.has(tile.userData.freezeLevel))
-    return true;
-  const pathType = type.length > 2 ? type[2] : null;
-  if (pathType && "012345".includes(pathType))
-    return true;
-  return false;
+  return gameState.isFixedTile(tile.userData.logicTile, completedZones);
 }
 function isBlockedEdge(tileA, tileB) {
-  let k1 = `${tileA.userData.q},${tileA.userData.r}`;
-  let k2 = `${tileB.userData.q},${tileB.userData.r}`;
-  let wallKey = k1 < k2 ? `${k1}|${k2}` : `${k2}|${k1}`;
-  if (walls.has(wallKey))
+  if (!tileA.userData.logicTile || !tileB.userData.logicTile)
     return true;
-  if (colorGates.has(wallKey)) {
-    const allowedColors = colorGates.get(wallKey);
-    const isTileAllowed = (tile) => {
-      const type = tile.userData.type;
-      if (type === "**" || type === "@@" || type.startsWith("T"))
-        return true;
-      const topColor = getCurrentColor(tile);
-      return allowedColors.includes(topColor);
-    };
-    if (!isTileAllowed(tileA) || !isTileAllowed(tileB)) {
-      return true;
-    }
-  }
-  return false;
-}
-function getPathAndRot(typeStr) {
-  if (typeStr.length <= 2)
-    return { path: null, rot: 0 };
-  const lastChar = typeStr[typeStr.length - 1];
-  let path = null;
-  let rot = 0;
-  if (/[0-5]/.test(lastChar)) {
-    rot = parseInt(lastChar, 10);
-    path = typeStr.length > 3 ? typeStr[2] : "0";
-    if (path === "*" || /[0-5]/.test(path))
-      path = "0";
-  } else {
-    path = typeStr[2];
-    rot = 0;
-  }
-  return { path, rot };
-}
-function isTileMatch(tile, rawExpectedType) {
-  const cleanType = (t) => t.length > 2 ? t.substring(0, 2) + t.substring(2).replace(/\*+$/, "") : t;
-  const currentType = tile.userData.type;
-  const expectedType = cleanType(rawExpectedType);
-  let isColorMatch = false;
-  if (currentType === expectedType) {
-    isColorMatch = true;
-  } else if (currentType[0] !== "T" && expectedType[0] !== "T" && currentType !== "@@" && currentType !== "**" && expectedType !== "@@" && expectedType !== "**") {
-    let expectedTop = expectedType[0] === "T" ? expectedType[1] : expectedType[0];
-    let currentTop = getCurrentColor(tile);
-    if (currentTop === expectedTop) {
-      isColorMatch = true;
-    }
-  }
-  if (!isColorMatch)
-    return false;
-  if (expectedType.length <= 2)
-    return true;
-  const expected = getPathAndRot(expectedType);
-  const current = getPathAndRot(currentType);
-  if (current.path !== expected.path)
-    return false;
-  if (expected.path) {
-    const expectedRot = expected.rot;
-    const currentRot = tile.userData.rotation !== void 0 ? tile.userData.rotation : 0;
-    const currentFlipped = tile.userData.flipped || false;
-    const baseEdges = pathData[expected.path];
-    if (!baseEdges) {
-      const norm = (r) => (r % 6 + 6) % 6;
-      if (norm(currentRot) !== norm(expectedRot))
-        return false;
-    } else {
-      const mod = (n, m) => (n % m + m) % m;
-      const getNormalizedEdges = (rot, flipped) => {
-        const edges = baseEdges.map((segment) => {
-          const e1 = segment[0] === 6 ? 6 : mod((flipped ? -segment[0] : segment[0]) + rot, 6);
-          const e2 = segment[1] === 6 ? 6 : mod((flipped ? -segment[1] : segment[1]) + rot, 6);
-          return e1 < e2 ? `${e1},${e2}` : `${e2},${e1}`;
-        });
-        return edges.sort().join("|");
-      };
-      if (getNormalizedEdges(currentRot, currentFlipped) !== getNormalizedEdges(expectedRot, false))
-        return false;
-    }
-  }
-  return true;
-}
-function getObjectiveState() {
-  if (!levelConfig || !levelConfig.objective)
-    return null;
-  const obj = levelConfig.objective;
-  const zonesConfig = levelConfig?.zones || {};
-  const hasZones = Object.keys(zonesConfig).length > 0;
-  const objMap = /* @__PURE__ */ new Map();
-  const zonesState = {};
-  let maxZone = 1;
-  let isWin = true;
-  if (obj.pieces) {
-    for (const p of obj.pieces) {
-      objMap.set(`${p.q},${p.r}`, p.type);
-      const z = hasZones ? zonesConfig[`${p.q},${p.r}`] !== void 0 ? zonesConfig[`${p.q},${p.r}`] : 0 : 1;
-      if (z > maxZone)
-        maxZone = z;
-      if (!zonesState[z])
-        zonesState[z] = { matched: true };
-      const tile = tiles.get(`${p.q},${p.r}`);
-      if (!tile || !isTileMatch(tile, p.type)) {
-        zonesState[z].matched = false;
-        isWin = false;
-      }
-    }
-  } else if (obj.map) {
-    let halfRows = Math.floor(obj.map.length / 2);
-    for (let i = 0; i < obj.map.length; i++) {
-      let r = i - halfRows;
-      const rowTiles = obj.map[i].trim().split(/\s+/).filter((t) => t.length > 0);
-      let N = rowTiles.length;
-      if (N === 0)
-        continue;
-      let qStart = Math.floor(-r / 2 - (N - 1) / 2);
-      for (let j = 0; j < N; j++) {
-        let q = qStart + j;
-        const expectedType = rowTiles[j];
-        if (/^\*+$/.test(expectedType))
-          continue;
-        objMap.set(`${q},${r}`, expectedType);
-        const z = hasZones ? zonesConfig[`${q},${r}`] !== void 0 ? zonesConfig[`${q},${r}`] : 0 : 1;
-        if (z > maxZone)
-          maxZone = z;
-        if (!zonesState[z])
-          zonesState[z] = { matched: true };
-        const tile = tiles.get(`${q},${r}`);
-        if (!tile || !isTileMatch(tile, expectedType)) {
-          zonesState[z].matched = false;
-          isWin = false;
-        }
-      }
-    }
-  }
-  const sortedZones = Object.keys(zonesState).map(Number).sort((a, b) => a - b);
-  let targetZone = sortedZones.length > 0 ? sortedZones[sortedZones.length - 1] : 1;
-  for (const z of sortedZones) {
-    if (!zonesState[z].matched) {
-      targetZone = z;
-      break;
-    }
-  }
-  return { objMap, zonesState, maxZone, hasZones, isWin, sortedZones, targetZone };
-}
-function evaluateLogicalWin(objMap) {
-  const endpointsByColor = {};
-  const pathColors = /* @__PURE__ */ new Set();
-  const cleanType = (t) => t.length > 2 ? t.substring(0, 2) + t.substring(2).replace(/\*+$/, "") : t;
-  for (const rawExpected of objMap.values()) {
-    const expectedType = cleanType(rawExpected);
-    if (expectedType.length > 2) {
-      const { path } = getPathAndRot(expectedType);
-      if (path === "0") {
-        const color = expectedType[0];
-        if (!endpointsByColor[color])
-          endpointsByColor[color] = [];
-        pathColors.add(color);
-      }
-    }
-  }
-  for (const [key, rawExpected] of objMap.entries()) {
-    const expectedType = cleanType(rawExpected);
-    const { path, rot } = getPathAndRot(expectedType);
-    if (path === "0")
-      endpointsByColor[expectedType[0]].push({ key, color: expectedType[0], edge: rot });
-  }
-  if (pathColors.size === 0)
-    return false;
-  for (const [key, rawExpectedType] of objMap.entries()) {
-    const expectedType = cleanType(rawExpectedType);
-    const tile = tiles.get(key);
-    if (!tile)
-      return false;
-    const expectedColor = expectedType[0];
-    const currentType = tile.userData.type;
-    const currentColor = currentType[0];
-    if (expectedType.startsWith("T") || expectedType === "@@") {
-      if (currentColor !== expectedColor)
-        return false;
-      continue;
-    }
-    if (pathColors.has(expectedColor))
-      continue;
-    if (expectedColor === "*" && pathColors.has(currentColor))
-      continue;
-    if (!isTileMatch(tile, rawExpectedType))
-      return false;
-  }
-  const mod = (n, m) => (n % m + m) % m;
-  const directions = [[-1, 0], [0, -1], [1, -1], [1, 0], [0, 1], [-1, 1]];
-  const getEffectiveEdge = (tile, p) => {
-    if (p === 6)
-      return 6;
-    const r = tile.userData.rotation !== void 0 ? tile.userData.rotation : 0;
-    const f = tile.userData.flipped || false;
-    return mod((f ? -p : p) + r, 6);
-  };
-  for (const color of pathColors) {
-    const eps = endpointsByColor[color];
-    if (!eps || eps.length !== 2)
-      return false;
-    const [ep1, ep2] = eps;
-    const startTile = tiles.get(ep1.key);
-    const endTile = tiles.get(ep2.key);
-    if (!startTile || !endTile)
-      return false;
-    const visited = /* @__PURE__ */ new Set();
-    const tracePath = (currentTile, entryEdge) => {
-      const tileKey = `${currentTile.userData.q},${currentTile.userData.r}`;
-      if (visited.has(tileKey) || currentTile.userData.type[0] !== color)
-        return false;
-      visited.add(tileKey);
-      if (currentTile === endTile) {
-        if (entryEdge !== null) {
-          const pathEdges2 = currentTile.userData.pathEdges;
-          if (!pathEdges2) {
-            visited.delete(tileKey);
-            return false;
-          }
-          for (const p of pathEdges2) {
-            const e1 = getEffectiveEdge(currentTile, p[0]);
-            const e2 = getEffectiveEdge(currentTile, p[1]);
-            if (e1 === entryEdge || e2 === entryEdge) {
-              if (e1 === ep2.edge || e2 === ep2.edge)
-                return true;
-            }
-          }
-          visited.delete(tileKey);
-          return false;
-        }
-        return true;
-      }
-      const pathEdges = currentTile.userData.pathEdges;
-      if (!pathEdges) {
-        visited.delete(tileKey);
-        return false;
-      }
-      for (const p of pathEdges) {
-        const e1 = getEffectiveEdge(currentTile, p[0]);
-        const e2 = getEffectiveEdge(currentTile, p[1]);
-        const attemptTraceFrom = (exitEdge) => {
-          if (exitEdge === 6)
-            return false;
-          const [dq, dr] = directions[exitEdge];
-          const nextTile = tiles.get(`${currentTile.userData.q + dq},${currentTile.userData.r + dr}`);
-          if (nextTile)
-            return tracePath(nextTile, mod(exitEdge + 3, 6));
-          return false;
-        };
-        if (entryEdge === null) {
-          if (e1 !== 6 && attemptTraceFrom(e1))
-            return true;
-          if (e2 !== 6 && attemptTraceFrom(e2))
-            return true;
-        } else if (e1 === entryEdge && attemptTraceFrom(e2))
-          return true;
-        else if (e2 === entryEdge && attemptTraceFrom(e1))
-          return true;
-      }
-      visited.delete(tileKey);
-      return false;
-    };
-    if (!tracePath(startTile, null))
-      return false;
-  }
-  return true;
+  return gameState.isBlockedEdge(tileA.userData.logicTile, tileB.userData.logicTile);
 }
 function checkWinCondition() {
-  if (!levelConfig || !levelConfig.objective)
-    return;
-  const obj = levelConfig.objective;
-  if (obj.type === "match_map" || obj.type === "match_pieces") {
-    const state = getObjectiveState();
-    if (!state)
-      return;
-    let isWin = state.isWin;
-    if (!isWin) {
-      isWin = evaluateLogicalWin(state.objMap);
+  const { isWin, newlyCompleted, hasZones } = gameState.checkWinCondition(completedZones);
+  if (newlyCompleted.length > 0) {
+    if (!levelConfig || !levelConfig.isTutorial) {
+      console.log(`[Game] Zones ${newlyCompleted.join(", ")} complete!`);
     }
-    const newlyCompleted = [];
-    if (isWin) {
-      for (const z of state.sortedZones) {
-        if (!completedZones.has(z)) {
-          newlyCompleted.push(z);
-          completedZones.add(z);
-        }
-      }
-    } else {
-      for (const z of state.sortedZones) {
-        if (state.zonesState[z].matched && !completedZones.has(z)) {
-          newlyCompleted.push(z);
-          completedZones.add(z);
-        }
-      }
-    }
-    if (newlyCompleted.length > 0) {
-      if (!levelConfig || !levelConfig.isTutorial) {
-        console.log(`[Game] Zones ${newlyCompleted.join(", ")} complete!`);
-      }
-      playSFX("win");
-      const zonesConfig = levelConfig?.zones || {};
-      const flashMeshes = [];
-      const flashMat = new THREE.MeshBasicMaterial({ color: 16777215, transparent: true, opacity: 0.8, blending: THREE.AdditiveBlending });
-      tiles.forEach((tile, key) => {
-        const z = state.hasZones ? zonesConfig[key] !== void 0 ? zonesConfig[key] : 0 : 1;
-        if (tile.userData.freezeLevel > 0 && newlyCompleted.includes(tile.userData.freezeLevel) && tile.userData.iceMesh) {
-          const ice = tile.userData.iceMesh;
-          tile.userData.iceMesh = null;
-          setTileType(tile);
-          if (ice && ice.material) {
-            activeTweens.push((time) => {
-              if (!ice.userData.startTime)
-                ice.userData.startTime = time;
-              const p = (time - ice.userData.startTime) / 500;
-              if (p >= 1) {
-                tile.remove(ice);
-                return true;
-              }
-              ice.scale.set(0.96 * (1 - p), 2.2 * (1 - p), 0.96 * (1 - p));
-              ice.material.opacity = 0.5 * (1 - p);
-              return false;
-            });
-          }
-        }
-        if (newlyCompleted.includes(z)) {
-          const flashMesh = new THREE.Mesh(hitboxGeometry, flashMat);
-          flashMesh.position.y = 0;
-          flashMesh.scale.set(1.02, 1.2, 1.02);
-          tile.add(flashMesh);
-          flashMeshes.push(flashMesh);
-        }
-      });
-      activeTweens.push((time) => {
-        if (!flashMat.userData.startTime)
-          flashMat.userData.startTime = time;
-        const p = (time - flashMat.userData.startTime) / 600;
-        if (p >= 1) {
-          flashMeshes.forEach((m) => m.parent.remove(m));
-          flashMat.dispose();
-          return true;
-        }
-        flashMat.opacity = 0.8 * (1 - p);
-        return false;
-      });
-    }
-    if (isWin && !levelWon && !levelConfig.isTutorial) {
-      levelWon = true;
-      if (onWinCallback)
-        onWinCallback();
-    }
-  } else if (obj.type === "path_connect" && obj.targets) {
-    const mod = (n, m) => (n % m + m) % m;
-    const directions = [[-1, 0], [0, -1], [1, -1], [1, 0], [0, 1], [-1, 1]];
-    const getEffectiveEdge = (tile, p) => {
-      if (p === 6)
-        return 6;
-      const r = tile.userData.rotation !== void 0 ? tile.userData.rotation : 0;
-      const f = tile.userData.flipped || false;
-      return mod((f ? -p : p) + r, 6);
-    };
-    const startCoords = obj.targets[0];
-    const endCoords = obj.targets[1];
-    const startTile = tiles.get(`${startCoords.q},${startCoords.r}`);
-    const endTile = tiles.get(`${endCoords.q},${endCoords.r}`);
-    if (!startTile || !endTile)
-      return;
-    const visited = /* @__PURE__ */ new Set();
-    let isWin = false;
-    const tracePath = (currentTile, entryEdge) => {
-      const tileKey = `${currentTile.userData.q},${currentTile.userData.r}`;
-      if (visited.has(tileKey))
-        return false;
-      visited.add(tileKey);
-      if (currentTile === endTile) {
-        if (entryEdge !== null) {
-          const { pathEdges: pathEdges2 } = currentTile.userData;
-          if (!pathEdges2)
-            return false;
-          for (const path of pathEdges2) {
-            const e1 = getEffectiveEdge(currentTile, path[0]);
-            const e2 = getEffectiveEdge(currentTile, path[1]);
-            if (e1 === entryEdge || e2 === entryEdge)
+    playSFX("win");
+    newlyCompleted.forEach((z) => completedZones.add(z));
+    const zonesConfig = levelConfig?.zones || {};
+    const flashMeshes = [];
+    const flashMat = new THREE.MeshBasicMaterial({ color: 16777215, transparent: true, opacity: 0.8, blending: THREE.AdditiveBlending });
+    tiles.forEach((tile, key) => {
+      const z = hasZones ? zonesConfig[key] !== void 0 ? zonesConfig[key] : 0 : 1;
+      if (tile.userData.logicTile && tile.userData.logicTile.freezeLevel > 0 && newlyCompleted.includes(tile.userData.logicTile.freezeLevel) && tile.userData.iceMesh) {
+        const ice = tile.userData.iceMesh;
+        tile.userData.iceMesh = null;
+        setTileType(tile);
+        if (ice && ice.material) {
+          activeTweens.push((time) => {
+            if (!ice.userData.startTime)
+              ice.userData.startTime = time;
+            const p = (time - ice.userData.startTime) / 500;
+            if (p >= 1) {
+              tile.remove(ice);
               return true;
-          }
-          return false;
+            }
+            ice.scale.set(0.96 * (1 - p), 2.2 * (1 - p), 0.96 * (1 - p));
+            ice.material.opacity = 0.5 * (1 - p);
+            return false;
+          });
         }
+      }
+      if (newlyCompleted.includes(z)) {
+        const flashMesh = new THREE.Mesh(hitboxGeometry, flashMat);
+        flashMesh.position.y = 0;
+        flashMesh.scale.set(1.02, 1.2, 1.02);
+        tile.add(flashMesh);
+        flashMeshes.push(flashMesh);
+      }
+    });
+    activeTweens.push((time) => {
+      if (!flashMat.userData.startTime)
+        flashMat.userData.startTime = time;
+      const p = (time - flashMat.userData.startTime) / 600;
+      if (p >= 1) {
+        flashMeshes.forEach((m) => m.parent.remove(m));
+        flashMat.dispose();
         return true;
       }
-      const { pathEdges } = currentTile.userData;
-      if (!pathEdges)
-        return false;
-      for (const path of pathEdges) {
-        const e1 = getEffectiveEdge(currentTile, path[0]);
-        const e2 = getEffectiveEdge(currentTile, path[1]);
-        const attemptTraceFrom = (exitEdge) => {
-          if (exitEdge === 6)
-            return false;
-          const [dq, dr] = directions[exitEdge];
-          const nextTile = tiles.get(`${currentTile.userData.q + dq},${currentTile.userData.r + dr}`);
-          if (nextTile) {
-            return tracePath(nextTile, mod(exitEdge + 3, 6));
-          }
-          return false;
-        };
-        if (entryEdge === null) {
-          if (e1 !== 6 && attemptTraceFrom(e1))
-            return true;
-          if (e2 !== 6 && attemptTraceFrom(e2))
-            return true;
-        } else if (e1 === entryEdge) {
-          if (attemptTraceFrom(e2))
-            return true;
-        } else if (e2 === entryEdge) {
-          if (attemptTraceFrom(e1))
-            return true;
-        }
-      }
-      visited.delete(tileKey);
+      flashMat.opacity = 0.8 * (1 - p);
       return false;
-    };
-    isWin = tracePath(startTile, null);
-    if (isWin && !levelWon && !levelConfig.isTutorial) {
-      levelWon = true;
-      if (onWinCallback)
-        onWinCallback();
-    }
+    });
+  }
+  if (isWin && !levelWon && !levelConfig.isTutorial) {
+    levelWon = true;
+    if (onWinCallback)
+      onWinCallback();
   }
 }
 function flipTile(source, target) {
@@ -1238,31 +825,13 @@ function flipTile(source, target) {
   const sr = source.userData.r;
   const tq = target.userData.q;
   const tr = target.userData.r;
+  gameState.flipTile(sq, sr, tq, tr);
   tiles.set(`${tq},${tr}`, source);
   tiles.set(`${sq},${sr}`, target);
   source.userData.q = tq;
   source.userData.r = tr;
   target.userData.q = sq;
   target.userData.r = sr;
-  const advanceColorIndex = (tile) => {
-    if (!tile.userData.type.startsWith("**") && !tile.userData.type.startsWith("@@") && !tile.userData.type.startsWith("T")) {
-      tile.userData.colorIndex = (tile.userData.colorIndex || 0) + 1;
-    }
-  };
-  advanceColorIndex(source);
-  advanceColorIndex(target);
-  const neighborDirections = { "-1,0": 0, "0,-1": 1, "1,-1": 2, "1,0": 3, "0,1": 4, "-1,1": 5 };
-  const flipDir = neighborDirections[`${tq - sq},${tr - sr}`];
-  const mod = (n, m) => (n % m + m) % m;
-  const sourceR = source.userData.rotation !== void 0 ? source.userData.rotation : 0;
-  const sourceF = source.userData.flipped || false;
-  const targetR = target.userData.rotation !== void 0 ? target.userData.rotation : 0;
-  const targetF = target.userData.flipped || false;
-  source.userData.rotation = mod(2 * flipDir + 3 - sourceR, 6);
-  source.userData.flipped = !sourceF;
-  const targetFlipDir = (flipDir + 3) % 6;
-  target.userData.rotation = mod(2 * targetFlipDir + 3 - targetR, 6);
-  target.userData.flipped = !targetF;
   const oldPos = axialToWorld(sq, sr);
   const newPos = axialToWorld(tq, tr);
   const dx = newPos.x - oldPos.x;
@@ -1311,13 +880,7 @@ function performSingleFlip(tile) {
   playSFX("flip");
   isAnimating = true;
   tile.position.y = 0;
-  if (!tile.userData.type.startsWith("**") && !tile.userData.type.startsWith("@@") && !tile.userData.type.startsWith("T")) {
-    tile.userData.colorIndex = (tile.userData.colorIndex || 0) + 1;
-  }
-  const oldR = tile.userData.rotation !== void 0 ? tile.userData.rotation : 0;
-  const mod = (n, m) => (n % m + m) % m;
-  tile.userData.rotation = mod(-oldR, 6);
-  tile.userData.flipped = !(tile.userData.flipped || false);
+  gameState.singleFlip(tile.userData.q, tile.userData.r);
   const pivot = new THREE.Group();
   pivot.position.copy(tile.position);
   boardGroup.add(pivot);
@@ -1356,9 +919,7 @@ function performSingleRotate(tile) {
   playSFX("flip");
   isAnimating = true;
   tile.position.y = 0;
-  const oldR = tile.userData.rotation !== void 0 ? tile.userData.rotation : 0;
-  const mod = (n, m) => (n % m + m) % m;
-  tile.userData.rotation = mod(oldR + 1, 6);
+  gameState.singleRotate(tile.userData.q, tile.userData.r);
   const pivot = new THREE.Group();
   pivot.position.copy(tile.position);
   boardGroup.add(pivot);
@@ -1559,73 +1120,734 @@ function onPointerUp(event) {
   dragStartTile = null;
 }
 
+// gamelogic.js
+var pathData = {
+  "s": [[0, 3]],
+  // Single Straight
+  "c": [[0, 1]],
+  // Single Corner (adjacent)
+  "C": [[0, 1], [3, 4]],
+  // Double Corner
+  "B": [[0, 1], [2, 3]],
+  // Double Corner B
+  "a": [[1, 5]],
+  // Single Arc (TL-BL)
+  "A": [[1, 5], [2, 4]],
+  // Double Arc
+  "x": [[0, 3], [1, 4]],
+  // Double Straight
+  "t": [[0, 1], [2, 3], [4, 5]],
+  // Triple Corner
+  "S": [[0, 3], [1, 4], [2, 5]],
+  // Triple Straight
+  "U": [[0, 5], [1, 4], [2, 3]],
+  // U-Turn (2 corners, 1 straight)
+  "0": [[0, 6]],
+  // Endpoint pointing to Edge 0
+  "1": [[1, 6]],
+  // Endpoint pointing to Edge 1
+  "2": [[2, 6]],
+  // Endpoint pointing to Edge 2
+  "3": [[3, 6]],
+  // Endpoint pointing to Edge 3
+  "4": [[4, 6]],
+  // Endpoint pointing to Edge 4
+  "5": [[5, 6]]
+  // Endpoint pointing to Edge 5
+};
+function getPathAndRot(typeStr) {
+  if (typeStr.length <= 2)
+    return { path: null, rot: 0 };
+  const lastChar = typeStr[typeStr.length - 1];
+  let path = null;
+  let rot = 0;
+  if (/[0-5]/.test(lastChar)) {
+    rot = parseInt(lastChar, 10);
+    path = typeStr.length > 3 ? typeStr[2] : "0";
+    if (path === "*" || /[0-5]/.test(path))
+      path = "0";
+  } else {
+    path = typeStr[2];
+    rot = 0;
+  }
+  return { path, rot };
+}
+function getCurrentColor(tileData, offset = 0) {
+  let type = tileData.type;
+  if (type.startsWith("**") || type.startsWith("@@") || type.startsWith("T")) {
+    return type.startsWith("T") ? type[1] : "*";
+  }
+  let sc = tileData.staticColors || "";
+  let cc = tileData.cyclingColors || "";
+  let idx = (tileData.colorIndex || 0) + offset;
+  if (idx < sc.length) {
+    return sc[idx];
+  } else {
+    let cIdx = idx - sc.length;
+    if (cc.length > 0) {
+      return cc[cIdx % cc.length];
+    } else {
+      return sc.length > 0 ? sc[sc.length - 1] : "*";
+    }
+  }
+}
+function isTileMatch(tileData, rawExpectedType) {
+  if (!tileData)
+    return false;
+  const cleanType = (t) => t.length > 2 ? t.substring(0, 2) + t.substring(2).replace(/\*+$/, "") : t;
+  const currentType = tileData.type;
+  const expectedType = cleanType(rawExpectedType);
+  let isColorMatch = false;
+  if (currentType === expectedType) {
+    isColorMatch = true;
+  } else if (currentType[0] !== "T" && expectedType[0] !== "T" && currentType !== "@@" && currentType !== "**" && expectedType !== "@@" && expectedType !== "**") {
+    let expectedTop = expectedType[0] === "T" ? expectedType[1] : expectedType[0];
+    let currentTop = getCurrentColor(tileData);
+    if (currentTop === expectedTop) {
+      isColorMatch = true;
+    }
+  }
+  if (!isColorMatch)
+    return false;
+  if (expectedType.length <= 2)
+    return true;
+  const expected = getPathAndRot(expectedType);
+  const current = getPathAndRot(currentType);
+  if (current.path !== expected.path)
+    return false;
+  if (expected.path) {
+    const expectedRot = expected.rot;
+    const currentRot = tileData.rotation !== void 0 ? tileData.rotation : 0;
+    const currentFlipped = tileData.flipped || false;
+    const baseEdges = pathData[expected.path];
+    if (!baseEdges) {
+      const norm = (r) => (r % 6 + 6) % 6;
+      if (norm(currentRot) !== norm(expectedRot))
+        return false;
+    } else {
+      const mod = (n, m) => (n % m + m) % m;
+      const getNormalizedEdges = (rot, flipped) => {
+        const edges = baseEdges.map((segment) => {
+          const e1 = segment[0] === 6 ? 6 : mod((flipped ? -segment[0] : segment[0]) + rot, 6);
+          const e2 = segment[1] === 6 ? 6 : mod((flipped ? -segment[1] : segment[1]) + rot, 6);
+          return e1 < e2 ? `${e1},${e2}` : `${e2},${e1}`;
+        });
+        return edges.sort().join("|");
+      };
+      if (getNormalizedEdges(currentRot, currentFlipped) !== getNormalizedEdges(expectedRot, false))
+        return false;
+    }
+  }
+  return true;
+}
+function evaluateLogicalWin(objMap, tiles2) {
+  const endpointsByColor = {};
+  const pathColors = /* @__PURE__ */ new Set();
+  const cleanType = (t) => t.length > 2 ? t.substring(0, 2) + t.substring(2).replace(/\*+$/, "") : t;
+  for (const rawExpected of objMap.values()) {
+    const expectedType = cleanType(rawExpected);
+    if (expectedType.length > 2) {
+      const { path } = getPathAndRot(expectedType);
+      if (path === "0") {
+        const color = expectedType[0];
+        if (!endpointsByColor[color])
+          endpointsByColor[color] = [];
+        pathColors.add(color);
+      }
+    }
+  }
+  for (const [key, rawExpected] of objMap.entries()) {
+    const expectedType = cleanType(rawExpected);
+    const { path, rot } = getPathAndRot(expectedType);
+    if (path === "0")
+      endpointsByColor[expectedType[0]].push({ key, color: expectedType[0], edge: rot });
+  }
+  if (pathColors.size === 0)
+    return false;
+  for (const [key, rawExpectedType] of objMap.entries()) {
+    const expectedType = cleanType(rawExpectedType);
+    const tileData = tiles2.get(key);
+    if (!tileData)
+      return false;
+    const expectedColor = expectedType[0];
+    const currentType = tileData.type;
+    const currentColor = currentType[0];
+    if (expectedType.startsWith("T") || expectedType === "@@") {
+      if (currentColor !== expectedColor)
+        return false;
+      continue;
+    }
+    if (pathColors.has(expectedColor))
+      continue;
+    if (expectedColor === "*" && pathColors.has(currentColor))
+      continue;
+    if (!isTileMatch(tileData, rawExpectedType))
+      return false;
+  }
+  const mod = (n, m) => (n % m + m) % m;
+  const directions = [[-1, 0], [0, -1], [1, -1], [1, 0], [0, 1], [-1, 1]];
+  const getEffectiveEdge = (tileData, p) => {
+    if (p === 6)
+      return 6;
+    const r = tileData.rotation !== void 0 ? tileData.rotation : 0;
+    const f = tileData.flipped || false;
+    return mod((f ? -p : p) + r, 6);
+  };
+  for (const color of pathColors) {
+    const eps = endpointsByColor[color];
+    if (!eps || eps.length !== 2)
+      return false;
+    const [ep1, ep2] = eps;
+    const startTile = tiles2.get(ep1.key);
+    const endTile = tiles2.get(ep2.key);
+    if (!startTile || !endTile)
+      return false;
+    const visited = /* @__PURE__ */ new Set();
+    const tracePath = (currentTile, entryEdge) => {
+      const tileKey = `${currentTile.q},${currentTile.r}`;
+      if (visited.has(tileKey) || currentTile.type[0] !== color)
+        return false;
+      visited.add(tileKey);
+      if (currentTile === endTile) {
+        if (entryEdge !== null) {
+          const pathEdges2 = currentTile.pathEdges;
+          if (!pathEdges2) {
+            visited.delete(tileKey);
+            return false;
+          }
+          for (const p of pathEdges2) {
+            const e1 = getEffectiveEdge(currentTile, p[0]);
+            const e2 = getEffectiveEdge(currentTile, p[1]);
+            if (e1 === entryEdge || e2 === entryEdge) {
+              if (e1 === ep2.edge || e2 === ep2.edge)
+                return true;
+            }
+          }
+          visited.delete(tileKey);
+          return false;
+        }
+        return true;
+      }
+      const pathEdges = currentTile.pathEdges;
+      if (!pathEdges) {
+        visited.delete(tileKey);
+        return false;
+      }
+      for (const p of pathEdges) {
+        const e1 = getEffectiveEdge(currentTile, p[0]);
+        const e2 = getEffectiveEdge(currentTile, p[1]);
+        const attemptTraceFrom = (exitEdge) => {
+          if (exitEdge === 6)
+            return false;
+          const [dq, dr] = directions[exitEdge];
+          const nextTile = tiles2.get(`${currentTile.q + dq},${currentTile.r + dr}`);
+          if (nextTile)
+            return tracePath(nextTile, mod(exitEdge + 3, 6));
+          return false;
+        };
+        if (entryEdge === null) {
+          if (e1 !== 6 && attemptTraceFrom(e1))
+            return true;
+          if (e2 !== 6 && attemptTraceFrom(e2))
+            return true;
+        } else if (e1 === entryEdge && attemptTraceFrom(e2))
+          return true;
+        else if (e2 === entryEdge && attemptTraceFrom(e1))
+          return true;
+      }
+      visited.delete(tileKey);
+      return false;
+    };
+    if (!tracePath(startTile, null))
+      return false;
+  }
+  return true;
+}
+var BoardState = class _BoardState {
+  constructor() {
+    this.tiles = /* @__PURE__ */ new Map();
+    this.walls = /* @__PURE__ */ new Set();
+    this.colorGates = /* @__PURE__ */ new Map();
+    this.zones = {};
+    this.frozen = {};
+    this.levelConfig = null;
+  }
+  clone() {
+    const newState = new _BoardState();
+    newState.levelConfig = this.levelConfig;
+    newState.zones = this.zones;
+    newState.frozen = this.frozen;
+    newState.walls = new Set(this.walls);
+    newState.colorGates = new Map(this.colorGates);
+    this.tiles.forEach((v, k) => {
+      newState.tiles.set(k, { ...v });
+    });
+    return newState;
+  }
+  parseLevel(config) {
+    this.levelConfig = config;
+    this.tiles.clear();
+    this.walls.clear();
+    this.colorGates.clear();
+    this.zones = config.zones || {};
+    this.frozen = config.frozen || {};
+    if (config.staticMap) {
+      let halfRows = Math.floor(config.staticMap.length / 2);
+      for (let i = 0; i < config.staticMap.length; i++) {
+        let r = i - halfRows;
+        const rowTiles = config.staticMap[i].trim().split(/\s+/).filter((t) => t.length > 0);
+        const N = rowTiles.length;
+        if (N === 0)
+          continue;
+        let qStart = Math.floor(-r / 2 - (N - 1) / 2);
+        for (let j = 0; j < N; j++) {
+          let q = qStart + j;
+          const s = rowTiles[j];
+          let matchZ = s.match(/Z(\d+)/);
+          if (matchZ)
+            this.zones[`${q},${r}`] = parseInt(matchZ[1], 10);
+          let matchF = s.match(/F(\d+)/);
+          if (matchF)
+            this.frozen[`${q},${r}`] = parseInt(matchF[1], 10);
+          let matchW = s.match(/W([1-6]+)/);
+          if (matchW) {
+            let dirs = matchW[1].split("").map(Number);
+            dirs.forEach((d) => {
+              let edge = d - 1;
+              const neighbors = [[-1, 0], [0, -1], [1, -1], [1, 0], [0, 1], [-1, 1]];
+              let nq = q + neighbors[edge][0];
+              let nr = r + neighbors[edge][1];
+              let k1 = `${q},${r}`;
+              let k2 = `${nq},${nr}`;
+              let wallKey = k1 < k2 ? `${k1}|${k2}` : `${k2}|${k1}`;
+              this.walls.add(wallKey);
+            });
+          }
+          let matchC = [...s.matchAll(/C([a-zA-Z]+)([1-6]+)/g)];
+          if (matchC.length > 0) {
+            matchC.forEach((m) => {
+              let colors = m[1];
+              let dirs = m[2].split("").map(Number);
+              dirs.forEach((d) => {
+                let edge = d - 1;
+                const neighbors = [[-1, 0], [0, -1], [1, -1], [1, 0], [0, 1], [-1, 1]];
+                let nq = q + neighbors[edge][0];
+                let nr = r + neighbors[edge][1];
+                let k1 = `${q},${r}`;
+                let k2 = `${nq},${nr}`;
+                let wallKey = k1 < k2 ? `${k1}|${k2}` : `${k2}|${k1}`;
+                this.colorGates.set(wallKey, colors);
+              });
+            });
+          }
+          if (s.includes("@@")) {
+            this.addTile(q, r, "@@");
+          } else {
+            let matchT = s.match(/T([a-zA-Z*])/);
+            let matchE = s.match(/E([a-zA-Z*])?([1-6])/);
+            if (matchT) {
+              this.addTile(q, r, "T" + matchT[1]);
+            } else if (matchE) {
+              let c = matchE[1] || "*";
+              let dir = parseInt(matchE[2], 10) - 1;
+              this.addTile(q, r, c + c + "0" + dir);
+            } else {
+              this.addTile(q, r, "**");
+            }
+          }
+        }
+      }
+    } else if (config.map) {
+      let halfRows = Math.floor(config.map.length / 2);
+      for (let i = 0; i < config.map.length; i++) {
+        let r = i - halfRows;
+        const rowTiles = config.map[i].trim().split(/\s+/).filter((t) => t.length > 0);
+        const N = rowTiles.length;
+        if (N === 0)
+          continue;
+        let qStart = Math.floor(-r / 2 - (N - 1) / 2);
+        for (let j = 0; j < N; j++) {
+          let q = qStart + j;
+          const type = rowTiles[j];
+          this.addTile(q, r, type);
+        }
+      }
+    }
+    if (config.staticMap && config.map) {
+      let halfRows = Math.floor(config.map.length / 2);
+      for (let i = 0; i < config.map.length; i++) {
+        let r = i - halfRows;
+        const rowTiles = config.map[i].trim().split(/\s+/).filter((t) => t.length > 0);
+        const N = rowTiles.length;
+        if (N === 0)
+          continue;
+        let qStart = Math.floor(-r / 2 - (N - 1) / 2);
+        for (let j = 0; j < N; j++) {
+          let q = qStart + j;
+          const type = rowTiles[j];
+          if (!/^\*+$/.test(type)) {
+            this.tiles.delete(`${q},${r}`);
+            this.addTile(q, r, type);
+          }
+        }
+      }
+    } else if (config.initial) {
+      config.initial.forEach((p) => {
+        this.tiles.delete(`${p.q},${p.r}`);
+        this.addTile(p.q, p.r, p.type);
+      });
+    }
+  }
+  addTile(q, r, type) {
+    if (/^\*+$/.test(type))
+      type = "**";
+    let staticColors = "";
+    let cyclingColors = "";
+    let pathStr = "";
+    let isTargetMesh = false;
+    let isBlocked = false;
+    if (type.startsWith("@@")) {
+      isTargetMesh = true;
+      isBlocked = true;
+    } else if (type.startsWith("T")) {
+      isTargetMesh = true;
+      staticColors = type[1];
+      pathStr = type.substring(2).replace(/\*+$/, "");
+    } else if (type.startsWith("**")) {
+      pathStr = type.substring(2).replace(/\*+$/, "");
+    } else if (type.startsWith("[")) {
+      let closeIdx = type.indexOf("]");
+      if (closeIdx !== -1) {
+        let colorsPart = type.substring(1, closeIdx);
+        let dashIdx = colorsPart.indexOf("-");
+        if (dashIdx !== -1) {
+          staticColors = colorsPart.substring(0, dashIdx);
+          cyclingColors = colorsPart.substring(dashIdx + 1);
+        } else {
+          cyclingColors = colorsPart;
+        }
+        pathStr = type.substring(closeIdx + 1).replace(/\*+$/, "");
+      }
+    } else {
+      cyclingColors = type.substring(0, Math.min(2, type.length));
+      if (cyclingColors.length === 1 && type !== "**")
+        cyclingColors += cyclingColors;
+      pathStr = type.substring(cyclingColors.length).replace(/\*+$/, "");
+    }
+    let pathType = null;
+    let initialRot = 0;
+    if (pathStr) {
+      const lastChar = pathStr[pathStr.length - 1];
+      if (/[0-5]/.test(lastChar)) {
+        initialRot = parseInt(lastChar, 10);
+        pathType = pathStr.length > 1 ? pathStr[0] : "0";
+        if (pathType === "*" || /[0-5]/.test(pathType))
+          pathType = "0";
+      } else {
+        pathType = pathStr[0];
+        initialRot = 0;
+      }
+    }
+    if (isTargetMesh && pathType === "*")
+      pathType = null;
+    const pathEdges = pathType ? pathData[pathType] : null;
+    const isPathTarget = this.levelConfig?.objective?.type === "path_connect" && this.levelConfig.objective.targets?.some((t) => t.q === q && t.r === r);
+    const freezeLevel = this.frozen[`${q},${r}`] || 0;
+    const tileData = {
+      q,
+      r,
+      type,
+      rotation: initialRot,
+      flipped: false,
+      pathEdges,
+      isPathTarget,
+      freezeLevel,
+      staticColors,
+      cyclingColors,
+      colorIndex: 0,
+      isTarget: isTargetMesh,
+      isBlocked,
+      path: pathStr
+    };
+    this.tiles.set(`${q},${r}`, tileData);
+  }
+  isFixedTile(tileData, completedZones2) {
+    if (!tileData || !tileData.type)
+      return true;
+    const type = tileData.type;
+    if (type === "@@")
+      return true;
+    if (type.startsWith("T"))
+      return true;
+    if (tileData.isPathTarget)
+      return true;
+    if (tileData.freezeLevel > 0 && !completedZones2.has(tileData.freezeLevel))
+      return true;
+    const pathType = type.length > 2 ? type[2] : null;
+    if (pathType && "012345".includes(pathType))
+      return true;
+    return false;
+  }
+  isBlockedEdge(tileA, tileB) {
+    let k1 = `${tileA.q},${tileA.r}`;
+    let k2 = `${tileB.q},${tileB.r}`;
+    let wallKey = k1 < k2 ? `${k1}|${k2}` : `${k2}|${k1}`;
+    if (this.walls.has(wallKey))
+      return true;
+    if (this.colorGates.has(wallKey)) {
+      const allowedColors = this.colorGates.get(wallKey);
+      const isTileAllowed = (tile) => {
+        const type = tile.type;
+        if (type === "**" || type === "@@" || type.startsWith("T"))
+          return true;
+        const topColor = getCurrentColor(tile);
+        return allowedColors.includes(topColor);
+      };
+      if (!isTileAllowed(tileA) || !isTileAllowed(tileB)) {
+        return true;
+      }
+    }
+    return false;
+  }
+  flipTile(sq, sr, tq, tr) {
+    const source = this.tiles.get(`${sq},${sr}`);
+    const target = this.tiles.get(`${tq},${tr}`);
+    this.tiles.set(`${tq},${tr}`, source);
+    this.tiles.set(`${sq},${sr}`, target);
+    source.q = tq;
+    source.r = tr;
+    target.q = sq;
+    target.r = sr;
+    const advanceColorIndex = (tileData) => {
+      if (!tileData.type.startsWith("**") && !tileData.type.startsWith("@@") && !tileData.type.startsWith("T")) {
+        tileData.colorIndex = (tileData.colorIndex || 0) + 1;
+      }
+    };
+    advanceColorIndex(source);
+    advanceColorIndex(target);
+    const neighborDirections = { "-1,0": 0, "0,-1": 1, "1,-1": 2, "1,0": 3, "0,1": 4, "-1,1": 5 };
+    const flipDir = neighborDirections[`${tq - sq},${tr - sr}`];
+    const mod = (n, m) => (n % m + m) % m;
+    const sourceR = source.rotation !== void 0 ? source.rotation : 0;
+    const sourceF = source.flipped || false;
+    const targetR = target.rotation !== void 0 ? target.rotation : 0;
+    const targetF = target.flipped || false;
+    source.rotation = mod(2 * flipDir + 3 - sourceR, 6);
+    source.flipped = !sourceF;
+    const targetFlipDir = (flipDir + 3) % 6;
+    target.rotation = mod(2 * targetFlipDir + 3 - targetR, 6);
+    target.flipped = !targetF;
+  }
+  singleFlip(q, r) {
+    const tile = this.tiles.get(`${q},${r}`);
+    if (!tile.type.startsWith("**") && !tile.type.startsWith("@@") && !tile.type.startsWith("T")) {
+      tile.colorIndex = (tile.colorIndex || 0) + 1;
+    }
+    const oldR = tile.rotation !== void 0 ? tile.rotation : 0;
+    const mod = (n, m) => (n % m + m) % m;
+    tile.rotation = mod(-oldR, 6);
+    tile.flipped = !(tile.flipped || false);
+  }
+  singleRotate(q, r) {
+    const tile = this.tiles.get(`${q},${r}`);
+    const oldR = tile.rotation !== void 0 ? tile.rotation : 0;
+    const mod = (n, m) => (n % m + m) % m;
+    tile.rotation = mod(oldR + 1, 6);
+  }
+  getObjectiveState() {
+    if (!this.levelConfig || !this.levelConfig.objective)
+      return null;
+    const obj = this.levelConfig.objective;
+    const hasZones = Object.keys(this.zones).length > 0;
+    const objMap = /* @__PURE__ */ new Map();
+    const zonesState = {};
+    let maxZone = 1;
+    let isWin = true;
+    if (obj.pieces) {
+      for (const p of obj.pieces) {
+        objMap.set(`${p.q},${p.r}`, p.type);
+        const z = hasZones ? this.zones[`${p.q},${p.r}`] !== void 0 ? this.zones[`${p.q},${p.r}`] : 0 : 1;
+        if (z > maxZone)
+          maxZone = z;
+        if (!zonesState[z])
+          zonesState[z] = { matched: true };
+        const tile = this.tiles.get(`${p.q},${p.r}`);
+        if (!tile || !isTileMatch(tile, p.type)) {
+          zonesState[z].matched = false;
+          isWin = false;
+        }
+      }
+    } else if (obj.map) {
+      let halfRows = Math.floor(obj.map.length / 2);
+      for (let i = 0; i < obj.map.length; i++) {
+        let r = i - halfRows;
+        const rowTiles = obj.map[i].trim().split(/\s+/).filter((t) => t.length > 0);
+        let N = rowTiles.length;
+        if (N === 0)
+          continue;
+        let qStart = Math.floor(-r / 2 - (N - 1) / 2);
+        for (let j = 0; j < N; j++) {
+          let q = qStart + j;
+          const expectedType = rowTiles[j];
+          if (/^\*+$/.test(expectedType))
+            continue;
+          objMap.set(`${q},${r}`, expectedType);
+          const z = hasZones ? this.zones[`${q},${r}`] !== void 0 ? this.zones[`${q},${r}`] : 0 : 1;
+          if (z > maxZone)
+            maxZone = z;
+          if (!zonesState[z])
+            zonesState[z] = { matched: true };
+          const tile = this.tiles.get(`${q},${r}`);
+          if (!tile || !isTileMatch(tile, expectedType)) {
+            zonesState[z].matched = false;
+            isWin = false;
+          }
+        }
+      }
+    }
+    const sortedZones = Object.keys(zonesState).map(Number).sort((a, b) => a - b);
+    let targetZone = sortedZones.length > 0 ? sortedZones[sortedZones.length - 1] : 1;
+    for (const z of sortedZones) {
+      if (!zonesState[z].matched) {
+        targetZone = z;
+        break;
+      }
+    }
+    return { objMap, zonesState, maxZone, hasZones, isWin, sortedZones, targetZone };
+  }
+  checkWinCondition(completedZones2) {
+    if (!this.levelConfig || !this.levelConfig.objective)
+      return { isWin: false, newlyCompleted: [] };
+    const obj = this.levelConfig.objective;
+    if (obj.type === "match_map" || obj.type === "match_pieces") {
+      const state = this.getObjectiveState();
+      if (!state)
+        return { isWin: false, newlyCompleted: [] };
+      let isWin = state.isWin;
+      if (!isWin) {
+        isWin = evaluateLogicalWin(state.objMap, this.tiles);
+      }
+      const newlyCompleted = [];
+      if (isWin) {
+        for (const z of state.sortedZones) {
+          if (!completedZones2.has(z)) {
+            newlyCompleted.push(z);
+          }
+        }
+      } else {
+        for (const z of state.sortedZones) {
+          if (state.zonesState[z].matched && !completedZones2.has(z)) {
+            newlyCompleted.push(z);
+          }
+        }
+      }
+      return { isWin, newlyCompleted, hasZones: state.hasZones };
+    } else if (obj.type === "path_connect" && obj.targets) {
+      const mod = (n, m) => (n % m + m) % m;
+      const directions = [[-1, 0], [0, -1], [1, -1], [1, 0], [0, 1], [-1, 1]];
+      const getEffectiveEdge = (tile, p) => {
+        if (p === 6)
+          return 6;
+        const r = tile.rotation !== void 0 ? tile.rotation : 0;
+        const f = tile.flipped || false;
+        return mod((f ? -p : p) + r, 6);
+      };
+      const startCoords = obj.targets[0];
+      const endCoords = obj.targets[1];
+      const startTile = this.tiles.get(`${startCoords.q},${startCoords.r}`);
+      const endTile = this.tiles.get(`${endCoords.q},${endCoords.r}`);
+      if (!startTile || !endTile)
+        return { isWin: false, newlyCompleted: [] };
+      const visited = /* @__PURE__ */ new Set();
+      let isWin = false;
+      const tracePath = (currentTile, entryEdge) => {
+        const tileKey = `${currentTile.q},${currentTile.r}`;
+        if (visited.has(tileKey))
+          return false;
+        visited.add(tileKey);
+        if (currentTile === endTile) {
+          if (entryEdge !== null) {
+            const { pathEdges: pathEdges2 } = currentTile;
+            if (!pathEdges2)
+              return false;
+            for (const path of pathEdges2) {
+              const e1 = getEffectiveEdge(currentTile, path[0]);
+              const e2 = getEffectiveEdge(currentTile, path[1]);
+              if (e1 === entryEdge || e2 === entryEdge)
+                return true;
+            }
+            return false;
+          }
+          return true;
+        }
+        const { pathEdges } = currentTile;
+        if (!pathEdges) {
+          return false;
+        }
+        for (const path of pathEdges) {
+          const e1 = getEffectiveEdge(currentTile, path[0]);
+          const e2 = getEffectiveEdge(currentTile, path[1]);
+          const attemptTraceFrom = (exitEdge) => {
+            if (exitEdge === 6)
+              return false;
+            const [dq, dr] = directions[exitEdge];
+            const nextTile = this.tiles.get(`${currentTile.q + dq},${currentTile.r + dr}`);
+            if (nextTile) {
+              return tracePath(nextTile, mod(exitEdge + 3, 6));
+            }
+            return false;
+          };
+          if (entryEdge === null) {
+            if (e1 !== 6 && attemptTraceFrom(e1))
+              return true;
+            if (e2 !== 6 && attemptTraceFrom(e2))
+              return true;
+          } else if (e1 === entryEdge) {
+            if (attemptTraceFrom(e2))
+              return true;
+          } else if (e2 === entryEdge) {
+            if (attemptTraceFrom(e1))
+              return true;
+          }
+        }
+        visited.delete(tileKey);
+        return false;
+      };
+      isWin = tracePath(startTile, null);
+      return { isWin, newlyCompleted: [] };
+    }
+    return { isWin: false, newlyCompleted: [] };
+  }
+};
+
 // board.js
 var tiles = /* @__PURE__ */ new Map();
 var levelConfig = null;
 var hitboxes = [];
-var walls = /* @__PURE__ */ new Set();
-var colorGates = /* @__PURE__ */ new Map();
 var wallMeshes = [];
+var gameState = new BoardState();
 var indGeometry = new THREE.CircleGeometry(0.35, 6, Math.PI / 2);
 indGeometry.rotateX(-Math.PI / 2);
 var iceTexture = new THREE.TextureLoader().load("ice.webp");
 iceTexture.colorSpace = THREE.SRGBColorSpace;
-function createTile(q, r, type) {
+function createTile(tileData) {
+  const { q, r, type, rotation: initialRot, staticColors, cyclingColors, isTarget: isTargetMesh, isBlocked, path: pathStr, pathEdges, freezeLevel } = tileData;
   const pos = axialToWorld(q, r);
   const group = new THREE.Group();
   group.position.set(pos.x, 0, pos.z);
-  if (/^\*+$/.test(type))
-    type = "**";
-  let staticColors = "";
-  let cyclingColors = "";
-  let pathStr = "";
-  let isTargetMesh = false;
-  let isBlocked = false;
-  if (type.startsWith("@@")) {
-    isTargetMesh = true;
-    isBlocked = true;
-  } else if (type.startsWith("T")) {
-    isTargetMesh = true;
-    staticColors = type[1];
-    pathStr = type.substring(2).replace(/\*+$/, "");
-  } else if (type.startsWith("**")) {
-    pathStr = type.substring(2).replace(/\*+$/, "");
-  } else if (type.startsWith("[")) {
-    let closeIdx = type.indexOf("]");
-    if (closeIdx !== -1) {
-      let colorsPart = type.substring(1, closeIdx);
-      let dashIdx = colorsPart.indexOf("-");
-      if (dashIdx !== -1) {
-        staticColors = colorsPart.substring(0, dashIdx);
-        cyclingColors = colorsPart.substring(dashIdx + 1);
-      } else {
-        cyclingColors = colorsPart;
-      }
-      pathStr = type.substring(closeIdx + 1).replace(/\*+$/, "");
-    }
-  } else {
-    cyclingColors = type.substring(0, Math.min(2, type.length));
-    if (cyclingColors.length === 1 && type !== "**")
-      cyclingColors += cyclingColors;
-    pathStr = type.substring(cyclingColors.length).replace(/\*+$/, "");
-  }
   let pathType = null;
-  let initialRot = 0;
   if (pathStr) {
     const lastChar = pathStr[pathStr.length - 1];
     if (/[0-5]/.test(lastChar)) {
-      initialRot = parseInt(lastChar, 10);
       pathType = pathStr.length > 1 ? pathStr[0] : "0";
       if (pathType === "*" || /[0-5]/.test(pathType))
         pathType = "0";
     } else {
       pathType = pathStr[0];
-      initialRot = 0;
     }
   }
   if (isTargetMesh && pathType === "*")
     pathType = null;
-  const pathEdges = pathType ? pathData[pathType] : null;
   let firstColor = staticColors.length > 0 ? staticColors[0] : cyclingColors.length > 0 ? cyclingColors[0] : "*";
   let topColorKey = firstColor;
   let nextColor = "*";
@@ -1688,25 +1910,11 @@ function createTile(q, r, type) {
   botMesh.scale.y = -1;
   group.add(topMesh);
   group.add(botMesh);
-  const isPathTarget = levelConfig?.objective?.type === "path_connect" && levelConfig.objective.targets?.some((t) => t.q === q && t.r === r);
-  const frozenConfig = levelConfig?.frozen || {};
-  const freezeLevel = frozenConfig[`${q},${r}`] || 0;
   group.userData = {
     q,
     r,
-    type,
-    rotation: initialRot,
-    flipped: false,
-    pathEdges,
-    isPathTarget,
-    usingFallback,
-    freezeLevel,
-    staticColors,
-    cyclingColors,
-    colorIndex: 0,
-    isTarget: isTargetMesh,
-    isBlocked,
-    path: pathStr
+    logicTile: tileData,
+    isTarget: isTargetMesh
   };
   if ((staticColors || cyclingColors) && topColorKey !== "*" && topColorKey !== "@" && !isTargetMesh) {
     const createIndicatorMaterial = (colorKey) => {
@@ -1725,7 +1933,7 @@ function createTile(q, r, type) {
     group.userData.botInd = botInd;
   }
   if (useProceduralPath && pathEdges) {
-    const topPathMesh = createPathMesh(pathEdges, isPathTarget);
+    const topPathMesh = createPathMesh(pathEdges, tileData.isPathTarget);
     topPathMesh.traverse((c) => {
       if (c.isMesh && c.material) {
         c.material = c.material.clone();
@@ -1736,7 +1944,7 @@ function createTile(q, r, type) {
     });
     topPathMesh.position.y = hexHeight / 2 + 2e-3;
     topMesh.add(topPathMesh);
-    const bottomPathMesh = createPathMesh(pathEdges, isPathTarget);
+    const bottomPathMesh = createPathMesh(pathEdges, tileData.isPathTarget);
     bottomPathMesh.traverse((c) => {
       if (c.isMesh && c.material) {
         c.material = c.material.clone();
@@ -1773,35 +1981,21 @@ function createTile(q, r, type) {
   setTileType(group);
   return group;
 }
-function getCurrentColor(tile, offset = 0) {
-  let type = tile.userData.type;
-  if (type.startsWith("**") || type.startsWith("@@") || type.startsWith("T")) {
-    return type.startsWith("T") ? type[1] : "*";
-  }
-  let sc = tile.userData.staticColors || "";
-  let cc = tile.userData.cyclingColors || "";
-  let idx = (tile.userData.colorIndex || 0) + offset;
-  if (idx < sc.length) {
-    return sc[idx];
-  } else {
-    let cIdx = idx - sc.length;
-    if (cc.length > 0) {
-      return cc[cIdx % cc.length];
-    } else {
-      return sc.length > 0 ? sc[sc.length - 1] : "*";
-    }
-  }
+function getTileCurrentColor(tile, offset = 0) {
+  if (!tile.userData.logicTile)
+    return "*";
+  return getCurrentColor(tile.userData.logicTile, offset);
 }
 function setTileType(tile, unusedType) {
   const isTargetMesh = tile.userData.isTarget;
-  let topColorKey = getCurrentColor(tile, 0);
-  let botColorKey = getCurrentColor(tile, 1);
+  let topColorKey = getTileCurrentColor(tile, 0);
+  let botColorKey = getTileCurrentColor(tile, 1);
   const topStyle = { color: colorHexes[topColorKey] || "#ffffff", emissive: isTargetMesh, colorKey: topColorKey };
   const botStyle = { color: colorHexes[botColorKey] || "#ffffff", emissive: false, colorKey: botColorKey };
   if (tile.userData.topInd && tile.userData.botInd) {
     let indTopMat = new THREE.MeshStandardMaterial({ color: colorHexes[botColorKey] || "#fff", roughness: 0.7 });
     let indBotMat = new THREE.MeshStandardMaterial({ color: colorHexes[topColorKey] || "#fff", roughness: 0.7 });
-    if (tile.userData.flipped) {
+    if (tile.userData.logicTile && tile.userData.logicTile.flipped) {
       tile.userData.botInd.material = indTopMat;
       tile.userData.topInd.material = indBotMat;
     } else {
@@ -1812,7 +2006,7 @@ function setTileType(tile, unusedType) {
   if (tile.children.length >= 2) {
     const topObj = tile.children[0];
     const botObj = tile.children[1];
-    if (tile.userData.flipped) {
+    if (tile.userData.logicTile && tile.userData.logicTile.flipped) {
       applyTileStyle(botObj, topStyle, isTargetMesh, tile);
       applyTileStyle(topObj, botStyle, isTargetMesh, tile);
     } else {
@@ -1968,8 +2162,7 @@ function buildLevel(config) {
   completedZones.clear();
   activeTweens.length = 0;
   tiles.clear();
-  walls.clear();
-  colorGates.clear();
+  gameState = new BoardState();
   hitboxes.length = 0;
   wallMeshes.forEach((m) => boardGroup.remove(m));
   wallMeshes.length = 0;
@@ -1983,138 +2176,12 @@ function buildLevel(config) {
   while (boardGroup.children.length > 0) {
     boardGroup.remove(boardGroup.children[0]);
   }
-  if (config.staticMap) {
-    let halfRows = Math.floor(config.staticMap.length / 2);
-    for (let i = 0; i < config.staticMap.length; i++) {
-      let r = i - halfRows;
-      const rowTiles = config.staticMap[i].trim().split(/\s+/).filter((t) => t.length > 0);
-      const N = rowTiles.length;
-      if (N === 0)
-        continue;
-      let qStart = Math.floor(-r / 2 - (N - 1) / 2);
-      for (let j = 0; j < N; j++) {
-        let q = qStart + j;
-        const s = rowTiles[j];
-        let matchZ = s.match(/Z(\d+)/);
-        if (matchZ) {
-          if (!config.zones)
-            config.zones = {};
-          config.zones[`${q},${r}`] = parseInt(matchZ[1], 10);
-        }
-        let matchF = s.match(/F(\d+)/);
-        if (matchF) {
-          if (!config.frozen)
-            config.frozen = {};
-          config.frozen[`${q},${r}`] = parseInt(matchF[1], 10);
-        }
-        let matchW = s.match(/W([1-6]+)/);
-        if (matchW) {
-          if (!config.walls)
-            config.walls = [];
-          let dirs = matchW[1].split("").map(Number);
-          dirs.forEach((d) => {
-            let edge = d - 1;
-            const neighbors = [[-1, 0], [0, -1], [1, -1], [1, 0], [0, 1], [-1, 1]];
-            let nq = q + neighbors[edge][0];
-            let nr = r + neighbors[edge][1];
-            let k1 = `${q},${r}`;
-            let k2 = `${nq},${nr}`;
-            let wallKey = k1 < k2 ? `${k1}|${k2}` : `${k2}|${k1}`;
-            if (!config.walls.includes(wallKey))
-              config.walls.push(wallKey);
-          });
-        }
-        let matchC = [...s.matchAll(/C([a-zA-Z]+)([1-6]+)/g)];
-        if (matchC.length > 0) {
-          if (!config.colorGates)
-            config.colorGates = {};
-          matchC.forEach((m) => {
-            let colors = m[1];
-            let dirs = m[2].split("").map(Number);
-            dirs.forEach((d) => {
-              let edge = d - 1;
-              const neighbors = [[-1, 0], [0, -1], [1, -1], [1, 0], [0, 1], [-1, 1]];
-              let nq = q + neighbors[edge][0];
-              let nr = r + neighbors[edge][1];
-              let k1 = `${q},${r}`;
-              let k2 = `${nq},${nr}`;
-              let wallKey = k1 < k2 ? `${k1}|${k2}` : `${k2}|${k1}`;
-              config.colorGates[wallKey] = colors;
-            });
-          });
-        }
-        if (s.includes("@@")) {
-          createTile(q, r, "@@");
-        } else {
-          let matchT = s.match(/T([a-zA-Z*])/);
-          let matchE = s.match(/E([a-zA-Z*])?([1-6])/);
-          if (matchT) {
-            createTile(q, r, "T" + matchT[1]);
-          } else if (matchE) {
-            let c = matchE[1] || "*";
-            let dir = parseInt(matchE[2], 10) - 1;
-            createTile(q, r, c + c + "0" + dir);
-          } else {
-            createTile(q, r, "**");
-          }
-        }
-      }
-    }
-  } else if (config.map) {
-    let halfRows = Math.floor(config.map.length / 2);
-    for (let i = 0; i < config.map.length; i++) {
-      let r = i - halfRows;
-      const rowTiles = config.map[i].trim().split(/\s+/).filter((t) => t.length > 0);
-      const N = rowTiles.length;
-      if (N === 0)
-        continue;
-      let qStart = Math.floor(-r / 2 - (N - 1) / 2);
-      for (let j = 0; j < N; j++) {
-        let q = qStart + j;
-        const type = rowTiles[j];
-        createTile(q, r, type);
-      }
-    }
-  }
-  if (config.staticMap && config.map) {
-    let halfRows = Math.floor(config.map.length / 2);
-    for (let i = 0; i < config.map.length; i++) {
-      let r = i - halfRows;
-      const rowTiles = config.map[i].trim().split(/\s+/).filter((t) => t.length > 0);
-      const N = rowTiles.length;
-      if (N === 0)
-        continue;
-      let qStart = Math.floor(-r / 2 - (N - 1) / 2);
-      for (let j = 0; j < N; j++) {
-        let q = qStart + j;
-        const type = rowTiles[j];
-        if (!/^\*+$/.test(type)) {
-          const existing = tiles.get(`${q},${r}`);
-          if (existing) {
-            boardGroup.remove(existing);
-            const index = hitboxes.findIndex((h) => h.userData.tileGroup === existing);
-            if (index > -1)
-              hitboxes.splice(index, 1);
-          }
-          createTile(q, r, type);
-        }
-      }
-    }
-  } else if (config.initial) {
-    config.initial.forEach((p) => {
-      const existing = tiles.get(`${p.q},${p.r}`);
-      if (existing) {
-        boardGroup.remove(existing);
-        const index = hitboxes.findIndex((h) => h.userData.tileGroup === existing);
-        if (index > -1)
-          hitboxes.splice(index, 1);
-      }
-      createTile(p.q, p.r, p.type);
-    });
-  }
-  if (config.walls) {
-    config.walls.forEach((w) => walls.add(w));
-    config.walls.forEach((wallKey) => {
+  gameState.parseLevel(config);
+  gameState.tiles.forEach((tileData, key) => {
+    createTile(tileData);
+  });
+  if (gameState.walls.size > 0) {
+    gameState.walls.forEach((wallKey) => {
       const [k1, k2] = wallKey.split("|");
       const p1 = axialToWorld(...k1.split(",").map(Number));
       const p2 = axialToWorld(...k2.split(",").map(Number));
@@ -2132,9 +2199,8 @@ function buildLevel(config) {
       wallMeshes.push(wallMesh);
     });
   }
-  if (config.colorGates) {
-    Object.entries(config.colorGates).forEach(([wallKey, colors]) => {
-      colorGates.set(wallKey, colors);
+  if (gameState.colorGates.size > 0) {
+    gameState.colorGates.forEach((colors, wallKey) => {
       const [k1, k2] = wallKey.split("|");
       const p1 = axialToWorld(...k1.split(",").map(Number));
       const p2 = axialToWorld(...k2.split(",").map(Number));
@@ -3235,7 +3301,7 @@ async function playTutorial(tutorialData) {
         const k1 = `${t1.userData.q},${t1.userData.r}`;
         const k2 = `${t2.userData.q},${t2.userData.r}`;
         const wallKey = k1 < k2 ? `${k1}|${k2}` : `${k2}|${k1}`;
-        const isBlocked = isBlockedStep === true || walls.has(wallKey);
+        const isBlocked = isBlockedStep === true || gameState.walls.has(wallKey);
         if (isBlocked) {
           const xEl = document.createElement("div");
           xEl.innerHTML = CROSS_SVG;

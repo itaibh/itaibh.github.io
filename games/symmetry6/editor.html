@@ -314,12 +314,18 @@
           >
             Export JSON
           </button>
+          <button class="btn host-btn" id="btn-host-save" style="background: #2980b9; width: auto; margin: 0; display: none;" title="Save to Host /levels">
+            Save to Host
+          </button>
           <button
             class="btn"
             id="btn-import"
             style="background: #2ecc71; width: auto; margin: 0"
           >
             Import JSON
+          </button>
+          <button class="btn host-btn" id="btn-host-load" style="background: #27ae60; width: auto; margin: 0; display: none;" title="Load from Host /levels">
+            Load from Host
           </button>
           <input type="file" id="file-import" accept=".json" style="display: none;">
           <input
@@ -788,6 +794,22 @@
             Save
           </button>
         </div>
+      </div>
+    </dialog>
+
+    <dialog
+      id="host-load-modal"
+      style="
+        background: #222; padding: 20px; border-radius: 8px; width: 300px;
+        border: 1px solid #555; color: white;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+      "
+    >
+      <h3 style="margin-top: 0; border-bottom: 1px solid #444; padding-bottom: 10px;">Load from Host</h3>
+      <select id="host-file-select" style="width: 100%; padding: 8px; background: #111; color: white; border: 1px solid #444; border-radius: 4px; margin-bottom: 15px;"></select>
+      <div style="display: flex; justify-content: flex-end; gap: 10px;">
+        <button id="btn-host-load-cancel" style="padding: 8px 16px; background: #555; color: white; border: none; cursor: pointer; border-radius: 4px;">Cancel</button>
+        <button id="btn-host-load-confirm" style="padding: 8px 16px; background: #2ecc71; color: white; border: none; cursor: pointer; border-radius: 4px; font-weight: bold;">Load</button>
       </div>
     </dialog>
 
