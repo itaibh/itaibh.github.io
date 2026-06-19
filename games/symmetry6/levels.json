@@ -1019,5 +1019,27 @@
         "targetMoves": 5
       }
     }
+  },
+  {
+    "objectiveString": "Swap Positions of the Red and Blue Tiles",
+    "staticMap": [
+      "  @@* *** @@* @@*  ",
+      "  *** *** Cr1 Cb1 ***  ",
+      "  @@* @@* *** @@*  "
+    ],
+    "map": [
+      "  ** ** ** **  ",
+      "  bb ** ** ** rr  ",
+      "  ** ** ** **  "
+    ],
+    "objective": {
+      "type": "match_map",
+      "map": [
+        "  ** ** ** **  ",
+        "  rr ** ** ** bb  ",
+        "  ** ** ** **  "
+      ]
+    },
+    "targetMoves": 9
   }
 ]
