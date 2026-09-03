@@ -28,6 +28,7 @@ section:before  {
 }
 
 section#about:before { background-image: url(me.jpg); }
+section#projects:before { content: none; }
 section#links:before { background-image: url(bsod.jpg); }
 section#publications:before { background-image: url(presentation.jpg); }
 section#personal-life:before { background-image: url(family.jpg); }
