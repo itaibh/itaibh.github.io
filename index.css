@@ -61,20 +61,7 @@ body {
 
 /* Header & Navigation */
 .site-header {
-    position: sticky;
-    top: 0;
-    z-index: 10;
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    justify-content: space-between;
-    gap: 0.75rem 1.5rem;
-    margin-bottom: 2rem;
-    padding: 1.5rem 0 1.25rem;
-    background-color: var(--header-bg);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-    border-bottom: 1px solid var(--border);
+    padding: 2rem 0 0.75rem;
 }
 
 .site-header h1 {
@@ -94,9 +81,18 @@ body {
 }
 
 .site-nav {
+    position: sticky;
+    top: 0;
+    z-index: 10;
     display: flex;
     flex-wrap: wrap;
     gap: 0.4rem;
+    margin-bottom: 1.75rem;
+    padding: 0.75rem 0;
+    background-color: var(--header-bg);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--border);
 }
 
 .site-nav a {
@@ -128,7 +124,7 @@ main {
     border-radius: 16px;
     padding: 1.75rem;
     box-shadow: var(--shadow);
-    scroll-margin-top: 7.5rem;
+    scroll-margin-top: 4.5rem;
 }
 
 .card.has-media {
@@ -284,12 +280,12 @@ footer {
     }
 
     .site-header {
-        padding: 1rem 0;
+        padding: 1.25rem 0 0.5rem;
     }
 
     .card {
         padding: 1.35rem;
-        scroll-margin-top: 8.5rem;
+        scroll-margin-top: 5.5rem;
     }
 
     .card.has-media {
