@@ -1,88 +1,143 @@
-
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Itai Bar-Haim</title>
+    <link rel="icon" type="image/svg+xml" href="favicon.svg" />
     <link rel="stylesheet" href="index.css" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
 <body>
     <div class="wrapper">
-        <h1>Welcome!</h1>
-        <section id="about">
-            <h2>A bit about myself</h2>
-            <p>Hi! I'm Itai Bar-Haim.</p>
-            <p>
-                I'm a Client-Oriented kind of guy, most of my experience is writing UI
-                in various technologies (started with X-Motif, then GTK, QT, WinForms,
-                WPF, Web, Some Android).
-            </p>
-            <p>
-                Writing UI code gave me deep understanding of thread management,
-                performance, and the importance of responsiveness. Also I had to handle
-                a lot of different methods of user input and respond accordingly. UI
-                libraries also have their share of memory issues (handles in Windows,
-                for example), which I learnt how to tackle.
-            </p>
-            <p>After doing UI in the deep levels for so many years, server side is easy :-)</p>
-            <p>
-                I'm a fast learner, self-taught. If I want to learn something new, I just start
-                a project with it. It also goes the other way around - if I need to do something
-                using a technology I'm not familiar with, I just learn it "on-the-fly".
-            </p>
-            <p>
-                I have the attitude of "Get-Things-Done-Right". This means that while I do get
-                things done, I always try to do them the right way. In software this usually
-                means I try to think ahead to allow room for future changes and adaptations.
-            </p>
-            <p>
-                I am currently unemployed (or "between jobs", "searching-for-my-next-challenge", you get the idea). The last placed I worked at was Applitools (AI powered UI Testing), where 
-                I had the roles of DotNet SDK developer, DotNet backend developer, and web-based plugins developer for Azure and Figma plugins.
-            </p>
-        </section>
-        <section id="projects">
-            <h2>Projects</h2>
-            <ul>
-                <li><a href=""><b>NBidi</b></a>, A .Net implementation of the BIDI (Bi-Directional Text) algorithm.</li>
-                <li><a href="https://github.com/WebQuestEngine/WebQuestEngine"><b>WebQuestEngine</b></a>, Point and Click Quest Game Engine for Web</li>
-                <li><a href="https://github.com/itaibh/blender_rotoscope"><b>Blender Rotoscope</b></a>, Interactive video matte generation through an external AI worker.</li>
-            </ul>
-        </section>
-        <section id="links">
-            <h2>Some links</h2>
-            <ul>
-                <li id="blogger"><a href="https://blog.itaibarhaim.me"><b>My Blog</b></a>, where I write mostly about technology and share my thoughts.</li>
-                <li id="github"><a href="https://github.com/itaibh"><b>My GitHub page</b></a></li>
-                <li id="stackoverflow"><a href="https://stackoverflow.com/users/47104/itai-bar-haim"><b>My Stack-Overflow profile page</b></a></li>
-                <li id="linkedin"><a href="https://il.linkedin.com/in/itaibarhaim"><b>My Linked-in profile page</b></a></li>
-                <li id="sourceforge"><a href="https://sourceforge.net/u/itaibh/profile/"><b>My old SourceForge page</b></a></li>
-            </ul>
-        </section>
-        <section id="publications">
-            <h2>Presentations and Publications</h2>
-            <ul>
-                <li><a href="https://docs.google.com/presentation/d/1JQR6T3qQruqFEa5EuNv9V_uFQCrDmYl_-0fEo4iNs7U/edit?usp=sharing"><b>Efficient Web Page Authoring</b></a>
-                     - a presentation I passed to my collegues at PicScout to improve their understanding of web-related concepts and how to do things better.</li>
-                <li><a href="https://docs.google.com/presentation/d/1yHRh_BVuZM5fKmHdnKYT-n3G6Y3nnwXOqjiaq_0AgeI/edit?usp=sharing"><b>Web Development for Beginners</b></a>
-                     - a presentation aiming to teach the basics of web development to people with basic programming background. Was done as part of a volunteering
-                    project in PicScout.</li>
-                <li><a href="http://engineering.picscout.com/2016/04/writing-web-based-client-side-unit.html"><b>My post about Jasmine JavaScript Unit Testing Framework</b></a>
-                    in the PicScout engineering blog.</li>
-            </ul>
-        </section>
-        <section id="personal-life">
-            <h2>Personal Life</h2>
-            <p>
-                Married to Nadin and father to Ella and Gali.
-            </p>
-            <p>
-                When I have time I like (surprise surprise!) programming (my own projects), going to Escape Rooms with my wife or with friends,
-                and when I have a good quest game I like solving it.
-            </p>
-        </section>
+        <header class="site-header">
+            <div class="header-text">
+                <h1>Welcome!</h1>
+                <p class="subtitle">Itai Bar-Haim &middot; Software &amp; UI Engineer</p>
+            </div>
+            <nav class="site-nav" aria-label="Page sections">
+                <a href="#about">About</a>
+                <a href="#projects">Projects</a>
+                <a href="#links">Links</a>
+                <a href="#publications">Publications</a>
+                <a href="#personal-life">Personal</a>
+            </nav>
+        </header>
+
+        <main>
+            <section id="about" class="card has-media">
+                <div class="section-media">
+                    <img src="me.jpg" alt="Itai Bar-Haim" />
+                </div>
+                <div class="section-body">
+                    <h2>A bit about myself</h2>
+                    <p>Hi! I'm Itai Bar-Haim.</p>
+                    <p>
+                        I'm a Client-Oriented kind of guy, most of my experience is writing UI
+                        in various technologies (started with X-Motif, then GTK, QT, WinForms,
+                        WPF, Web, Some Android).
+                    </p>
+                    <p>
+                        Writing UI code gave me deep understanding of thread management,
+                        performance, and the importance of responsiveness. Also I had to handle
+                        a lot of different methods of user input and respond accordingly. UI
+                        libraries also have their share of memory issues (handles in Windows,
+                        for example), which I learnt how to tackle.
+                    </p>
+                    <p>After doing UI in the deep levels for so many years, server side is easy :-)</p>
+                    <p>
+                        I'm a fast learner, self-taught. If I want to learn something new, I just start
+                        a project with it. It also goes the other way around - if I need to do something
+                        using a technology I'm not familiar with, I just learn it "on-the-fly".
+                    </p>
+                    <p>
+                        I have the attitude of "Get-Things-Done-Right". This means that while I do get
+                        things done, I always try to do them the right way. In software this usually
+                        means I try to think ahead to allow room for future changes and adaptations.
+                    </p>
+                    <p>
+                        I am currently unemployed (or "between jobs", "searching-for-my-next-challenge", you get the idea). The last placed I worked at was Applitools (AI powered UI Testing), where 
+                        I had the roles of DotNet SDK developer, DotNet backend developer, and web-based plugins developer for Azure and Figma plugins.
+                    </p>
+                </div>
+            </section>
+
+            <section id="projects" class="card">
+                <div class="section-body">
+                    <h2>Projects</h2>
+                    <ul class="item-list">
+                        <li>
+                            <a href=""><strong>NBidi</strong></a>, A .Net implementation of the BIDI (Bi-Directional Text) algorithm.
+                        </li>
+                        <li>
+                            <a href="https://github.com/WebQuestEngine/WebQuestEngine"><strong>WebQuestEngine</strong></a>, Point and Click Quest Game Engine for Web
+                        </li>
+                        <li>
+                            <a href="https://github.com/itaibh/blender_rotoscope"><strong>Blender Rotoscope</strong></a>, Interactive video matte generation through an external AI worker.
+                        </li>
+                    </ul>
+                </div>
+            </section>
+
+            <section id="links" class="card has-media">
+                <div class="section-media">
+                    <img src="bsod.jpg" alt="Itai pointing at a BSOD screen" loading="lazy" />
+                </div>
+                <div class="section-body">
+                    <h2>Some links</h2>
+                    <ul class="link-list">
+                        <li id="blogger"><a href="https://blog.itaibarhaim.me"><strong>My Blog</strong></a>, where I write mostly about technology and share my thoughts.</li>
+                        <li id="github"><a href="https://github.com/itaibh"><strong>My GitHub page</strong></a></li>
+                        <li id="stackoverflow"><a href="https://stackoverflow.com/users/47104/itai-bar-haim"><strong>My Stack-Overflow profile page</strong></a></li>
+                        <li id="linkedin"><a href="https://il.linkedin.com/in/itaibarhaim"><strong>My Linked-in profile page</strong></a></li>
+                        <li id="sourceforge"><a href="https://sourceforge.net/u/itaibh/profile/"><strong>My old SourceForge page</strong></a></li>
+                    </ul>
+                </div>
+            </section>
+
+            <section id="publications" class="card has-media">
+                <div class="section-media">
+                    <img src="presentation.jpg" alt="Itai giving a presentation at PicScout" loading="lazy" />
+                </div>
+                <div class="section-body">
+                    <h2>Presentations and Publications</h2>
+                    <ul class="item-list">
+                        <li>
+                            <a href="https://docs.google.com/presentation/d/1JQR6T3qQruqFEa5EuNv9V_uFQCrDmYl_-0fEo4iNs7U/edit?usp=sharing"><strong>Efficient Web Page Authoring</strong></a>
+                            - a presentation I passed to my collegues at PicScout to improve their understanding of web-related concepts and how to do things better.
+                        </li>
+                        <li>
+                            <a href="https://docs.google.com/presentation/d/1yHRh_BVuZM5fKmHdnKYT-n3G6Y3nnwXOqjiaq_0AgeI/edit?usp=sharing"><strong>Web Development for Beginners</strong></a>
+                            - a presentation aiming to teach the basics of web development to people with basic programming background. Was done as part of a volunteering
+                            project in PicScout.
+                        </li>
+                        <li>
+                            <a href="http://engineering.picscout.com/2016/04/writing-web-based-client-side-unit.html"><strong>My post about Jasmine JavaScript Unit Testing Framework</strong></a>
+                            in the PicScout engineering blog.
+                        </li>
+                    </ul>
+                </div>
+            </section>
+
+            <section id="personal-life" class="card has-media">
+                <div class="section-media">
+                    <img src="family.jpg" alt="Itai with his family" loading="lazy" />
+                </div>
+                <div class="section-body">
+                    <h2>Personal Life</h2>
+                    <p>
+                        Married to Nadin and father to Ella and Gali.
+                    </p>
+                    <p>
+                        When I have time I like (surprise surprise!) programming (my own projects), going to Escape Rooms with my wife or with friends,
+                        and when I have a good quest game I like solving it.
+                    </p>
+                </div>
+            </section>
+        </main>
+
+        <footer>
+            Updated September 2026
+        </footer>
     </div>
-    <footer>
-        Updated September 2026
-    </footer>
 </body>
 </html>
