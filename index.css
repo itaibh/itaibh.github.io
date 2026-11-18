@@ -188,27 +188,63 @@ a:hover {
 
 /* Lists */
 .item-list,
-.link-list {
+.link-list,
+.experience-list {
     margin: 0;
     padding: 0;
     list-style: none;
 }
 
 .item-list li,
-.link-list li {
-    padding: 0.55rem 0;
+.link-list li,
+.experience-list li {
+    padding: 0.65rem 0;
     border-bottom: 1px solid var(--border);
 }
 
 .item-list li:first-child,
-.link-list li:first-child {
+.link-list li:first-child,
+.experience-list li:first-child {
     padding-top: 0.15rem;
 }
 
 .item-list li:last-child,
-.link-list li:last-child {
+.link-list li:last-child,
+.experience-list li:last-child {
     padding-bottom: 0;
     border-bottom: none;
+}
+
+.exp-header {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 0.25rem 0.75rem;
+    margin-bottom: 0.35rem;
+}
+
+.exp-header strong {
+    color: var(--text-heading);
+    font-size: 1.05rem;
+}
+
+.exp-meta {
+    font-size: 0.875rem;
+    color: var(--text-muted);
+    font-weight: 500;
+}
+
+.experience-list p {
+    margin: 0;
+}
+
+code {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    font-size: 0.88em;
+    padding: 0.1em 0.35em;
+    border-radius: 5px;
+    background-color: var(--accent-soft);
 }
 
 /* Sprite Icons in #links */

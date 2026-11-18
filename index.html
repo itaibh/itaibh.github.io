@@ -12,10 +12,11 @@
         <header class="site-header">
             <div class="header-text">
                 <h1>Welcome!</h1>
-                <p class="subtitle">Itai Bar-Haim &middot; Software &amp; UI Engineer</p>
+                <p class="subtitle">Itai Bar-Haim &middot; Senior Software Engineer &amp; Architect</p>
             </div>
             <nav class="site-nav" aria-label="Page sections">
                 <a href="#about">About</a>
+                <a href="#experience">Experience</a>
                 <a href="#projects">Projects</a>
                 <a href="#links">Links</a>
                 <a href="#publications">Publications</a>
@@ -32,32 +33,93 @@
                     <h2>A bit about myself</h2>
                     <p>Hi! I'm Itai Bar-Haim.</p>
                     <p>
-                        I'm a Client-Oriented kind of guy, most of my experience is writing UI
-                        in various technologies (started with X-Motif, then GTK, QT, WinForms,
-                        WPF, Web, Some Android).
+                        I'm a software engineer and architect with 25 years of experience building resilient,
+                        cost-effective, and maintainable systems — from deep client-side UI to scalable
+                        backend infrastructure and developer-facing tools.
                     </p>
                     <p>
-                        Writing UI code gave me deep understanding of thread management,
-                        performance, and the importance of responsiveness. Also I had to handle
-                        a lot of different methods of user input and respond accordingly. UI
-                        libraries also have their share of memory issues (handles in Windows,
-                        for example), which I learnt how to tackle.
-                    </p>
-                    <p>After doing UI in the deep levels for so many years, server side is easy :-)</p>
-                    <p>
-                        I'm a fast learner, self-taught. If I want to learn something new, I just start
-                        a project with it. It also goes the other way around - if I need to do something
-                        using a technology I'm not familiar with, I just learn it "on-the-fly".
+                        My career began in 2001 writing tactical C4I user interfaces for the Israeli Navy
+                        (X/Motif, GTK+, C/C++, and Gtk# over Mono), where reliability and handling edge cases
+                        were non-negotiable. Working in UI at the lowest levels gave me a deep understanding
+                        of thread management, performance, responsiveness, and memory/handle management —
+                        which made transitioning into backend and full-stack architecture a natural fit.
                     </p>
                     <p>
-                        I have the attitude of "Get-Things-Done-Right". This means that while I do get
-                        things done, I always try to do them the right way. In software this usually
-                        means I try to think ahead to allow room for future changes and adaptations.
+                        I'm a fast, self-taught learner with a "Get-Things-Done-Right" mindset: I get things
+                        done, but always with clean architecture that leaves room for future growth and
+                        adaptation. If I need a technology I'm not familiar with, I learn it on the fly by
+                        building with it.
                     </p>
                     <p>
-                        I am currently unemployed (or "between jobs", "searching-for-my-next-challenge", you get the idea). The last placed I worked at was Applitools (AI powered UI Testing), where 
-                        I had the roles of DotNet SDK developer, DotNet backend developer, and web-based plugins developer for Azure and Figma plugins.
+                        I am currently exploring new opportunities in <strong>Backend</strong> and
+                        <strong>Full-Stack</strong> development, especially where solving deep architectural
+                        puzzles or modernizing legacy systems can make a real impact. Feel free to reach out
+                        at <a href="mailto:itaibh@gmail.com">itaibh@gmail.com</a>.
                     </p>
+                </div>
+            </section>
+
+            <section id="experience" class="card">
+                <div class="section-body">
+                    <h2>Experience</h2>
+                    <ul class="experience-list">
+                        <li>
+                            <div class="exp-header">
+                                <strong>Applitools</strong>
+                                <span class="exp-meta">Back End &amp; SDK Developer &middot; 2017 – 2026 (9 years)</span>
+                            </div>
+                            <p>
+                                Spearheaded a core server migration from .NET Framework to .NET 6+ on Linux,
+                                cutting server costs by $40,000 and boosting performance. Re-architected a
+                                heavy component into a multi-process model, replaced legacy Windows-only
+                                <code>System.Drawing.Bitmap</code> with 100% backward API compatibility,
+                                unified the C# SDK across 6 OS/CPU native runtimes on NuGet, and owned/revamped
+                                the Figma and Azure DevOps (ADO) plugins.
+                            </p>
+                        </li>
+                        <li>
+                            <div class="exp-header">
+                                <strong>PicScout</strong>
+                                <span class="exp-meta">Software Engineer &middot; 2015 – 2016</span>
+                            </div>
+                            <p>
+                                Full-stack web development using ASP.NET on the server side with Angular and
+                                Knockout.js on the client side, plus Selenium-based web UI test automation.
+                            </p>
+                        </li>
+                        <li>
+                            <div class="exp-header">
+                                <strong>Overwolf</strong>
+                                <span class="exp-meta">Senior Developer &middot; 2013 – 2015</span>
+                            </div>
+                            <p>
+                                Enhanced the WPF client, integrated Chromium Embedded Framework (CEF) for
+                                web-based apps, built web-facing C# APIs, and automated builds, tests, and
+                                API documentation generation.
+                            </p>
+                        </li>
+                        <li>
+                            <div class="exp-header">
+                                <strong>mPrest</strong>
+                                <span class="exp-meta">Software Architect &middot; 2008 – 2013</span>
+                            </div>
+                            <p>
+                                Led the UI team and built client-side architecture and GIS/3D interfaces
+                                (WinForms, WPF) for mission-critical C4I systems, most notably the
+                                <strong>Iron Dome</strong> and Ituran.
+                            </p>
+                        </li>
+                        <li>
+                            <div class="exp-header">
+                                <strong>Israeli Navy C4I</strong>
+                                <span class="exp-meta">Programmer &amp; Software Architect &middot; 2001 – 2008</span>
+                            </div>
+                            <p>
+                                Built tactical client-side C4I systems using X/Motif and GTK+ in C/C++, and
+                                Gtk# over Mono.
+                            </p>
+                        </li>
+                    </ul>
                 </div>
             </section>
 
@@ -66,13 +128,16 @@
                     <h2>Projects</h2>
                     <ul class="item-list">
                         <li>
-                            <a href=""><strong>NBidi</strong></a>, A .Net implementation of the BIDI (Bi-Directional Text) algorithm.
+                            <a href=""><strong>NBidi</strong></a>, an open-source .NET implementation of the Unicode BIDI (Bi-Directional Text) algorithm.
                         </li>
                         <li>
-                            <a href="https://github.com/WebQuestEngine/WebQuestEngine"><strong>WebQuestEngine</strong></a>, Point and Click Quest Game Engine for Web
+                            <a href="https://github.com/WebQuestEngine/WebQuestEngine"><strong>WebQuestEngine</strong></a>, Point and Click Quest Game Engine for Web.
                         </li>
                         <li>
-                            <a href="https://github.com/itaibh/blender_rotoscope"><strong>Blender Rotoscope</strong></a>, Interactive video matte generation through an external AI worker.
+                            <a href="https://github.com/itaibh/blender_rotoscope"><strong>Blender Rotoscope</strong></a>, interactive video matte generation through an external AI worker.
+                        </li>
+                        <li>
+                            <strong>Mobile Puzzle Games</strong>, including <em>Symmetry6</em> and <em>FlipMosaic</em>.
                         </li>
                     </ul>
                 </div>
@@ -103,11 +168,11 @@
                     <ul class="item-list">
                         <li>
                             <a href="https://docs.google.com/presentation/d/1JQR6T3qQruqFEa5EuNv9V_uFQCrDmYl_-0fEo4iNs7U/edit?usp=sharing"><strong>Efficient Web Page Authoring</strong></a>
-                            - a presentation I passed to my collegues at PicScout to improve their understanding of web-related concepts and how to do things better.
+                             - a presentation I passed to my colleagues at PicScout to improve their understanding of web-related concepts and how to do things better.
                         </li>
                         <li>
                             <a href="https://docs.google.com/presentation/d/1yHRh_BVuZM5fKmHdnKYT-n3G6Y3nnwXOqjiaq_0AgeI/edit?usp=sharing"><strong>Web Development for Beginners</strong></a>
-                            - a presentation aiming to teach the basics of web development to people with basic programming background. Was done as part of a volunteering
+                             - a presentation aiming to teach the basics of web development to people with basic programming background. Was done as part of a volunteering
                             project in PicScout.
                         </li>
                         <li>
@@ -128,7 +193,7 @@
                         Married to Nadin and father to Ella and Gali.
                     </p>
                     <p>
-                        When I have time I like (surprise surprise!) programming (my own projects), going to Escape Rooms with my wife or with friends,
+                        When I have time I like (surprise surprise!) programming (my own projects and mobile puzzle games), going to Escape Rooms with my wife or with friends,
                         and when I have a good quest game I like solving it.
                     </p>
                 </div>
@@ -136,7 +201,7 @@
         </main>
 
         <footer>
-            Updated September 2026
+            Updated November 2026
         </footer>
     </div>
 </body>
