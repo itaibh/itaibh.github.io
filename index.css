@@ -244,7 +244,11 @@ code {
 }
 
 /* Sprite Icons in #links */
-#links li::before {
+#blogger::before,
+#github::before,
+#stackoverflow::before,
+#linkedin::before,
+#sourceforge::before {
     content: "";
     width: 18px;
     height: 18px;
