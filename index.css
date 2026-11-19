@@ -4,7 +4,7 @@
     --surface: #ffffff;
     --text: #334155;
     --text-heading: #0f172a;
-    --text-muted: #64748b;
+    --text-muted: #475569;
     --accent: #2563eb;
     --accent-hover: #1d4ed8;
     --accent-soft: rgba(37, 99, 235, 0.08);
@@ -38,19 +38,59 @@
     box-sizing: border-box;
 }
 
-html {
-    scroll-behavior: smooth;
+@media (prefers-reduced-motion: no-preference) {
+    html {
+        scroll-behavior: smooth;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        transition-duration: 0.01ms !important;
+        animation-duration: 0.01ms !important;
+    }
 }
 
 body {
     margin: 0;
     padding: 0;
     font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-    font-size: 16px;
+    font-size: 1rem;
     line-height: 1.65;
     color: var(--text);
     background-color: var(--bg);
     -webkit-font-smoothing: antialiased;
+}
+
+/* Skip Link & Focus Indicators */
+.skip-link {
+    position: absolute;
+    left: -9999px;
+    top: 0;
+    z-index: 100;
+    padding: 0.65rem 1rem;
+    background-color: var(--text-heading);
+    color: var(--surface);
+    font-weight: 600;
+    text-decoration: none;
+    border-radius: 0 0 8px 0;
+}
+
+.skip-link:focus {
+    left: 0.75rem;
+    top: 0.75rem;
+    border-radius: 8px;
+}
+
+:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 3px;
+}
+
+main:focus {
+    outline: none;
 }
 
 .wrapper {
@@ -98,6 +138,7 @@ body {
 .site-nav a {
     display: inline-block;
     padding: 0.35rem 0.75rem;
+    border: 1px solid transparent;
     border-radius: 999px;
     font-size: 0.875rem;
     font-weight: 500;
@@ -106,9 +147,11 @@ body {
     transition: background-color 0.15s ease, color 0.15s ease;
 }
 
-.site-nav a:hover {
+.site-nav a:hover,
+.site-nav a:focus-visible {
     background-color: var(--accent-soft);
-    color: var(--accent);
+    color: var(--accent-hover);
+    text-decoration: none;
 }
 
 /* Cards & Sections */
@@ -172,14 +215,14 @@ main {
 /* Links */
 a {
     color: var(--accent);
-    text-decoration: none;
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
     text-underline-offset: 3px;
     transition: color 0.15s ease;
 }
 
 a:hover {
     color: var(--accent-hover);
-    text-decoration: underline;
 }
 
 /* Lists */
@@ -220,9 +263,12 @@ a:hover {
     margin-bottom: 0.35rem;
 }
 
+.exp-header h3,
 .exp-header strong {
+    margin: 0;
     color: var(--text-heading);
     font-size: 1.05rem;
+    font-weight: 700;
 }
 
 .exp-meta {

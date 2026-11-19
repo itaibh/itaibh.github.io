@@ -18,6 +18,7 @@
 </head>
 
 <body>
+    <a href="#main-content" class="skip-link">Skip to main content</a>
     <div class="wrapper">
         <header class="site-header">
             <div class="header-text">
@@ -34,13 +35,13 @@
             <a href="#personal-life">Personal</a>
         </nav>
 
-        <main>
-            <section id="about" class="card has-media">
+        <main id="main-content" tabindex="-1">
+            <section id="about" class="card has-media" aria-labelledby="about-heading">
                 <div class="section-media">
-                    <img src="me.jpg" alt="Itai Bar-Haim" />
+                    <img src="me.jpg" alt="Portrait of Itai Bar-Haim" width="180" height="180" />
                 </div>
                 <div class="section-body">
-                    <h2>A bit about myself</h2>
+                    <h2 id="about-heading">A bit about myself</h2>
                     <p>Hi! I'm Itai Bar-Haim.</p>
                     <p>
                         I'm a software engineer and architect with 25 years of experience building resilient,
@@ -69,13 +70,13 @@
                 </div>
             </section>
 
-            <section id="experience" class="card">
+            <section id="experience" class="card" aria-labelledby="experience-heading">
                 <div class="section-body">
-                    <h2>Experience</h2>
+                    <h2 id="experience-heading">Experience</h2>
                     <ul class="experience-list">
                         <li>
                             <div class="exp-header">
-                                <strong>Applitools</strong>
+                                <h3>Applitools</h3>
                                 <span class="exp-meta">Back End &amp; SDK Developer &middot; 2017 – 2026 (9
                                     years)</span>
                             </div>
@@ -90,7 +91,7 @@
                         </li>
                         <li>
                             <div class="exp-header">
-                                <strong>PicScout</strong>
+                                <h3>PicScout</h3>
                                 <span class="exp-meta">Software Engineer &middot; 2015 – 2016</span>
                             </div>
                             <p>
@@ -100,7 +101,7 @@
                         </li>
                         <li>
                             <div class="exp-header">
-                                <strong>Overwolf</strong>
+                                <h3>Overwolf</h3>
                                 <span class="exp-meta">Senior Developer &middot; 2013 – 2015</span>
                             </div>
                             <p>
@@ -111,7 +112,7 @@
                         </li>
                         <li>
                             <div class="exp-header">
-                                <strong>mPrest</strong>
+                                <h3>mPrest</h3>
                                 <span class="exp-meta">Software Architect &middot; 2008 – 2013</span>
                             </div>
                             <p>
@@ -122,7 +123,7 @@
                         </li>
                         <li>
                             <div class="exp-header">
-                                <strong>Israeli Navy C4I</strong>
+                                <h3>Israeli Navy C4I</h3>
                                 <span class="exp-meta">Programmer &amp; Software Architect &middot; 2001 – 2008</span>
                             </div>
                             <p>
@@ -134,12 +135,12 @@
                 </div>
             </section>
 
-            <section id="projects" class="card">
+            <section id="projects" class="card" aria-labelledby="projects-heading">
                 <div class="section-body">
-                    <h2>Projects</h2>
+                    <h2 id="projects-heading">Projects</h2>
                     <ul class="item-list">
                         <li>
-                            <a href=""><strong>NBidi</strong></a>, an open-source .NET implementation of the Unicode
+                            <strong>NBidi</strong>, an open-source .NET implementation of the Unicode
                             BIDI (Bi-Directional Text) algorithm.
                         </li>
                         <li>
@@ -159,12 +160,12 @@
                 </div>
             </section>
 
-            <section id="links" class="card has-media">
+            <section id="links" class="card has-media" aria-labelledby="links-heading">
                 <div class="section-media">
-                    <img src="bsod.jpg" alt="Itai pointing at a BSOD screen" loading="lazy" />
+                    <img src="bsod.jpg" alt="Itai pointing at a Blue Screen of Death (BSOD) screen" width="180" height="180" loading="lazy" />
                 </div>
                 <div class="section-body">
-                    <h2>Some links</h2>
+                    <h2 id="links-heading">Some links</h2>
                     <ul class="link-list">
                         <li id="blogger"><a href="https://blog.itaibarhaim.me"><strong>My Blog</strong></a>, where I
                             write mostly about technology and share my thoughts.</li>
@@ -177,20 +178,20 @@
                                     SourceForge page</strong></a></li>
                         <li>
                             <strong>Stop-Motion Animation (<em>@roguesunfiltered</em>)</strong> &ndash;
-                            <a href="https://www.youtube.com/@roguesunfiltered">YouTube</a>,
-                            <a href="https://www.tiktok.com/@roguesunfiltered">TikTok</a>,
-                            <a href="https://www.instagram.com/roguesunfiltered/">Instagram</a>
+                            <a href="https://www.youtube.com/@roguesunfiltered" aria-label="Stop-Motion Animation on YouTube (@roguesunfiltered)">YouTube</a>,
+                            <a href="https://www.tiktok.com/@roguesunfiltered" aria-label="Stop-Motion Animation on TikTok (@roguesunfiltered)">TikTok</a>,
+                            <a href="https://www.instagram.com/roguesunfiltered/" aria-label="Stop-Motion Animation on Instagram (@roguesunfiltered)">Instagram</a>
                         </li>
                     </ul>
                 </div>
             </section>
 
-            <section id="publications" class="card has-media">
+            <section id="publications" class="card has-media" aria-labelledby="publications-heading">
                 <div class="section-media">
-                    <img src="presentation.jpg" alt="Itai giving a presentation at PicScout" loading="lazy" />
+                    <img src="presentation.jpg" alt="Itai giving a presentation at PicScout" width="180" height="180" loading="lazy" />
                 </div>
                 <div class="section-body">
-                    <h2>Presentations and Publications</h2>
+                    <h2 id="publications-heading">Presentations and Publications</h2>
                     <ul class="item-list">
                         <li>
                             <a
@@ -216,12 +217,12 @@
                 </div>
             </section>
 
-            <section id="personal-life" class="card has-media">
+            <section id="personal-life" class="card has-media" aria-labelledby="personal-life-heading">
                 <div class="section-media">
-                    <img src="family.jpg" alt="Itai with his family" loading="lazy" />
+                    <img src="family.jpg" alt="Itai with his family" width="180" height="180" loading="lazy" />
                 </div>
                 <div class="section-body">
-                    <h2>Personal Life</h2>
+                    <h2 id="personal-life-heading">Personal Life</h2>
                     <p>
                         Married to Nadin and father to Ella and Gali.
                     </p>
@@ -229,9 +230,9 @@
                         When I have time I like (surprise surprise!) programming (my own projects and mobile puzzle
                         games),
                         creating stop-motion animations frame by frame (check out <strong>@roguesunfiltered</strong> on
-                        <a href="https://www.youtube.com/@roguesunfiltered">YouTube</a>,
-                        <a href="https://www.tiktok.com/@roguesunfiltered">TikTok</a>, and
-                        <a href="https://www.instagram.com/roguesunfiltered/">Instagram</a>),
+                        <a href="https://www.youtube.com/@roguesunfiltered" aria-label="@roguesunfiltered on YouTube">YouTube</a>,
+                        <a href="https://www.tiktok.com/@roguesunfiltered" aria-label="@roguesunfiltered on TikTok">TikTok</a>, and
+                        <a href="https://www.instagram.com/roguesunfiltered/" aria-label="@roguesunfiltered on Instagram">Instagram</a>),
                         going to Escape Rooms with my wife or with friends, and when I have a good quest game I like
                         solving it.
                     </p>
